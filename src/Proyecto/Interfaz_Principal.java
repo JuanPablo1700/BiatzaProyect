@@ -18,6 +18,7 @@ public class Interfaz_Principal extends javax.swing.JFrame {
     public Interfaz_Principal() {
         initComponents();
         setLocationRelativeTo(null);
+        CBD.conectar();
     }
 
     /**
@@ -278,7 +279,7 @@ public class Interfaz_Principal extends javax.swing.JFrame {
             }
         });
     }
-
+    private final ConeccionBD CBD = new ConeccionBD(); 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCerrarSesion;
     private javax.swing.JLabel btnClientes;
