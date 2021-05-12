@@ -6,11 +6,13 @@
 package Proyecto;
 
 import java.awt.Color;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
-/**
- *
- * @author diana
- */
+
 public class Ventana_Acceso extends javax.swing.JFrame {
 
     /**
@@ -18,9 +20,9 @@ public class Ventana_Acceso extends javax.swing.JFrame {
      */
     public Ventana_Acceso() {
         initComponents();
-        
     }
-
+    private String sql;
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -33,10 +35,10 @@ public class Ventana_Acceso extends javax.swing.JFrame {
         pnlFondo = new javax.swing.JPanel();
         lblTitulo = new javax.swing.JLabel();
         txtUsuario = new javax.swing.JTextField();
-        txtContraseña = new javax.swing.JTextField();
         btnAcceder = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        txtContraseña = new javax.swing.JPasswordField();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -78,23 +80,6 @@ public class Ventana_Acceso extends javax.swing.JFrame {
         pnlFondo.add(txtUsuario);
         txtUsuario.setBounds(40, 170, 270, 40);
 
-        txtContraseña.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtContraseña.setForeground(new java.awt.Color(102, 102, 102));
-        txtContraseña.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        txtContraseña.setText("Contraseña.");
-        txtContraseña.setToolTipText("Contraseña");
-        txtContraseña.setNextFocusableComponent(btnAcceder);
-        txtContraseña.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtContraseñaFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtContraseñaFocusLost(evt);
-            }
-        });
-        pnlFondo.add(txtContraseña);
-        txtContraseña.setBounds(40, 250, 270, 40);
-
         btnAcceder.setBackground(new java.awt.Color(204, 204, 204));
         btnAcceder.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnAcceder.setText("Acceder");
@@ -121,6 +106,20 @@ public class Ventana_Acceso extends javax.swing.JFrame {
         pnlFondo.add(jLabel2);
         jLabel2.setBounds(140, 90, 60, 70);
 
+        txtContraseña.setText("jPasswordField1");
+        txtContraseña.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtContraseñaFocusGained(evt);
+            }
+        });
+        txtContraseña.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtContraseñaActionPerformed(evt);
+            }
+        });
+        pnlFondo.add(txtContraseña);
+        txtContraseña.setBounds(40, 240, 270, 40);
+
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Fondo.png"))); // NOI18N
         jLabel1.setText("jLabel1");
         pnlFondo.add(jLabel1);
@@ -142,9 +141,43 @@ public class Ventana_Acceso extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSalirActionPerformed
 
     private void btnAccederActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAccederActionPerformed
-        this.dispose();
-        Interfaz_Principal IA = new Interfaz_Principal();
-        IA.setVisible(true);
+        String usuario,contraseña;
+        
+        if(CBD.conectar()){
+            ResultSet rs;
+            String datos [][] = new String[100][100];
+            int renglon=0, columna;
+            sql = "select Nom_Usuario, Contraseña from usuarios";
+            rs = CBD.seleccionar(sql);
+            
+            try {
+                while (rs.next()){
+                    columna = 0;
+                    datos[renglon][columna] = rs.getString(1);
+                    columna++;
+                    datos[renglon][columna] = rs.getString(2);
+                    renglon++;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Ventana_Acceso.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            boolean acceso = false;
+            int contador=0;
+            usuario = txtUsuario.getText();
+            contraseña = txtContraseña.getText();
+            while(contador < renglon && acceso == false){
+                if(usuario.equals(datos[contador][0]) && contraseña.equals(datos[contador][1])){
+                    acceso = true;
+                    this.dispose();
+                    Interfaz_Principal IP = new Interfaz_Principal();
+                    IP.setVisible(true);
+                }else{
+                contador++;
+                JOptionPane.showMessageDialog(null, "Acceso denegado");
+                }
+            }
+        }
     }//GEN-LAST:event_btnAccederActionPerformed
 
     private void txtUsuarioFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtUsuarioFocusGained
@@ -162,19 +195,13 @@ public class Ventana_Acceso extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtUsuarioFocusLost
 
-    private void txtContraseñaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtContraseñaFocusGained
-        if(txtContraseña.getText().equals("Contraseña.")){
-            txtContraseña.setText("");
-            txtContraseña.setForeground(Color.black);
-        }
-    }//GEN-LAST:event_txtContraseñaFocusGained
+    private void txtContraseñaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtContraseñaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtContraseñaActionPerformed
 
-    private void txtContraseñaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtContraseñaFocusLost
-        if(txtContraseña.getText().equals("")){
-            txtContraseña.setText("Contraseña.");
-            txtContraseña.setForeground(new Color(102,102,102));
-        }
-    }//GEN-LAST:event_txtContraseñaFocusLost
+    private void txtContraseñaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtContraseñaFocusGained
+        txtContraseña.setText("");
+    }//GEN-LAST:event_txtContraseñaFocusGained
 
     /**
      * @param args the command line arguments
@@ -210,7 +237,7 @@ public class Ventana_Acceso extends javax.swing.JFrame {
             }
         });
     }
-
+    private final ConeccionBD CBD = new ConeccionBD();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAcceder;
     private javax.swing.JButton btnSalir;
@@ -218,7 +245,7 @@ public class Ventana_Acceso extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JPanel pnlFondo;
-    private javax.swing.JTextField txtContraseña;
+    private javax.swing.JPasswordField txtContraseña;
     private javax.swing.JTextField txtUsuario;
     // End of variables declaration//GEN-END:variables
 }

@@ -18,7 +18,6 @@ public class Interfaz_Principal extends javax.swing.JFrame {
     public Interfaz_Principal() {
         initComponents();
         setLocationRelativeTo(null);
-        CBD.conectar();
     }
 
     /**
@@ -39,7 +38,7 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         btnProductos = new javax.swing.JLabel();
         btnReporte = new javax.swing.JLabel();
         pnlNaranja = new javax.swing.JPanel();
-        jLabel9 = new javax.swing.JLabel();
+        labelNombre = new javax.swing.JLabel();
         btnCerrarSesion = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -162,11 +161,11 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         pnlNaranja.setPreferredSize(new java.awt.Dimension(1270, 66));
         pnlNaranja.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel9.setText("Administrador: Nombre_Usuario");
-        jLabel9.setMaximumSize(new java.awt.Dimension(1270, 66));
-        jLabel9.setMinimumSize(new java.awt.Dimension(1270, 66));
-        pnlNaranja.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 23, -1, -1));
+        labelNombre.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        labelNombre.setText("Administrador: Nombre_Usuario");
+        labelNombre.setMaximumSize(new java.awt.Dimension(1270, 66));
+        labelNombre.setMinimumSize(new java.awt.Dimension(1270, 66));
+        pnlNaranja.add(labelNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 23, -1, -1));
 
         btnCerrarSesion.setBackground(new java.awt.Color(224, 122, 95));
         btnCerrarSesion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -289,7 +288,7 @@ public class Interfaz_Principal extends javax.swing.JFrame {
     private javax.swing.JLabel btnReporte;
     private javax.swing.JLabel btnRetiro;
     private javax.swing.JLabel btnUsuarios;
-    private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel labelNombre;
     private javax.swing.JPanel menu;
     private javax.swing.JPanel pnlNaranja;
     // End of variables declaration//GEN-END:variables
