@@ -6,13 +6,19 @@
 package Proyecto;
 
 import java.awt.Color;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
-/**
- *
- * @author diana
- */
+
 public class Ventana_Producto_Registrar extends javax.swing.JFrame {
-
+    
+    private String tipoProducto, nomProducto, tamaño, descripcion, sql;
+    private float precioProducto;
+    
     /**
      * Creates new form Ventana_Usuario_RegistrarUsuario
      */
@@ -38,8 +44,8 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
         pnlInformacion = new javax.swing.JPanel();
         txtPrecioProducto = new javax.swing.JTextField();
         txtNomProducto = new javax.swing.JTextField();
-        cmbCargo = new javax.swing.JComboBox<>();
-        cmbCargo1 = new javax.swing.JComboBox<>();
+        cmbTamaño = new javax.swing.JComboBox<>();
+        cmbTipoProducto = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         ta_desc = new javax.swing.JTextArea();
         btnRegistrar = new javax.swing.JButton();
@@ -126,23 +132,18 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
                 txtNomProductoFocusLost(evt);
             }
         });
-        txtNomProducto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNomProductoActionPerformed(evt);
-            }
-        });
         pnlInformacion.add(txtNomProducto);
         txtNomProducto.setBounds(250, 10, 202, 28);
 
-        cmbCargo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        cmbCargo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tamaño", "Chico", "Mediano", "Grande" }));
-        pnlInformacion.add(cmbCargo);
-        cmbCargo.setBounds(20, 70, 200, 30);
+        cmbTamaño.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        cmbTamaño.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tamaño", "Chico", "Mediano", "Grande" }));
+        pnlInformacion.add(cmbTamaño);
+        cmbTamaño.setBounds(20, 70, 200, 30);
 
-        cmbCargo1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        cmbCargo1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tipo de producto", "Pizza", "Refresco", "Otro" }));
-        pnlInformacion.add(cmbCargo1);
-        cmbCargo1.setBounds(20, 10, 200, 30);
+        cmbTipoProducto.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        cmbTipoProducto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tipo de producto", "Pizza", "Refresco", "Otro" }));
+        pnlInformacion.add(cmbTipoProducto);
+        cmbTipoProducto.setBounds(20, 10, 200, 30);
 
         jScrollPane1.setForeground(new java.awt.Color(102, 102, 102));
 
@@ -170,6 +171,11 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
         btnRegistrar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnRegistrar.setText("Registrar producto");
         btnRegistrar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnRegistrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegistrarActionPerformed(evt);
+            }
+        });
         pnlFondo.add(btnRegistrar);
         btnRegistrar.setBounds(420, 460, 170, 70);
 
@@ -216,10 +222,6 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtNomProductoFocusGained
 
-    private void txtNomProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomProductoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtNomProductoActionPerformed
-
     private void txtNomProductoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNomProductoFocusLost
         if(txtNomProducto.getText().equals("")){
             txtNomProducto.setText("Nombre del producto");
@@ -265,6 +267,125 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
         VA.setVisible(true);
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
+    private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
+        if(!ValidaCaja(txtNomProducto))return;
+        if(!ValidaTextArea(ta_desc))return;
+        try {
+            if(!ValidaPrecio(txtPrecioProducto))return;
+        } catch (Exception ex) {
+            Logger.getLogger(Ventana_Producto_Registrar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if(!ValidaCombos(cmbTipoProducto))return;
+        if(!ValidaCombos(cmbTamaño))return;
+        
+        if(guardar()){
+            JOptionPane.showMessageDialog(null, "Datos registrados correctamente.");
+            limpiarCampos();
+        }else{
+            JOptionPane.showMessageDialog(null, "Error: No se registraron los datos.");
+        }
+    }//GEN-LAST:event_btnRegistrarActionPerformed
+
+    private void limpiarCampos(){
+        cmbTipoProducto.setSelectedIndex(0);
+        txtNomProducto.setText("");
+        cmbTamaño.setSelectedIndex(0);
+        txtPrecioProducto.setText("");
+        ta_desc.setText("");
+    }
+    
+    private boolean guardar(){
+        boolean estado = false;
+        
+        tipoProducto = cmbTipoProducto.getSelectedItem().toString();
+        nomProducto = txtNomProducto.getText();
+        tamaño = cmbTamaño.getSelectedItem().toString();
+        precioProducto = Float.parseFloat(txtPrecioProducto.getText());
+        descripcion = ta_desc.getText();
+        if(CBD.conectar()){
+            sql = "insert into productos (Nom_Producto, Tipo, Tamaño, Precio, Descripcion) "
+                    + "values("
+                    + "'" + nomProducto + "',"
+                    + "'" + tipoProducto + "',"
+                    + "'" + tamaño + "',"
+                    + precioProducto + ","
+                    + "'" + descripcion + "'"
+                    + ")";
+            if(CBD.ejecutar(sql)){
+                estado = true;
+            }
+            CBD.desconectar();
+        }else{
+            JOptionPane.showMessageDialog(null, "Error al conectar a la Base de Datos");
+        }
+        return estado;
+    }
+    
+    private void ValidaLetras(JTextField texto)throws Exception{
+        String cadena = texto.getText();
+        if(cadena.equals(""))throw new Exception("Error!, llena todos los campos.");
+        if(cadena.equals("Nombre del producto"))throw new Exception("Error!, llena todos los campos.");
+        if(!cadena.matches("[aA-zZ,ñÑ, ,Áá,éÉ,Íí,óÓ,úÚ]*"))throw new Exception("Error, solo Letras.");
+    }
+    
+    private void ValidaLetras(JTextArea texto)throws Exception{
+        String cadena = texto.getText();
+        if(cadena.equals(""))throw new Exception("Error!, llena todos los campos.");
+        if(cadena.equals("Descripcion del Producto"))throw new Exception("Error!, llena todos los campos.");
+        if(!cadena.matches("[aA-zZ,ñÑ, ,Áá,éÉ,Íí,óÓ,úÚ]*"))throw new Exception("Error, solo Letras.");
+    }
+    
+    private void ValidaNumeros(JTextField valor)throws Exception{
+        String precio = valor.getText();
+            if(precio.equals(""))throw new Exception("Error, Ingresa la edad.");
+            if(!precio.matches("[\\d]?[\\d]?[\\d]?[\\d][.]?[\\d]?[\\d]?[\\d]?"))throw new Exception("Precio invalida, solo Numeros.");
+    }
+    
+    private boolean ValidaPrecio(JTextField valor)throws Exception{
+        try{
+            ValidaNumeros(valor);
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+            valor.setText(""); valor.requestFocus(); return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean ValidaCaja(JTextField caja){
+        try{
+            ValidaLetras(caja);
+        }catch(Exception err){
+            JOptionPane.showMessageDialog(this, err.getMessage());
+            caja.setText(""); caja.requestFocus(); return false;
+        }
+        return true;
+    }
+    
+    private boolean ValidaTextArea(JTextArea textArea){
+        try{
+            ValidaLetras(textArea);
+        }catch(Exception err){
+            JOptionPane.showMessageDialog(this, err.getMessage());
+            textArea.setText(""); textArea.requestFocus(); return false;
+        }
+        return true;
+    }
+    
+    private void ValidaCombo(JComboBox cmb)throws Exception{
+        if(cmb.getSelectedIndex() == 0)throw new Exception("Combo invalido, Selecciona un combo.");
+    }
+    
+    private boolean ValidaCombos(JComboBox combo){
+        try{
+            ValidaCombo(combo);
+        }catch(Exception err){
+            JOptionPane.showMessageDialog(this, err.getMessage());
+            combo.requestFocus(); return false;
+        }
+        return true;
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -306,13 +427,13 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
             }
         });
     }
-
+    private final ConeccionBD CBD = new ConeccionBD();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnCerrarSesion;
     private javax.swing.JButton btnRegistrar;
-    private javax.swing.JComboBox<String> cmbCargo;
-    private javax.swing.JComboBox<String> cmbCargo1;
+    private javax.swing.JComboBox<String> cmbTamaño;
+    private javax.swing.JComboBox<String> cmbTipoProducto;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblUsuario;
