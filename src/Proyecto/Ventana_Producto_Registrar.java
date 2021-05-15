@@ -302,7 +302,7 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
         tamaño = cmbTamaño.getSelectedItem().toString();
         precioProducto = Float.parseFloat(txtPrecioProducto.getText());
         descripcion = ta_desc.getText();
-        if(CBD.conectar()){
+        /*if(CBD.conectar()){
             sql = "insert into productos (Nom_Producto, Tipo, Tamaño, Precio, Descripcion) "
                     + "values("
                     + "'" + nomProducto + "',"
@@ -317,7 +317,7 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
             CBD.desconectar();
         }else{
             JOptionPane.showMessageDialog(null, "Error al conectar a la Base de Datos");
-        }
+        }*/
         return estado;
     }
     

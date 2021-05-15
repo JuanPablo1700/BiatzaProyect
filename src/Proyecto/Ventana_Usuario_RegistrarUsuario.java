@@ -198,7 +198,7 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
         txtTelefono.setBounds(250, 70, 202, 28);
 
         cmbCargo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        cmbCargo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un cargo.", "Usuario", "Administrador" }));
+        cmbCargo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un cargo.", "Cajero", "Administrador" }));
         pnlInformacion.add(cmbCargo);
         cmbCargo.setBounds(250, 130, 200, 30);
 

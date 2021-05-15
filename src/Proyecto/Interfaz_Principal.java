@@ -1,5 +1,7 @@
 package Proyecto;
 
+import javax.swing.JOptionPane;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -19,7 +21,41 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
     }
-
+    public String Nombre_Usuario,Apellido_Usuario,Telefono,U,C,Correo,Direccion,Cargo,Fecha,Status;
+    private Ventana_Usuario_ModificarUsuario VUM = new Ventana_Usuario_ModificarUsuario();
+    private Ventana_Usuario_Principal VUP = new Ventana_Usuario_Principal();
+    private void bloc_Cajero(){
+        btnUsuarios.setVisible(false);
+        btnProductos.setVisible(false);
+        btnInventario.setVisible(false);
+    }
+    
+    private void MandaInfoVUM(){
+        VUM.Nombre_Usuario=Nombre_Usuario;
+        VUM.Apellido_Usuario=Apellido_Usuario;
+        VUM.Telefono=Telefono;
+        VUM.U=U;
+        VUM.C=C;
+        VUM.Correo=Correo;
+        VUM.Direccion=Direccion;
+        VUM.Cargo=Cargo;
+        VUM.Fecha=Fecha;
+        VUM.Status=Status;
+    }
+    private void MandaInfoVUP(){
+        VUP.Nombre_Usuario=Nombre_Usuario;
+        VUP.Apellido_Usuario=Apellido_Usuario;
+        VUP.Telefono=Telefono;
+        VUP.U=U;
+        VUP.C=C;
+        VUP.Correo=Correo;
+        VUP.Direccion=Direccion;
+        VUP.Cargo=Cargo;
+        VUP.Fecha=Fecha;
+        VUP.Status=Status;
+        this.dispose();
+        VUP.setVisible(true);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -32,11 +68,11 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         menu = new javax.swing.JPanel();
         btnPedidos = new javax.swing.JLabel();
         btnClientes = new javax.swing.JLabel();
-        btnUsuarios = new javax.swing.JLabel();
-        btnInventario = new javax.swing.JLabel();
         btnRetiro = new javax.swing.JLabel();
-        btnProductos = new javax.swing.JLabel();
         btnReporte = new javax.swing.JLabel();
+        btnUsuarios = new javax.swing.JLabel();
+        btnProductos = new javax.swing.JLabel();
+        btnInventario = new javax.swing.JLabel();
         pnlNaranja = new javax.swing.JPanel();
         labelNombre = new javax.swing.JLabel();
         btnCerrarSesion = new javax.swing.JButton();
@@ -44,6 +80,11 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         menu.setBackground(new java.awt.Color(61, 64, 91));
@@ -83,34 +124,6 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         });
         menu.add(btnClientes);
 
-        btnUsuarios.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        btnUsuarios.setForeground(new java.awt.Color(244, 241, 222));
-        btnUsuarios.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        btnUsuarios.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/usuarios.png"))); // NOI18N
-        btnUsuarios.setText("Usuarios");
-        btnUsuarios.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(244, 241, 222)));
-        btnUsuarios.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                btnUsuariosMouseReleased(evt);
-            }
-        });
-        menu.add(btnUsuarios);
-
-        btnInventario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        btnInventario.setForeground(new java.awt.Color(244, 241, 222));
-        btnInventario.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        btnInventario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/inventario.png"))); // NOI18N
-        btnInventario.setText("Inventario");
-        btnInventario.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(244, 241, 222)));
-        btnInventario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnInventario.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                btnInventarioMouseReleased(evt);
-            }
-        });
-        menu.add(btnInventario);
-
         btnRetiro.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btnRetiro.setForeground(new java.awt.Color(244, 241, 222));
         btnRetiro.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -124,6 +137,34 @@ public class Interfaz_Principal extends javax.swing.JFrame {
             }
         });
         menu.add(btnRetiro);
+
+        btnReporte.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        btnReporte.setForeground(new java.awt.Color(244, 241, 222));
+        btnReporte.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        btnReporte.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/reporte.png"))); // NOI18N
+        btnReporte.setText("Reporte de ventas");
+        btnReporte.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(244, 241, 222)));
+        btnReporte.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnReporte.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                btnReporteMouseReleased(evt);
+            }
+        });
+        menu.add(btnReporte);
+
+        btnUsuarios.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        btnUsuarios.setForeground(new java.awt.Color(244, 241, 222));
+        btnUsuarios.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        btnUsuarios.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/usuarios.png"))); // NOI18N
+        btnUsuarios.setText("Usuarios");
+        btnUsuarios.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(244, 241, 222)));
+        btnUsuarios.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                btnUsuariosMouseReleased(evt);
+            }
+        });
+        menu.add(btnUsuarios);
 
         btnProductos.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btnProductos.setForeground(new java.awt.Color(244, 241, 222));
@@ -139,19 +180,19 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         });
         menu.add(btnProductos);
 
-        btnReporte.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        btnReporte.setForeground(new java.awt.Color(244, 241, 222));
-        btnReporte.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        btnReporte.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/reporte.png"))); // NOI18N
-        btnReporte.setText("Reporte de ventas");
-        btnReporte.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(244, 241, 222)));
-        btnReporte.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnReporte.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnInventario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        btnInventario.setForeground(new java.awt.Color(244, 241, 222));
+        btnInventario.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        btnInventario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/inventario.png"))); // NOI18N
+        btnInventario.setText("Inventario");
+        btnInventario.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(244, 241, 222)));
+        btnInventario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnInventario.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                btnReporteMouseReleased(evt);
+                btnInventarioMouseReleased(evt);
             }
         });
-        menu.add(btnReporte);
+        menu.add(btnInventario);
 
         getContentPane().add(menu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 1270, 510));
 
@@ -188,15 +229,12 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnRetiroMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRetiroMouseReleased
-        this.dispose();
-        new Ventana_RetiroEfectivo().setVisible(true);
-    }//GEN-LAST:event_btnRetiroMouseReleased
-
     private void btnUsuariosMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnUsuariosMouseReleased
-       this.dispose();
-        Ventana_Usuario_Principal VUP = new Ventana_Usuario_Principal();
-        VUP.setVisible(true);
+        try {
+            MandaInfoVUP();
+        } catch (Exception e) {
+        }
+        
     }//GEN-LAST:event_btnUsuariosMouseReleased
 
     private void btnReporteMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReporteMouseReleased
@@ -236,6 +274,29 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         Ventana_Acceso VA = new Ventana_Acceso();
         VA.setVisible(true);
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        try {
+            labelNombre.setText(Cargo+": "+Nombre_Usuario+" "+Apellido_Usuario);
+        if (Cargo.equals("Cajero")) {
+            bloc_Cajero();
+        }
+        if (Status.equals("0")){
+            JOptionPane.showMessageDialog(null, "Es necesario que cambies tu usuario y/o contraseña.");
+            MandaInfoVUM();
+            this.dispose();
+            VUM.setVisible(true);
+            
+        }
+        } catch (Exception e) {
+        }
+        
+    }//GEN-LAST:event_formWindowOpened
+
+    private void btnRetiroMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRetiroMouseReleased
+        this.dispose();
+        new Ventana_RetiroEfectivo().setVisible(true);
+    }//GEN-LAST:event_btnRetiroMouseReleased
 
     /**
      * @param args the command line arguments

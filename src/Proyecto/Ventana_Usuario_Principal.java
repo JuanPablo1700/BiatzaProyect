@@ -5,6 +5,11 @@
  */
 package Proyecto;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author diana
@@ -17,7 +22,87 @@ public class Ventana_Usuario_Principal extends javax.swing.JFrame {
     public Ventana_Usuario_Principal() {
         initComponents();
     }
-
+    
+    public String Nombre_Usuario,Apellido_Usuario,Telefono,U,C,Correo,Direccion,Cargo,Fecha,Status;
+    public String Nombre_U,Apellido_U,TelU,Usu,Cont,CorreoU,DireccionU,CargoU,FechaU,StatusU;
+    
+    private ConeccionBD CBD = new ConeccionBD();
+    Connection conectar = CBD.conectar();
+    private Ventana_Usuario_ModificarUsuario VUM = new Ventana_Usuario_ModificarUsuario();
+    
+    private void CargarUsuarios(){
+        DefaultTableModel mod = new DefaultTableModel();
+        
+        mod.addColumn("Nombre");
+        mod.addColumn("Apellido");
+        mod.addColumn("TELEFONO");
+        mod.addColumn("Nom_Usuario");
+        mod.addColumn("Contraseña");
+        mod.addColumn("Correo");
+        mod.addColumn("Direccion");
+        mod.addColumn("Cargo");
+        mod.addColumn("Fecha_Registro");
+        mod.addColumn("Status");
+        
+        tblUsuarios.setModel(mod);
+        String sql=""; 
+        sql = "select Nombre,Apellido,TELEFONO,Nom_Usuario,Contraseña,Correo,Direccion,Cargo,Fecha_Registro,Status from usuarios";
+        String[] Datos = new String[10];
+        try {
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            
+            while (rs.next()){
+                Datos[0]=rs.getString(1);
+                Datos[1]=rs.getString(2);
+                Datos[2]=rs.getString(3);
+                Datos[3]=rs.getString(4);
+                Datos[4]=rs.getString(5);
+                Datos[5]=rs.getString(6);
+                Datos[6]=rs.getString(7);
+                Datos[7]=rs.getString(8);
+                Datos[8]=rs.getString(9);
+                Datos[9]=rs.getString(10);
+                
+                mod.addRow(Datos);
+            }
+            
+        } catch (Exception e) {
+        }
+        
+            
+        
+    }
+    
+    public void UsuarioSeleccionado(int Fila){
+        Nombre_U = tblUsuarios.getValueAt(Fila, 0).toString();
+        Apellido_U= tblUsuarios.getValueAt(Fila, 1).toString();
+        TelU= tblUsuarios.getValueAt(Fila, 2).toString();
+        Usu= tblUsuarios.getValueAt(Fila, 3).toString();
+        Cont= tblUsuarios.getValueAt(Fila, 4).toString();
+        CorreoU= tblUsuarios.getValueAt(Fila, 5).toString();
+        DireccionU= tblUsuarios.getValueAt(Fila, 6).toString();
+        CargoU= tblUsuarios.getValueAt(Fila, 7).toString();
+        FechaU= tblUsuarios.getValueAt(Fila, 8).toString();
+        StatusU= tblUsuarios.getValueAt(Fila, 9).toString();
+    }
+    private void MandaInfoVUM(){
+        VUM.Nombre_Usuario=Nombre_U;
+        VUM.Apellido_Usuario=Apellido_U;
+        VUM.Telefono=TelU;
+        VUM.U=Usu;
+        VUM.C=Cont;
+        VUM.Correo=CorreoU;
+        VUM.Direccion=DireccionU;
+        VUM.Cargo=CargoU;
+        VUM.Fecha=FechaU;
+        VUM.Status=StatusU;
+        
+        VUM.Nombre_Usuario_Actual=Nombre_Usuario;
+        VUM.Apellido_Usuario_Actual=Apellido_Usuario;
+        VUM.Cargo_Actual=Cargo;
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -43,6 +128,11 @@ public class Ventana_Usuario_Principal extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(1270, 583));
         setUndecorated(true);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
         getContentPane().setLayout(null);
 
         btnEliminarUsuario.setBackground(new java.awt.Color(244, 241, 222));
@@ -66,7 +156,7 @@ public class Ventana_Usuario_Principal extends javax.swing.JFrame {
         lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblUsuario.setText("Administrador: Nombre_Usuario");
         pnlCabezera.add(lblUsuario);
-        lblUsuario.setBounds(10, 20, 310, 30);
+        lblUsuario.setBounds(10, 20, 650, 30);
 
         btnCerrarSesion2.setBackground(new java.awt.Color(224, 122, 95));
         btnCerrarSesion2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -147,30 +237,16 @@ public class Ventana_Usuario_Principal extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Nombre", "Apellido", "Usuario", "Contraseña", "Correo", "Dirección", "Telefono", "Cargo", "Fecha"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false
-            };
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+            }
+        ));
+        tblUsuarios.getTableHeader().setReorderingAllowed(false);
+        tblUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblUsuariosMouseClicked(evt);
             }
         });
-        tblUsuarios.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tblUsuarios);
-        if (tblUsuarios.getColumnModel().getColumnCount() > 0) {
-            tblUsuarios.getColumnModel().getColumn(0).setResizable(false);
-            tblUsuarios.getColumnModel().getColumn(1).setResizable(false);
-            tblUsuarios.getColumnModel().getColumn(2).setResizable(false);
-            tblUsuarios.getColumnModel().getColumn(3).setResizable(false);
-            tblUsuarios.getColumnModel().getColumn(4).setResizable(false);
-            tblUsuarios.getColumnModel().getColumn(5).setResizable(false);
-            tblUsuarios.getColumnModel().getColumn(6).setResizable(false);
-            tblUsuarios.getColumnModel().getColumn(7).setResizable(false);
-            tblUsuarios.getColumnModel().getColumn(8).setResizable(false);
-        }
 
         btnEliminarUsuario.add(jScrollPane1);
         jScrollPane1.setBounds(260, 200, 760, 250);
@@ -212,6 +288,25 @@ public class Ventana_Usuario_Principal extends javax.swing.JFrame {
         VA.setVisible(true);
     }//GEN-LAST:event_btnCerrarSesion2ActionPerformed
 
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        try {
+            CargarUsuarios();
+            lblUsuario.setText(Cargo+": "+Nombre_Usuario+" "+Apellido_Usuario);
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_formWindowOpened
+
+    private void tblUsuariosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblUsuariosMouseClicked
+        try {
+            int Fila = tblUsuarios.getSelectedRow();
+            UsuarioSeleccionado(Fila);
+        } catch (Exception e) {
+        }
+        
+        
+        
+    }//GEN-LAST:event_tblUsuariosMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -248,8 +343,6 @@ public class Ventana_Usuario_Principal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCerrarSesion;
-    private javax.swing.JButton btnCerrarSesion1;
     private javax.swing.JButton btnCerrarSesion2;
     private javax.swing.JPanel btnEliminarUsuario;
     private javax.swing.JButton btnModificarUsuario;

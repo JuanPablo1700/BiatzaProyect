@@ -6,6 +6,14 @@
 package Proyecto;
 
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -20,7 +28,91 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
         initComponents();
         
     }
-
+    
+    public String Nombre_Usuario,Apellido_Usuario,Telefono,U,C,Correo,Direccion,Cargo,Fecha,Status;
+    public String Nombre_Usuario_Actual,Apellido_Usuario_Actual,Cargo_Actual;
+    private final ConeccionBD CBD = new ConeccionBD();
+    Connection conectar = CBD.conectar();
+    
+    
+    private void CargaInfo(){
+        txtNombre.setText(Nombre_Usuario);
+        txtApellido.setText(Apellido_Usuario);
+        txtTelefono.setText(Telefono);
+        txtUsuario.setText(U);
+        txtContraseña.setText(C);
+        txtCorreo.setText(Correo);
+        txtDireccion.setText(Direccion);
+        txtFecha.setText(Fecha);
+        if(Cargo.equals("Cajero")){
+            cmbCargo.setSelectedIndex(1);
+        }else if(Cargo.equals("Administrador")){
+            cmbCargo.setSelectedIndex(2);
+        }else
+            cmbCargo.setSelectedIndex(0);
+    }
+    private void Orden(){
+        btnConsultar.setVisible(false);
+        jScrollPane1.setVisible(false);
+        jLabel7.setText("Cambia tu informacion");
+        txtNombre.setLocation(txtNombre.getX()+360, txtNombre.getY());
+        txtCorreo.setLocation(txtCorreo.getX()+360, txtCorreo.getY());
+        txtApellido.setLocation(txtApellido.getX()+360, txtApellido.getY());
+        txtTelefono.setLocation(txtTelefono.getX()+360, txtTelefono.getY());
+        txtUsuario.setLocation(txtUsuario.getX()+360, txtUsuario.getY());
+        cmbCargo.setLocation(cmbCargo.getX()+360, cmbCargo.getY());
+        txtContraseña.setLocation(txtContraseña.getX()+360, txtContraseña.getY());
+        txtFecha.setLocation(txtFecha.getX()+360, txtFecha.getY());
+        txtDireccion.setLocation(txtDireccion.getX()+360, txtDireccion.getY());
+        btnModificar.setLocation(btnModificar.getX()+140, btnModificar.getY());
+        
+        txtNombre.setEnabled(false);
+        txtCorreo.setEnabled(false);
+        txtApellido.setEnabled(false);
+        txtTelefono.setEnabled(false);
+        cmbCargo.setEnabled(false);
+        txtFecha.setEnabled(false);
+        txtDireccion.setEnabled(false);
+        btnCancelar.setVisible(false);
+    }
+    private void MandaInfoIP(){
+        Interfaz_Principal IP = new Interfaz_Principal();
+            IP.Nombre_Usuario=Nombre_Usuario;
+            IP.Apellido_Usuario=Apellido_Usuario;
+            IP.Telefono=Telefono;
+            IP.U=U;
+            IP.C=C;
+            IP.Correo=Correo;
+            IP.Direccion=Direccion;
+            IP.Cargo=Cargo;
+            IP.Fecha=Fecha;
+            IP.Status=Status;
+            this.dispose();
+            IP.setVisible(true);
+    }
+    private void ModificaUsuarioInicio(){
+        String usuario=txtUsuario.getText(),contraseña=txtContraseña.getText();
+        
+        
+            String sql=""; 
+            sql = "update usuarios set Nom_Usuario = '"+usuario+"', Contraseña = '"+contraseña+"', Status = 1 where Nom_Usuario='"+U+"' and Contraseña='"+C+"'";
+            
+                
+            try {
+            PreparedStatement pat = conectar.prepareStatement(sql);
+            pat.executeUpdate();
+            
+                
+            JOptionPane.showMessageDialog(null, "Se han guardado los cambios.");
+            Status="1";
+            U=txtUsuario.getText();
+            C=txtContraseña.getText();
+            MandaInfoIP();
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al guardar los cambios.");
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -35,6 +127,8 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
         pnlCabezera = new javax.swing.JPanel();
         lblUsuario = new javax.swing.JLabel();
         btnCerrarSesion = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblUsuarios = new javax.swing.JTable();
         pnlInformacion = new javax.swing.JPanel();
         txtNombre = new javax.swing.JTextField();
         txtApellido = new javax.swing.JTextField();
@@ -44,17 +138,20 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
         txtDireccion = new javax.swing.JTextField();
         txtTelefono = new javax.swing.JTextField();
         cmbCargo = new javax.swing.JComboBox<>();
-        txtFechaNac = new javax.swing.JTextField();
+        txtFecha = new javax.swing.JTextField();
+        btnConsultar = new javax.swing.JButton();
         btnModificar = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblUsuarios = new javax.swing.JTable();
-        btnRegistrar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1270, 583));
         setUndecorated(true);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         pnlFondo.setBackground(new java.awt.Color(244, 241, 222));
         pnlFondo.setMaximumSize(new java.awt.Dimension(1270, 583));
@@ -77,7 +174,7 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
         lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblUsuario.setText("Administrador: Nombre_Usuario");
         pnlCabezera.add(lblUsuario);
-        lblUsuario.setBounds(10, 20, 310, 30);
+        lblUsuario.setBounds(10, 20, 570, 30);
 
         btnCerrarSesion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/logout.png"))); // NOI18N
         btnCerrarSesion.setText("Cerrar sesión");
@@ -91,141 +188,6 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
 
         pnlFondo.add(pnlCabezera);
         pnlCabezera.setBounds(0, 0, 1270, 66);
-
-        pnlInformacion.setBackground(new java.awt.Color(244, 241, 222));
-        pnlInformacion.setLayout(null);
-
-        txtNombre.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtNombre.setForeground(new java.awt.Color(102, 102, 102));
-        txtNombre.setText("Nombre");
-        txtNombre.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtNombreFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtNombreFocusLost(evt);
-            }
-        });
-        pnlInformacion.add(txtNombre);
-        txtNombre.setBounds(20, 10, 202, 28);
-
-        txtApellido.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtApellido.setForeground(new java.awt.Color(102, 102, 102));
-        txtApellido.setText("Apellido");
-        txtApellido.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtApellidoFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtApellidoFocusLost(evt);
-            }
-        });
-        pnlInformacion.add(txtApellido);
-        txtApellido.setBounds(20, 70, 202, 28);
-
-        txtUsuario.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtUsuario.setForeground(new java.awt.Color(102, 102, 102));
-        txtUsuario.setText("Usuario");
-        txtUsuario.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtUsuarioFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtUsuarioFocusLost(evt);
-            }
-        });
-        pnlInformacion.add(txtUsuario);
-        txtUsuario.setBounds(20, 130, 202, 28);
-
-        txtContraseña.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtContraseña.setForeground(new java.awt.Color(102, 102, 102));
-        txtContraseña.setText("Contraseña");
-        txtContraseña.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtContraseñaFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtContraseñaFocusLost(evt);
-            }
-        });
-        pnlInformacion.add(txtContraseña);
-        txtContraseña.setBounds(20, 190, 202, 28);
-
-        txtCorreo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtCorreo.setForeground(new java.awt.Color(102, 102, 102));
-        txtCorreo.setText("Correo");
-        txtCorreo.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtCorreoFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtCorreoFocusLost(evt);
-            }
-        });
-        pnlInformacion.add(txtCorreo);
-        txtCorreo.setBounds(250, 10, 202, 28);
-
-        txtDireccion.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtDireccion.setForeground(new java.awt.Color(102, 102, 102));
-        txtDireccion.setText("Dirección");
-        txtDireccion.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtDireccionFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtDireccionFocusLost(evt);
-            }
-        });
-        pnlInformacion.add(txtDireccion);
-        txtDireccion.setBounds(20, 250, 430, 28);
-
-        txtTelefono.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtTelefono.setForeground(new java.awt.Color(102, 102, 102));
-        txtTelefono.setText("Teléfono");
-        txtTelefono.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtTelefonoFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtTelefonoFocusLost(evt);
-            }
-        });
-        pnlInformacion.add(txtTelefono);
-        txtTelefono.setBounds(250, 70, 202, 28);
-
-        cmbCargo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        cmbCargo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un cargo", "Usuario", "Administrador" }));
-        pnlInformacion.add(cmbCargo);
-        cmbCargo.setBounds(250, 130, 200, 30);
-
-        txtFechaNac.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtFechaNac.setForeground(new java.awt.Color(102, 102, 102));
-        txtFechaNac.setText("Fecha de nacimiento");
-        txtFechaNac.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtFechaNacFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtFechaNacFocusLost(evt);
-            }
-        });
-        pnlInformacion.add(txtFechaNac);
-        txtFechaNac.setBounds(250, 190, 202, 28);
-
-        btnModificar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        btnModificar.setText("Consultar");
-        btnModificar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        btnModificar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnModificar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnModificarActionPerformed(evt);
-            }
-        });
-        pnlInformacion.add(btnModificar);
-        btnModificar.setBounds(460, 10, 200, 30);
-
-        pnlFondo.add(pnlInformacion);
-        pnlInformacion.setBounds(40, 190, 660, 290);
 
         tblUsuarios.setBackground(new java.awt.Color(244, 241, 222));
         tblUsuarios.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
@@ -251,11 +213,178 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
         pnlFondo.add(jScrollPane1);
         jScrollPane1.setBounds(710, 200, 530, 260);
 
-        btnRegistrar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        btnRegistrar.setText("Modificar usuario");
-        btnRegistrar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        pnlFondo.add(btnRegistrar);
-        btnRegistrar.setBounds(410, 490, 170, 70);
+        pnlInformacion.setBackground(new java.awt.Color(244, 241, 222));
+        pnlInformacion.setLayout(null);
+
+        txtNombre.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtNombre.setForeground(new java.awt.Color(102, 102, 102));
+        txtNombre.setText("Nombre.");
+        txtNombre.setMaximumSize(new java.awt.Dimension(202, 28));
+        txtNombre.setMinimumSize(new java.awt.Dimension(202, 28));
+        txtNombre.setPreferredSize(new java.awt.Dimension(202, 28));
+        txtNombre.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtNombreFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtNombreFocusLost(evt);
+            }
+        });
+        pnlInformacion.add(txtNombre);
+        txtNombre.setBounds(20, 10, 202, 28);
+
+        txtApellido.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtApellido.setForeground(new java.awt.Color(102, 102, 102));
+        txtApellido.setText("Apellido.");
+        txtApellido.setMaximumSize(new java.awt.Dimension(202, 28));
+        txtApellido.setMinimumSize(new java.awt.Dimension(202, 28));
+        txtApellido.setPreferredSize(new java.awt.Dimension(202, 28));
+        txtApellido.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtApellidoFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtApellidoFocusLost(evt);
+            }
+        });
+        pnlInformacion.add(txtApellido);
+        txtApellido.setBounds(20, 70, 202, 28);
+
+        txtUsuario.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtUsuario.setForeground(new java.awt.Color(102, 102, 102));
+        txtUsuario.setText("Usuario.");
+        txtUsuario.setMaximumSize(new java.awt.Dimension(202, 28));
+        txtUsuario.setMinimumSize(new java.awt.Dimension(202, 28));
+        txtUsuario.setPreferredSize(new java.awt.Dimension(202, 28));
+        txtUsuario.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtUsuarioFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtUsuarioFocusLost(evt);
+            }
+        });
+        pnlInformacion.add(txtUsuario);
+        txtUsuario.setBounds(20, 130, 202, 28);
+
+        txtContraseña.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtContraseña.setForeground(new java.awt.Color(102, 102, 102));
+        txtContraseña.setText("Contraseña.");
+        txtContraseña.setMaximumSize(new java.awt.Dimension(202, 28));
+        txtContraseña.setMinimumSize(new java.awt.Dimension(202, 28));
+        txtContraseña.setPreferredSize(new java.awt.Dimension(202, 28));
+        txtContraseña.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtContraseñaFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtContraseñaFocusLost(evt);
+            }
+        });
+        pnlInformacion.add(txtContraseña);
+        txtContraseña.setBounds(20, 190, 202, 28);
+
+        txtCorreo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtCorreo.setForeground(new java.awt.Color(102, 102, 102));
+        txtCorreo.setText("Correo.");
+        txtCorreo.setMaximumSize(new java.awt.Dimension(202, 28));
+        txtCorreo.setMinimumSize(new java.awt.Dimension(202, 28));
+        txtCorreo.setPreferredSize(new java.awt.Dimension(202, 28));
+        txtCorreo.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtCorreoFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtCorreoFocusLost(evt);
+            }
+        });
+        pnlInformacion.add(txtCorreo);
+        txtCorreo.setBounds(250, 10, 202, 28);
+
+        txtDireccion.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtDireccion.setForeground(new java.awt.Color(102, 102, 102));
+        txtDireccion.setText("Dirección");
+        txtDireccion.setMaximumSize(new java.awt.Dimension(438, 28));
+        txtDireccion.setMinimumSize(new java.awt.Dimension(438, 28));
+        txtDireccion.setPreferredSize(new java.awt.Dimension(438, 28));
+        txtDireccion.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtDireccionFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtDireccionFocusLost(evt);
+            }
+        });
+        pnlInformacion.add(txtDireccion);
+        txtDireccion.setBounds(20, 250, 438, 28);
+
+        txtTelefono.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtTelefono.setForeground(new java.awt.Color(102, 102, 102));
+        txtTelefono.setText("Teléfono.");
+        txtTelefono.setMaximumSize(new java.awt.Dimension(202, 28));
+        txtTelefono.setMinimumSize(new java.awt.Dimension(202, 28));
+        txtTelefono.setPreferredSize(new java.awt.Dimension(202, 28));
+        txtTelefono.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtTelefonoFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtTelefonoFocusLost(evt);
+            }
+        });
+        pnlInformacion.add(txtTelefono);
+        txtTelefono.setBounds(250, 70, 202, 28);
+
+        cmbCargo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        cmbCargo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un cargo", "Usuario", "Administrador" }));
+        cmbCargo.setMaximumSize(new java.awt.Dimension(202, 28));
+        cmbCargo.setMinimumSize(new java.awt.Dimension(202, 28));
+        cmbCargo.setPreferredSize(new java.awt.Dimension(202, 28));
+        pnlInformacion.add(cmbCargo);
+        cmbCargo.setBounds(250, 130, 202, 28);
+
+        txtFecha.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtFecha.setForeground(new java.awt.Color(102, 102, 102));
+        txtFecha.setText("Fecha.");
+        txtFecha.setMaximumSize(new java.awt.Dimension(202, 28));
+        txtFecha.setMinimumSize(new java.awt.Dimension(202, 28));
+        txtFecha.setPreferredSize(new java.awt.Dimension(202, 28));
+        txtFecha.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtFechaFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtFechaFocusLost(evt);
+            }
+        });
+        pnlInformacion.add(txtFecha);
+        txtFecha.setBounds(250, 190, 202, 28);
+
+        btnConsultar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        btnConsultar.setText("Consultar");
+        btnConsultar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnConsultar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnConsultar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsultarActionPerformed(evt);
+            }
+        });
+        pnlInformacion.add(btnConsultar);
+        btnConsultar.setBounds(460, 10, 200, 30);
+
+        pnlFondo.add(pnlInformacion);
+        pnlInformacion.setBounds(40, 190, 1170, 290);
+
+        btnModificar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        btnModificar.setText("Modificar usuario");
+        btnModificar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnModificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnModificarActionPerformed(evt);
+            }
+        });
+        pnlFondo.add(btnModificar);
+        btnModificar.setBounds(410, 490, 170, 70);
 
         btnCancelar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnCancelar.setText("Regresar");
@@ -330,16 +459,17 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
     }//GEN-LAST:event_txtUsuarioFocusLost
 
     private void txtContraseñaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtContraseñaFocusGained
-        if(txtContraseña.getText().equals("")){
-            txtContraseña.setText("Contraseña.");
-            txtContraseña.setForeground(new Color(102,102,102));
+        if(txtContraseña.getText().equals("Contraseña.")){
+            txtContraseña.setText("");
+            txtContraseña.setForeground(Color.black);
         }
+        
     }//GEN-LAST:event_txtContraseñaFocusGained
 
     private void txtContraseñaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtContraseñaFocusLost
-        if(txtDireccion.getText().equals("Dirección.")){
-            txtDireccion.setText("");
-            txtDireccion.setForeground(Color.black);
+        if(txtContraseña.getText().equals("")){
+            txtContraseña.setText("Contraseña.");
+            txtContraseña.setForeground(new Color(102,102,102));
         }
     }//GEN-LAST:event_txtContraseñaFocusLost
 
@@ -385,23 +515,23 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtTelefonoFocusLost
 
-    private void txtFechaNacFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtFechaNacFocusGained
-        if(txtFechaNac.getText().equals("Fecha de nacimiento.")){
-            txtFechaNac.setText("");
-            txtFechaNac.setForeground(Color.black);
+    private void txtFechaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtFechaFocusGained
+        if(txtFecha.getText().equals("Fecha.")){
+            txtFecha.setText("");
+            txtFecha.setForeground(Color.black);
         }
-    }//GEN-LAST:event_txtFechaNacFocusGained
+    }//GEN-LAST:event_txtFechaFocusGained
 
-    private void txtFechaNacFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtFechaNacFocusLost
-        if(txtFechaNac.getText().equals("")){
-            txtFechaNac.setText("Fecha de nacimiento.");
-            txtFechaNac.setForeground(new Color(102,102,102));
+    private void txtFechaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtFechaFocusLost
+        if(txtFecha.getText().equals("")){
+            txtFecha.setText("Fecha.");
+            txtFecha.setForeground(new Color(102,102,102));
         }
-    }//GEN-LAST:event_txtFechaNacFocusLost
+    }//GEN-LAST:event_txtFechaFocusLost
 
-    private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
+    private void btnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnModificarActionPerformed
+    }//GEN-LAST:event_btnConsultarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         this.dispose();
@@ -415,6 +545,25 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
         VA.setVisible(true);
 
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        try {
+            lblUsuario.setText(Cargo+": "+Nombre_Usuario+" "+Apellido_Usuario);
+            if(Status.equals("0")){
+            Orden();
+            CargaInfo();
+        }
+        } catch (Exception e) {
+        }
+        
+    }//GEN-LAST:event_formWindowOpened
+
+    private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
+        try {
+            ModificaUsuarioInicio();
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_btnModificarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -455,8 +604,8 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnCerrarSesion;
+    private javax.swing.JButton btnConsultar;
     private javax.swing.JButton btnModificar;
-    private javax.swing.JButton btnRegistrar;
     private javax.swing.JComboBox<String> cmbCargo;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
@@ -469,7 +618,7 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
     private javax.swing.JTextField txtContraseña;
     private javax.swing.JTextField txtCorreo;
     private javax.swing.JTextField txtDireccion;
-    private javax.swing.JTextField txtFechaNac;
+    private javax.swing.JTextField txtFecha;
     private javax.swing.JTextField txtNombre;
     private javax.swing.JTextField txtTelefono;
     private javax.swing.JTextField txtUsuario;

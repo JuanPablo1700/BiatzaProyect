@@ -4,15 +4,15 @@ import java.sql.*;
 
 public class ConeccionBD {
     
-    private Connection conexion;
-    private Statement sentencia;
+    public Connection conexion;
+    public Statement sentencia;
     
     //Datos para la conexion de la BD
     private final String servidor = "localhost";
     private final String puerto = "3307";
     private final String BD = "BaseDatosBiatza";
     private final String usuario = "root";
-    private final String clave = "contraseña12345";
+    private final String clave = "admin";
     private final String URL = "jdbc:mysql://"+
             servidor + ":" + puerto + "/" + BD;
     
@@ -21,8 +21,6 @@ public class ConeccionBD {
      * internos del conector de BD
      */
     public ConeccionBD(){
-        this.conexion = null;
-        this.sentencia = null;
     }
     
     /**
@@ -30,26 +28,18 @@ public class ConeccionBD {
      * @return true cuando la conexion se crea correctamente
      * y false cuando no es posible
      */
-    public boolean conectar(){
-        boolean estado = false;
+    public Connection conectar(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            try {
                 //Establecer la conexion con la BD
                 conexion = DriverManager.getConnection(URL, usuario, clave);
-                estado = true;
-                System.out.println("Conexion exitosa");
-            } catch (SQLException e) {
+                //System.out.println("Conexion exitosa");
+            } catch (Exception e) {
                 System.err.println("ERROR: ConectorBD.conectar()");
                 System.err.println("Al intentar la conexion con la BD");
                 System.err.println(e.getMessage());
             }
-        } catch (ClassNotFoundException e) {
-                System.err.println("ERROR: ConectorBD.conectar()");
-                System.err.println("No se encontro el Driver de coneccion con MySQL");
-                System.err.println(e.getMessage());            
-        }
-        return estado;
+        return conexion;
     }
     
     /**
@@ -57,18 +47,6 @@ public class ConeccionBD {
      * @param sql texto con el script sql para seleccionar registros
      * @return ResulSet con la informacion selecionada o null en caso de no
      */
-    public ResultSet seleccionar(String sql){
-        ResultSet resultado = null;
-        try {
-            sentencia = conexion.createStatement();
-            resultado = sentencia.executeQuery(sql);
-        } catch (SQLException sqle) {
-            System.err.println("ERROR: ConectorBD.seleccionar(sql)");
-            System.err.println(sqle.getMessage());
-        }
-        return resultado;
-    }
-    
     /**
      * Para ejecutar sentencias SQL: INSERT, UPDATE, DELETE
      * @param sql texto con el script sql para ejecutar sobre la BD
