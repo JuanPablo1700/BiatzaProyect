@@ -6,8 +6,12 @@
 package Proyecto;
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -22,6 +26,66 @@ public class Ventana_Acceso extends javax.swing.JFrame {
         initComponents();
     }
     private String sql;
+    private final ConeccionBD CBD = new ConeccionBD();
+    Connection conectar = CBD.conectar();
+    public String Nombre_Usuario,Apellido_Usuario,Telefono,U,C,Correo,Direccion,Cargo,Fecha,Status;
+    private Interfaz_Principal IP = new Interfaz_Principal();
+    
+    private void ValidaUsuario(){
+        String usuario = txtUsuario.getText();
+        String contraseña=String.valueOf(txtContraseña.getPassword());
+        int res=0;
+            sql = "select * from usuarios where Nom_Usuario='"+usuario+"' and Contraseña='"+contraseña+"'";
+            try {
+                Statement st = conectar.createStatement();
+                ResultSet rs = st.executeQuery(sql);
+                try {
+                    while (rs.next()){
+                        res=1;
+                        Nombre_Usuario = rs.getString(2);
+                        Apellido_Usuario = rs.getString(3);
+                        Telefono= rs.getString(4);
+                        U = rs.getString(5);
+                        C = rs.getString(6);
+                        Correo= rs.getString(7);
+                        Direccion= rs.getString(8);
+                        Cargo= rs.getString(9);
+                        Fecha= rs.getString(10);
+                        Status= rs.getString(11);
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Ventana_Acceso.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error.");
+        }
+           
+            System.out.println(Nombre_Usuario+" "+Apellido_Usuario+" "+Telefono+" "+U+" "+C+" "+Correo+" "+Direccion+" "+Cargo+" "+Fecha+" "+Status);
+            if(res==1){
+                MandaInfoIP();                
+                this.dispose();
+                IP.setVisible(true);
+                //JOptionPane.showMessageDialog(null, "Bienvenido: " +Nombre_Usuario+ " " + Apellido_Usuario+" "
+                //+Cargo+" "+Status);
+            }else
+            JOptionPane.showMessageDialog(null, "Acceso denegado");
+        
+    }
+    
+    private void MandaInfoIP(){
+        
+            IP.Nombre_Usuario=Nombre_Usuario;
+            IP.Apellido_Usuario=Apellido_Usuario;
+            IP.Telefono=Telefono;
+            IP.U=U;
+            IP.C=C;
+            IP.Correo=Correo;
+            IP.Direccion=Direccion;
+            IP.Cargo=Cargo;
+            IP.Fecha=Fecha;
+            IP.Status=Status;
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -44,11 +108,6 @@ public class Ventana_Acceso extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(350, 400));
         setUndecorated(true);
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
-            }
-        });
         getContentPane().setLayout(null);
 
         pnlFondo.setBackground(new java.awt.Color(255, 255, 255));
@@ -75,6 +134,11 @@ public class Ventana_Acceso extends javax.swing.JFrame {
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txtUsuarioFocusLost(evt);
+            }
+        });
+        txtUsuario.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtUsuarioKeyPressed(evt);
             }
         });
         pnlFondo.add(txtUsuario);
@@ -106,15 +170,18 @@ public class Ventana_Acceso extends javax.swing.JFrame {
         pnlFondo.add(jLabel2);
         jLabel2.setBounds(140, 90, 60, 70);
 
-        txtContraseña.setText("jPasswordField1");
+        txtContraseña.setText("Contraseña.");
         txtContraseña.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 txtContraseñaFocusGained(evt);
             }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtContraseñaFocusLost(evt);
+            }
         });
-        txtContraseña.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtContraseñaActionPerformed(evt);
+        txtContraseña.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtContraseñaKeyPressed(evt);
             }
         });
         pnlFondo.add(txtContraseña);
@@ -132,51 +199,14 @@ public class Ventana_Acceso extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        
-    }//GEN-LAST:event_formWindowOpened
-
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
         System.exit(0);
     }//GEN-LAST:event_btnSalirActionPerformed
 
     private void btnAccederActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAccederActionPerformed
-        String usuario,contraseña;
-        
-        if(CBD.conectar()){
-            ResultSet rs;
-            String datos [][] = new String[100][100];
-            int renglon=0, columna;
-            sql = "select Nom_Usuario, Contraseña from usuarios";
-            rs = CBD.seleccionar(sql);
-            
-            try {
-                while (rs.next()){
-                    columna = 0;
-                    datos[renglon][columna] = rs.getString(1);
-                    columna++;
-                    datos[renglon][columna] = rs.getString(2);
-                    renglon++;
-                }
-            } catch (SQLException ex) {
-                Logger.getLogger(Ventana_Acceso.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-            boolean acceso = false;
-            int contador=0;
-            usuario = txtUsuario.getText();
-            contraseña = txtContraseña.getText();
-            while(contador < renglon && acceso == false){
-                if(usuario.equals(datos[contador][0]) && contraseña.equals(datos[contador][1])){
-                    acceso = true;
-                    this.dispose();
-                    Interfaz_Principal IP = new Interfaz_Principal();
-                    IP.setVisible(true);
-                }else{
-                contador++;
-                JOptionPane.showMessageDialog(null, "Acceso denegado");
-                }
-            }
+        try {
+            ValidaUsuario();
+        } catch (Exception e) {
         }
     }//GEN-LAST:event_btnAccederActionPerformed
 
@@ -195,13 +225,36 @@ public class Ventana_Acceso extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtUsuarioFocusLost
 
-    private void txtContraseñaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtContraseñaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtContraseñaActionPerformed
-
     private void txtContraseñaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtContraseñaFocusGained
-        txtContraseña.setText("");
+        String C=String.valueOf(txtContraseña.getPassword());
+        if(C.equals("Contraseña.")){
+            txtContraseña.setText("");
+            txtContraseña.setForeground(Color.black);
+        }
     }//GEN-LAST:event_txtContraseñaFocusGained
+
+    private void txtContraseñaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtContraseñaKeyPressed
+        if(evt.getKeyCode()==KeyEvent.VK_ENTER){
+            try {
+            ValidaUsuario();
+            } catch (Exception e) {
+            }
+        }
+    }//GEN-LAST:event_txtContraseñaKeyPressed
+
+    private void txtContraseñaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtContraseñaFocusLost
+        String C=String.valueOf(txtContraseña.getPassword());
+        if(C.equals("")){
+            txtContraseña.setText("Contraseña.");
+            txtContraseña.setForeground(new Color(102,102,102));
+        }
+    }//GEN-LAST:event_txtContraseñaFocusLost
+
+    private void txtUsuarioKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUsuarioKeyPressed
+        if(evt.getKeyCode()==KeyEvent.VK_ENTER){
+            txtContraseña.requestFocus();
+        }
+    }//GEN-LAST:event_txtUsuarioKeyPressed
 
     /**
      * @param args the command line arguments
@@ -237,7 +290,7 @@ public class Ventana_Acceso extends javax.swing.JFrame {
             }
         });
     }
-    private final ConeccionBD CBD = new ConeccionBD();
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAcceder;
     private javax.swing.JButton btnSalir;
