@@ -424,6 +424,7 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tblUsuarios.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tblUsuarios.getTableHeader().setReorderingAllowed(false);
         tblUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
