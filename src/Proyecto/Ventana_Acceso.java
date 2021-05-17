@@ -27,8 +27,9 @@ public class Ventana_Acceso extends javax.swing.JFrame {
     }
     private String sql;
     private final ConeccionBD CBD = new ConeccionBD();
-    Connection conectar = CBD.conectar();
-    public String Nombre_Usuario,Apellido_Usuario,Telefono,U,C,Correo,Direccion,Cargo,Fecha,Status;
+    
+    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Telefono,Actual_U,Actual_C,
+            Actual_Correo,Actual_Direccion,Actual_Cargo,Actual_Fecha,Actual_Status;
     private Interfaz_Principal IP = new Interfaz_Principal();
     
     private void ValidaUsuario(){
@@ -37,31 +38,32 @@ public class Ventana_Acceso extends javax.swing.JFrame {
         int res=0;
             sql = "select * from usuarios where Nom_Usuario='"+usuario+"' and Contraseña='"+contraseña+"'";
             try {
+                Connection conectar = CBD.conectar();
                 Statement st = conectar.createStatement();
                 ResultSet rs = st.executeQuery(sql);
                 try {
                     while (rs.next()){
                         res=1;
-                        Nombre_Usuario = rs.getString(2);
-                        Apellido_Usuario = rs.getString(3);
-                        Telefono= rs.getString(4);
-                        U = rs.getString(5);
-                        C = rs.getString(6);
-                        Correo= rs.getString(7);
-                        Direccion= rs.getString(8);
-                        Cargo= rs.getString(9);
-                        Fecha= rs.getString(10);
-                        Status= rs.getString(11);
+                        Actual_Nombre_Usuario = rs.getString(2);
+                        Actual_Apellido_Usuario = rs.getString(3);
+                        Actual_Telefono= rs.getString(4);
+                        Actual_U = rs.getString(5);
+                        Actual_C = rs.getString(6);
+                        Actual_Correo= rs.getString(7);
+                        Actual_Direccion= rs.getString(8);
+                        Actual_Cargo= rs.getString(9);
+                        Actual_Fecha= rs.getString(10);
+                        Actual_Status= rs.getString(11);
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Ventana_Acceso.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
+              conectar.close();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error.");
         }
            
-            System.out.println(Nombre_Usuario+" "+Apellido_Usuario+" "+Telefono+" "+U+" "+C+" "+Correo+" "+Direccion+" "+Cargo+" "+Fecha+" "+Status);
+            //System.out.println(Nombre_Usuario+" "+Apellido_Usuario+" "+Telefono+" "+U+" "+C+" "+Correo+" "+Direccion+" "+Cargo+" "+Fecha+" "+Status);
             if(res==1){
                 MandaInfoIP();                
                 this.dispose();
@@ -75,16 +77,16 @@ public class Ventana_Acceso extends javax.swing.JFrame {
     
     private void MandaInfoIP(){
         
-            IP.Nombre_Usuario=Nombre_Usuario;
-            IP.Apellido_Usuario=Apellido_Usuario;
-            IP.Telefono=Telefono;
-            IP.U=U;
-            IP.C=C;
-            IP.Correo=Correo;
-            IP.Direccion=Direccion;
-            IP.Cargo=Cargo;
-            IP.Fecha=Fecha;
-            IP.Status=Status;
+            IP.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+            IP.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+            IP.Actual_Telefono=Actual_Telefono;
+            IP.Actual_U=Actual_U;
+            IP.Actual_C=Actual_C;
+            IP.Actual_Correo=Actual_Correo;
+            IP.Actual_Direccion=Actual_Direccion;
+            IP.Actual_Cargo=Actual_Cargo;
+            IP.Actual_Fecha=Actual_Fecha;
+            IP.Actual_Status=Actual_Status;
     }
     
     /**

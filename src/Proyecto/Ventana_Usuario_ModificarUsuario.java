@@ -5,6 +5,7 @@
  */
 package Proyecto;
 
+import com.sun.corba.se.impl.orbutil.CorbaResourceUtil;
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,6 +15,7 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -30,20 +32,33 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
     }
     
     public String Nombre_Usuario,Apellido_Usuario,Telefono,U,C,Correo,Direccion,Cargo,Fecha,Status;
-    public String Nombre_Usuario_Actual,Apellido_Usuario_Actual,Cargo_Actual;
+    
+    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Telefono,Actual_U,Actual_C,
+            Actual_Correo,Actual_Direccion,Actual_Cargo,Actual_Fecha,Actual_Status;
+    public int id_Usuario;
     private final ConeccionBD CBD = new ConeccionBD();
-    Connection conectar = CBD.conectar();
     
     
-    private void CargaInfo(){
-        txtNombre.setText(Nombre_Usuario);
-        txtApellido.setText(Apellido_Usuario);
-        txtTelefono.setText(Telefono);
-        txtUsuario.setText(U);
-        txtContraseña.setText(C);
-        txtCorreo.setText(Correo);
-        txtDireccion.setText(Direccion);
-        txtFecha.setText(Fecha);
+    
+    private boolean Vacio(){
+        boolean vacio=true;
+        if(!txtNombre.getText().equals("") && !txtApellido.getText().equals("") && !txtTelefono.getText().equals("")
+                 && !txtUsuario.getText().equals("Usuario.") && !txtContraseña.getText().equals("Contraseña.") && !txtCorreo.getText().equals("")
+                 && !txtDireccion.getText().equals("") && !txtFecha.getText().equals("") && cmbCargo.getSelectedIndex()!=0)vacio=false;
+
+        return vacio;
+    }
+
+    private void CargaUsuario(){
+        if(!Nombre_Usuario.equals(""))txtNombre.setText(Nombre_Usuario);
+        if(!Apellido_Usuario.equals(""))txtApellido.setText(Apellido_Usuario);
+        if(!Telefono.equals(""))txtTelefono.setText(Telefono);
+        if(!U.equals(""))txtUsuario.setText(U);
+        if(!C.equals(""))txtContraseña.setText(C);
+        if(!Correo.equals(""))txtCorreo.setText(Correo);
+        if(!Direccion.equals(""))txtDireccion.setText(Direccion);
+        if(!Fecha.equals(""))txtFecha.setText(Fecha);
+        
         if(Cargo.equals("Cajero")){
             cmbCargo.setSelectedIndex(1);
         }else if(Cargo.equals("Administrador")){
@@ -51,6 +66,16 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
         }else
             cmbCargo.setSelectedIndex(0);
     }
+    
+    private void MandaInfoVUP(){
+        Ventana_Usuario_Principal VUP = new Ventana_Usuario_Principal();
+        VUP.Actual_Nombre_Usuario = Actual_Nombre_Usuario;
+        VUP.Actual_Apellido_Usuario = Actual_Apellido_Usuario;
+        VUP.Actual_Cargo = Actual_Cargo;
+        this.dispose();
+        VUP.setVisible(true);
+    }
+    
     private void Orden(){
         btnConsultar.setVisible(false);
         jScrollPane1.setVisible(false);
@@ -77,42 +102,234 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
     }
     private void MandaInfoIP(){
         Interfaz_Principal IP = new Interfaz_Principal();
-            IP.Nombre_Usuario=Nombre_Usuario;
-            IP.Apellido_Usuario=Apellido_Usuario;
-            IP.Telefono=Telefono;
-            IP.U=U;
-            IP.C=C;
-            IP.Correo=Correo;
-            IP.Direccion=Direccion;
-            IP.Cargo=Cargo;
-            IP.Fecha=Fecha;
-            IP.Status=Status;
+            IP.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+            IP.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+            IP.Actual_Telefono=Actual_Telefono;
+            IP.Actual_U=Actual_U;
+            IP.Actual_C=Actual_C;
+            IP.Actual_Correo=Actual_Correo;
+            IP.Actual_Direccion=Actual_Direccion;
+            IP.Actual_Cargo=Actual_Cargo;
+            IP.Actual_Fecha=Actual_Fecha;
+            IP.Actual_Status="1";
             this.dispose();
             IP.setVisible(true);
     }
+    
     private void ModificaUsuarioInicio(){
-        String usuario=txtUsuario.getText(),contraseña=txtContraseña.getText();
-        
-        
-            String sql=""; 
-            sql = "update usuarios set Nom_Usuario = '"+usuario+"', Contraseña = '"+contraseña+"', Status = 1 where Nom_Usuario='"+U+"' and Contraseña='"+C+"'";
             
-                
+            String usuario=U,contraseña=C;
+            
             try {
-            PreparedStatement pat = conectar.prepareStatement(sql);
-            pat.executeUpdate();
-            
+                Connection conectar = CBD.conectar();
+                String sql;
+                    sql = "UPDATE usuarios "
+                    + "set Nom_Usuario = '"+usuario+"',"
+                        + "Contraseña = '"+contraseña+"', "
+                        + "Status = 1 "
+                        + "where Nom_Usuario = '"+U+"' and Contraseña = '"+C+"'";
                 
-            JOptionPane.showMessageDialog(null, "Se han guardado los cambios.");
-            Status="1";
-            U=txtUsuario.getText();
-            C=txtContraseña.getText();
-            MandaInfoIP();
-            
+                    
+                PreparedStatement pst = conectar.prepareStatement(sql);
+                pst.executeUpdate();
+                conectar.close();
+                JOptionPane.showMessageDialog(null, "Se han guardado los cambios.");
+           
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al guardar los cambios.");
+            JOptionPane.showMessageDialog(null, "Error al guardar la info.");
         }
     }
+    private void SacaID(){
+        String usuario = txtUsuario.getText();
+        String contraseña=txtContraseña.getText();
+            String sql = "select * from usuarios where Nom_Usuario='"+usuario+"' and Contraseña='"+contraseña+"'";
+            try {
+                Connection conectar = CBD.conectar();
+                Statement st = conectar.createStatement();
+                ResultSet rs = st.executeQuery(sql);
+                try {
+                    while (rs.next()){
+                        id_Usuario = rs.getInt(1);
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Ventana_Acceso.class.getName()).log(Level.SEVERE, null, ex);
+                }
+              conectar.close();
+            } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error.");
+            }
+    }
+    private void ModificaUsuario(){
+            String nombre, apellido,telefono,usuario,contraseña,correo,direccion,cargo,fecha;
+            nombre=txtNombre.getText();
+            apellido=txtApellido.getText();
+            telefono=txtTelefono.getText();
+            usuario=txtUsuario.getText();
+            contraseña=txtContraseña.getText();
+            correo=txtCorreo.getText();
+            direccion=txtDireccion.getText();
+            cargo=cmbCargo.getSelectedItem().toString();
+            fecha=txtFecha.getText();
+            
+            try {
+                SacaID();
+                //System.out.println("ID: "+ id_Usuario);
+                Connection conectar = CBD.conectar();
+                
+                String sql = "UPDATE usuarios set "
+                        + "Nombre = ?,"
+                        + "Apellido = ?,"
+                        + "Telefono = ?,"
+                        + "Nom_Usuario = ?,"
+                        + "Contraseña = ?,"
+                        + "Correo = ?,"
+                        + "Direccion = ?,"
+                        + "Cargo = ?,"
+                        + "Fecha_Registro = ? "
+                        + "where ID_Usuario = ?";
+                    
+                PreparedStatement pst = conectar.prepareStatement(sql);
+                pst.setString(1, nombre);
+                pst.setString(2, apellido);
+                pst.setString(3, telefono);
+                pst.setString(4, usuario);
+                pst.setString(5, contraseña);
+                pst.setString(6, correo);
+                pst.setString(7, direccion);
+                pst.setString(8, cargo);
+                pst.setString(9, fecha);
+                pst.setInt(10, id_Usuario);
+                
+                
+                pst.executeUpdate();
+                conectar.close();
+                JOptionPane.showMessageDialog(null, "Se han guardado los cambios.");
+           
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al guardar la informacion");
+        
+        }
+    }
+    
+    private void CargarUsuarios(){
+        limpiarTabla();
+        DefaultTableModel mod=(DefaultTableModel) tblUsuarios.getModel();
+        tblUsuarios.setModel(mod);
+        String sql=""; 
+        sql = "select * from usuarios";
+        String[] Datos = new String[10];
+        try {
+            Connection conectar = CBD.conectar();
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            
+            while (rs.next()){
+                Datos[0]=rs.getString(2);
+                Datos[1]=rs.getString(3);
+                Datos[2]=rs.getString(4);
+                Datos[3]=rs.getString(5);
+                Datos[4]=rs.getString(6);
+                Datos[5]=rs.getString(7);
+                Datos[6]=rs.getString(8);
+                Datos[7]=rs.getString(9);
+                Datos[8]=rs.getString(10);
+                Datos[9]=rs.getString(11);
+                
+                mod.addRow(Datos);
+            }
+        conectar.close();    
+        } catch (Exception e) {
+        }
+        
+            
+        
+    }
+    
+    public void UsuarioSeleccionado(int Fila){
+        Nombre_Usuario = tblUsuarios.getValueAt(Fila, 0).toString();
+        Apellido_Usuario= tblUsuarios.getValueAt(Fila, 1).toString();
+        Telefono= tblUsuarios.getValueAt(Fila, 2).toString();
+        U= tblUsuarios.getValueAt(Fila, 3).toString();
+        C= tblUsuarios.getValueAt(Fila, 4).toString();
+        Correo= tblUsuarios.getValueAt(Fila, 5).toString();
+        Direccion= tblUsuarios.getValueAt(Fila, 6).toString();
+        Cargo= tblUsuarios.getValueAt(Fila, 7).toString();
+        Fecha= tblUsuarios.getValueAt(Fila, 8).toString();
+        Status= tblUsuarios.getValueAt(Fila, 9).toString();
+    }
+    
+    public void limpiarTabla(){
+        try {
+            //System.out.println("Limpiando tabla");
+            DefaultTableModel mod=(DefaultTableModel) tblUsuarios.getModel();
+            int a=tblUsuarios.getRowCount()-1;
+            for (int i = a; i >= 0; i--) {
+                mod.removeRow(mod.getRowCount()-1);
+            }
+        } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Error al limpiar la tabla.");
+        }
+    }
+    
+    private void ConsultaUsuario(){
+        limpiarTabla();
+        String nombre = txtNombre.getText()+"%";
+        String apellido = txtApellido.getText()+"%";
+        String sql;
+        if (txtApellido.getText().equals("Apellido.")){
+            sql = "select * from usuarios where Nombre like '"+nombre+"'";
+        }
+        else{
+            sql = "select * from usuarios where Nombre like '"+nombre+"' and Apellido like '"+apellido+"'";
+        }
+        
+        String[] Datos = new String[10];
+        DefaultTableModel mod=(DefaultTableModel) tblUsuarios.getModel();
+        try {
+            Connection conectar = CBD.conectar();
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            
+            while (rs.next()){
+                Datos[0]=rs.getString(2);
+                Datos[1]=rs.getString(3);
+                Datos[2]=rs.getString(4);
+                Datos[3]=rs.getString(5);
+                Datos[4]=rs.getString(6);
+                Datos[5]=rs.getString(7);
+                Datos[6]=rs.getString(8);
+                Datos[7]=rs.getString(9);
+                Datos[8]=rs.getString(10);
+                Datos[9]=rs.getString(11);
+                
+                mod.addRow(Datos);
+            }
+        conectar.close();    
+        } catch (Exception e) {
+        }
+    }
+    
+    private void Limpiar(){
+        txtNombre.setText("Nombre.");
+        txtNombre.setForeground(new Color(102,102,102));
+        txtApellido.setText("Apellido.");
+        txtApellido.setForeground(new Color(102,102,102));
+        txtTelefono.setText("Teléfono.");
+        txtTelefono.setForeground(new Color(102,102,102));
+        txtUsuario.setText("Usuario.");
+        txtUsuario.setForeground(new Color(102,102,102));
+        txtContraseña.setText("Contraseña.");
+        txtContraseña.setForeground(new Color(102,102,102));
+        txtCorreo.setText("Correo.");
+        txtCorreo.setForeground(new Color(102,102,102));
+        txtDireccion.setText("Dirección.");
+        txtDireccion.setForeground(new Color(102,102,102));
+        txtFecha.setText("Fecha.");
+        txtFecha.setForeground(new Color(102,102,102));
+        cmbCargo.setSelectedIndex(0);
+        
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -174,7 +391,7 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
         lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblUsuario.setText("Administrador: Nombre_Usuario");
         pnlCabezera.add(lblUsuario);
-        lblUsuario.setBounds(10, 20, 570, 30);
+        lblUsuario.setBounds(10, 20, 760, 30);
 
         btnCerrarSesion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/logout.png"))); // NOI18N
         btnCerrarSesion.setText("Cerrar sesión");
@@ -196,11 +413,11 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Nombre", "Apellido", "Usuario", "Contraseña", "Correo", "Dirección", "Telefono", "Cargo", "Fecha"
+                "Nombre", "Apellido", "Usuario", "Contraseña", "Correo", "Dirección", "Telefono", "Cargo", "Fecha", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -208,7 +425,24 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
             }
         });
         tblUsuarios.getTableHeader().setReorderingAllowed(false);
+        tblUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblUsuariosMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblUsuarios);
+        if (tblUsuarios.getColumnModel().getColumnCount() > 0) {
+            tblUsuarios.getColumnModel().getColumn(0).setResizable(false);
+            tblUsuarios.getColumnModel().getColumn(1).setResizable(false);
+            tblUsuarios.getColumnModel().getColumn(2).setResizable(false);
+            tblUsuarios.getColumnModel().getColumn(3).setResizable(false);
+            tblUsuarios.getColumnModel().getColumn(4).setResizable(false);
+            tblUsuarios.getColumnModel().getColumn(5).setResizable(false);
+            tblUsuarios.getColumnModel().getColumn(6).setResizable(false);
+            tblUsuarios.getColumnModel().getColumn(7).setResizable(false);
+            tblUsuarios.getColumnModel().getColumn(8).setResizable(false);
+            tblUsuarios.getColumnModel().getColumn(9).setResizable(false);
+        }
 
         pnlFondo.add(jScrollPane1);
         jScrollPane1.setBounds(710, 200, 530, 260);
@@ -336,10 +570,19 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
         txtTelefono.setBounds(250, 70, 202, 28);
 
         cmbCargo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        cmbCargo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un cargo", "Usuario", "Administrador" }));
+        cmbCargo.setForeground(new java.awt.Color(102, 102, 102));
+        cmbCargo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un cargo", "Cajero", "Administrador" }));
         cmbCargo.setMaximumSize(new java.awt.Dimension(202, 28));
         cmbCargo.setMinimumSize(new java.awt.Dimension(202, 28));
         cmbCargo.setPreferredSize(new java.awt.Dimension(202, 28));
+        cmbCargo.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                cmbCargoFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                cmbCargoFocusLost(evt);
+            }
+        });
         pnlInformacion.add(cmbCargo);
         cmbCargo.setBounds(250, 130, 202, 28);
 
@@ -476,7 +719,7 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
     private void txtDireccionFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtDireccionFocusGained
         if(txtDireccion.getText().equals("")){
             txtDireccion.setText("Dirección.");
-            txtDireccion.setForeground(new Color(102,102,102));
+            txtDireccion.setForeground(Color.BLACK);
         }
     }//GEN-LAST:event_txtDireccionFocusGained
 
@@ -530,13 +773,21 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
     }//GEN-LAST:event_txtFechaFocusLost
 
     private void btnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarActionPerformed
-        // TODO add your handling code here:
+        try {
+            
+                if(txtNombre.getText().equals("Nombre."))CargarUsuarios();
+                else ConsultaUsuario();
+            Limpiar();
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_btnConsultarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        this.dispose();
-        Ventana_Usuario_Principal VUP = new Ventana_Usuario_Principal();
-        VUP.setVisible(true);
+        try {
+            MandaInfoVUP();
+        } catch (Exception e) {
+        }
+        
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
@@ -548,11 +799,14 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         try {
-            lblUsuario.setText(Cargo+": "+Nombre_Usuario+" "+Apellido_Usuario);
-            if(Status.equals("0")){
-            Orden();
-            CargaInfo();
-        }
+            
+            lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
+            CargarUsuarios();
+            CargaUsuario();
+            if(Actual_Status.equals("0"))
+                Orden();
+            
+                
         } catch (Exception e) {
         }
         
@@ -560,10 +814,65 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
         try {
-            ModificaUsuarioInicio();
+            int resp = JOptionPane.showConfirmDialog(null, 
+                "¿Los datos son correctos?", "Registrar.",JOptionPane.OK_CANCEL_OPTION);
+            if(resp==0){
+            if(Actual_Status==null)Actual_Status="1";
+            //System.out.println("Actual Status: "+Actual_Status);
+            if(Actual_Status.equals("0")){
+                if(Vacio()==false){
+                    ModificaUsuarioInicio();
+                    MandaInfoIP();
+                }
+                else
+                    JOptionPane.showMessageDialog(null, "Hay campos vacios.");
+            
+            }   
+            else {
+                if(Vacio()==false){
+                    ModificaUsuario();
+                    int resp2 = JOptionPane.showConfirmDialog(null, 
+                    "¿Desea hacer un nuevo registro?", "Registrar.",JOptionPane.YES_NO_OPTION);
+                    if(resp2 == 1)
+                        MandaInfoVUP();
+                    else
+                        Limpiar();
+                }
+                else
+                    JOptionPane.showMessageDialog(null, "Hay campos vacios.");
+            }
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Se ha cancelado el registro.");
+                Limpiar();
+            }
         } catch (Exception e) {
         }
     }//GEN-LAST:event_btnModificarActionPerformed
+
+    private void tblUsuariosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblUsuariosMouseClicked
+        try {
+            int Fila = tblUsuarios.getSelectedRow();
+            UsuarioSeleccionado(Fila);
+            //JOptionPane.showMessageDialog(null, Nombre_Usuario+" "+Apellido_Usuario+" "+Telefono+" "+U+" "+C+" "+Correo+" "+Direccion+" "+Cargo+" "+Fecha+" "+Status);
+            CargaUsuario();
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_tblUsuariosMouseClicked
+
+    private void cmbCargoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmbCargoFocusGained
+        if(cmbCargo.getSelectedIndex()!=0){
+            
+            cmbCargo.setForeground(Color.black);
+        }
+    }//GEN-LAST:event_cmbCargoFocusGained
+
+    private void cmbCargoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cmbCargoFocusLost
+        if(cmbCargo.getSelectedIndex()==0){
+            cmbCargo.setForeground(new Color(102,102,102));
+            
+        }
+    }//GEN-LAST:event_cmbCargoFocusLost
 
     /**
      * @param args the command line arguments

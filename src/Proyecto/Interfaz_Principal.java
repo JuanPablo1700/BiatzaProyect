@@ -21,9 +21,8 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
     }
-    public String Nombre_Usuario,Apellido_Usuario,Telefono,U,C,Correo,Direccion,Cargo,Fecha,Status;
-    private Ventana_Usuario_ModificarUsuario VUM = new Ventana_Usuario_ModificarUsuario();
-    private Ventana_Usuario_Principal VUP = new Ventana_Usuario_Principal();
+    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Telefono,Actual_U,Actual_C,
+            Actual_Correo,Actual_Direccion,Actual_Cargo,Actual_Fecha,Actual_Status;
     private void bloc_Cajero(){
         btnUsuarios.setVisible(false);
         btnProductos.setVisible(false);
@@ -31,28 +30,30 @@ public class Interfaz_Principal extends javax.swing.JFrame {
     }
     
     private void MandaInfoVUM(){
-        VUM.Nombre_Usuario=Nombre_Usuario;
-        VUM.Apellido_Usuario=Apellido_Usuario;
-        VUM.Telefono=Telefono;
-        VUM.U=U;
-        VUM.C=C;
-        VUM.Correo=Correo;
-        VUM.Direccion=Direccion;
-        VUM.Cargo=Cargo;
-        VUM.Fecha=Fecha;
-        VUM.Status=Status;
+        Ventana_Usuario_ModificarUsuario VUM = new Ventana_Usuario_ModificarUsuario();
+        VUM.Nombre_Usuario=Actual_Nombre_Usuario;
+        VUM.Apellido_Usuario=Actual_Apellido_Usuario;
+        VUM.Telefono=Actual_Telefono;
+        VUM.U=Actual_U;
+        VUM.C=Actual_C;
+        VUM.Correo=Actual_Correo;
+        VUM.Direccion=Actual_Direccion;
+        VUM.Cargo=Actual_Cargo;
+        VUM.Fecha=Actual_Fecha;
+        VUM.Status=Actual_Status;
+        
+        VUM.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VUM.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VUM.Actual_Cargo=Actual_Cargo;
+        VUM.Actual_Status=Actual_Status;
+        this.dispose();
+        VUM.setVisible(true);
     }
     private void MandaInfoVUP(){
-        VUP.Nombre_Usuario=Nombre_Usuario;
-        VUP.Apellido_Usuario=Apellido_Usuario;
-        VUP.Telefono=Telefono;
-        VUP.U=U;
-        VUP.C=C;
-        VUP.Correo=Correo;
-        VUP.Direccion=Direccion;
-        VUP.Cargo=Cargo;
-        VUP.Fecha=Fecha;
-        VUP.Status=Status;
+        Ventana_Usuario_Principal VUP = new Ventana_Usuario_Principal();
+        VUP.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VUP.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VUP.Actual_Cargo=Actual_Cargo;
         this.dispose();
         VUP.setVisible(true);
     }
@@ -277,15 +278,15 @@ public class Interfaz_Principal extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         try {
-            labelNombre.setText(Cargo+": "+Nombre_Usuario+" "+Apellido_Usuario);
-        if (Cargo.equals("Cajero")) {
+            labelNombre.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
+        if (Actual_Cargo.equals("Cajero")) {
             bloc_Cajero();
         }
-        if (Status.equals("0")){
+        if (Actual_Status.equals("0")){
             JOptionPane.showMessageDialog(null, "Es necesario que cambies tu usuario y/o contraseña.");
+            System.out.println(Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario+" "+Actual_Telefono+" "+Actual_U+" "+Actual_C+" "+Actual_Correo+" "+Actual_Direccion+" "+Actual_Cargo+" "+Actual_Fecha+" "+Actual_Status);
             MandaInfoVUM();
-            this.dispose();
-            VUM.setVisible(true);
+            
             
         }
         } catch (Exception e) {
