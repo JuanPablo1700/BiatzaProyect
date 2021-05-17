@@ -6,7 +6,11 @@
 package Proyecto;
 
 import java.awt.Color;
-
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import javax.swing.JOptionPane;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 /**
  *
  * @author diana
@@ -20,7 +24,90 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
         initComponents();
         
     }
+    
+    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Cargo;
+    private ConeccionBD CBD = new ConeccionBD();
+    
+    
+    private boolean Vacio(){
+        boolean vacio=true;
+        if(!txtNombre.getText().equals("") && !txtApellido.getText().equals("") && !txtTelefono.getText().equals("")
+                 && !txtUsuario.getText().equals("Usuario.") && !txtContraseña.getText().equals("Contraseña.") && !txtCorreo.getText().equals("")
+                 && !txtDireccion.getText().equals("") && cmbCargo.getSelectedIndex()!=0)vacio=false;
 
+        return vacio;
+    }
+    
+    private void MandaInfoVUP(){
+        Ventana_Usuario_Principal VUP = new Ventana_Usuario_Principal();
+        VUP.Actual_Nombre_Usuario = Actual_Nombre_Usuario;
+        VUP.Actual_Apellido_Usuario = Actual_Apellido_Usuario;
+        VUP.Actual_Cargo = Actual_Cargo;
+        this.dispose();
+        VUP.setVisible(true);
+    }
+     
+    private void RegistraUsuario(){
+         String nombre, apellido,telefono,usuario,contraseña,correo,direccion,cargo,fecha;
+            nombre=txtNombre.getText();
+            apellido=txtApellido.getText();
+            telefono=txtTelefono.getText();
+            usuario=txtUsuario.getText();
+            contraseña=txtContraseña.getText();
+            correo=txtCorreo.getText();
+            direccion=txtDireccion.getText();
+            cargo=cmbCargo.getSelectedItem().toString();
+            DateTimeFormatter hora_sistema = DateTimeFormatter.ofPattern("yy/MM/dd");
+            fecha = hora_sistema.format(LocalDateTime.now());
+            
+            try {
+                Connection conectar = CBD.conectar();
+                String sql = "insert into usuarios (Nombre,Apellido,Telefono,Nom_Usuario,Contraseña,Correo,Direccion,Cargo,Fecha_Registro,Status)"
+                        + "values (?,?,?,?,?,?,?,?,?,?)";
+                
+                PreparedStatement pst = conectar.prepareStatement(sql);
+                pst.setString(1, nombre);
+                pst.setString(2, apellido);
+                pst.setString(3, telefono);
+                pst.setString(4, usuario);
+                pst.setString(5, contraseña);
+                pst.setString(6, correo);
+                pst.setString(7, direccion);
+                pst.setString(8, cargo);
+                pst.setString(9, fecha);
+                if (cmbCargo.getSelectedItem().equals("Cajero"))
+                    pst.setInt(10, 0);
+                else
+                    pst.setInt(10, 1);
+                pst.executeUpdate();
+                
+                JOptionPane.showMessageDialog(null, "Registro exitoso.");
+               
+         } catch (Exception e) {
+             JOptionPane.showMessageDialog(null, "Error al registrar.");
+         }
+     }
+    
+    private void Limpiar(){
+        txtNombre.setText("Nombre.");
+        txtNombre.setForeground(new Color(102,102,102));
+        txtApellido.setText("Apellido.");
+        txtApellido.setForeground(new Color(102,102,102));
+        txtTelefono.setText("Teléfono.");
+        txtTelefono.setForeground(new Color(102,102,102));
+        txtUsuario.setText("Usuario.");
+        txtUsuario.setForeground(new Color(102,102,102));
+        txtContraseña.setText("Contraseña.");
+        txtContraseña.setForeground(new Color(102,102,102));
+        txtCorreo.setText("Correo.");
+        txtCorreo.setForeground(new Color(102,102,102));
+        txtDireccion.setText("Dirección.");
+        txtDireccion.setForeground(new Color(102,102,102));
+        cmbCargo.setSelectedIndex(0);
+        cmbCargo.setForeground(new Color(102,102,102));
+        
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -44,7 +131,6 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
         txtDireccion = new javax.swing.JTextField();
         txtTelefono = new javax.swing.JTextField();
         cmbCargo = new javax.swing.JComboBox<>();
-        txtFechaNac = new javax.swing.JTextField();
         btnRegistrar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
 
@@ -52,6 +138,11 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(1270, 583));
         setUndecorated(true);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         pnlFondo.setBackground(new java.awt.Color(244, 241, 222));
         pnlFondo.setMaximumSize(new java.awt.Dimension(1270, 583));
@@ -74,7 +165,7 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
         lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblUsuario.setText("Administrador: Nombre_Usuario");
         pnlCabezera.add(lblUsuario);
-        lblUsuario.setBounds(10, 20, 310, 30);
+        lblUsuario.setBounds(10, 20, 780, 30);
 
         btnCerrarSesion.setBackground(new java.awt.Color(224, 122, 95));
         btnCerrarSesion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -111,7 +202,7 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
             }
         });
         pnlInformacion.add(txtNombre);
-        txtNombre.setBounds(20, 10, 202, 28);
+        txtNombre.setBounds(20, 10, 202, 26);
 
         txtApellido.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtApellido.setForeground(new java.awt.Color(102, 102, 102));
@@ -125,7 +216,7 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
             }
         });
         pnlInformacion.add(txtApellido);
-        txtApellido.setBounds(20, 70, 202, 28);
+        txtApellido.setBounds(20, 70, 202, 26);
 
         txtUsuario.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtUsuario.setForeground(new java.awt.Color(102, 102, 102));
@@ -139,7 +230,7 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
             }
         });
         pnlInformacion.add(txtUsuario);
-        txtUsuario.setBounds(20, 130, 202, 28);
+        txtUsuario.setBounds(20, 130, 202, 26);
 
         txtContraseña.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtContraseña.setForeground(new java.awt.Color(102, 102, 102));
@@ -153,7 +244,7 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
             }
         });
         pnlInformacion.add(txtContraseña);
-        txtContraseña.setBounds(20, 190, 202, 28);
+        txtContraseña.setBounds(20, 190, 202, 26);
 
         txtCorreo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtCorreo.setForeground(new java.awt.Color(102, 102, 102));
@@ -167,7 +258,7 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
             }
         });
         pnlInformacion.add(txtCorreo);
-        txtCorreo.setBounds(250, 10, 202, 28);
+        txtCorreo.setBounds(250, 10, 202, 26);
 
         txtDireccion.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtDireccion.setForeground(new java.awt.Color(102, 102, 102));
@@ -181,7 +272,7 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
             }
         });
         pnlInformacion.add(txtDireccion);
-        txtDireccion.setBounds(20, 250, 430, 28);
+        txtDireccion.setBounds(20, 250, 430, 26);
 
         txtTelefono.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtTelefono.setForeground(new java.awt.Color(102, 102, 102));
@@ -195,26 +286,12 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
             }
         });
         pnlInformacion.add(txtTelefono);
-        txtTelefono.setBounds(250, 70, 202, 28);
+        txtTelefono.setBounds(250, 70, 202, 26);
 
         cmbCargo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         cmbCargo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un cargo.", "Cajero", "Administrador" }));
         pnlInformacion.add(cmbCargo);
         cmbCargo.setBounds(250, 130, 200, 30);
-
-        txtFechaNac.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtFechaNac.setForeground(new java.awt.Color(102, 102, 102));
-        txtFechaNac.setText("Fecha de nacimiento.");
-        txtFechaNac.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtFechaNacFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtFechaNacFocusLost(evt);
-            }
-        });
-        pnlInformacion.add(txtFechaNac);
-        txtFechaNac.setBounds(250, 190, 202, 28);
 
         pnlFondo.add(pnlInformacion);
         pnlInformacion.setBounds(410, 180, 470, 300);
@@ -222,6 +299,11 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
         btnRegistrar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnRegistrar.setText("Registrar usuario");
         btnRegistrar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(0, 0, 0), new java.awt.Color(0, 0, 0), java.awt.Color.black, java.awt.Color.black));
+        btnRegistrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegistrarActionPerformed(evt);
+            }
+        });
         pnlFondo.add(btnRegistrar);
         btnRegistrar.setBounds(430, 480, 170, 70);
 
@@ -256,9 +338,10 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        this.dispose();
-        Ventana_Usuario_Principal VUP = new Ventana_Usuario_Principal();
-        VUP.setVisible(true);
+        try {
+            MandaInfoVUP();
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void txtNombreFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNombreFocusGained
@@ -359,25 +442,44 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtTelefonoFocusLost
 
-    private void txtFechaNacFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtFechaNacFocusGained
-        if(txtFechaNac.getText().equals("Fecha de nacimiento.")){
-            txtFechaNac.setText("");
-            txtFechaNac.setForeground(Color.black);
-        }
-    }//GEN-LAST:event_txtFechaNacFocusGained
-
-    private void txtFechaNacFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtFechaNacFocusLost
-        if(txtFechaNac.getText().equals("")){
-            txtFechaNac.setText("Fecha de nacimiento.");
-            txtFechaNac.setForeground(new Color(102,102,102));
-        }
-    }//GEN-LAST:event_txtFechaNacFocusLost
-
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
         this.dispose();
         Ventana_Acceso VA = new Ventana_Acceso();
         VA.setVisible(true);
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        try {
+            lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
+        } catch (Exception e) {
+        }
+       
+    }//GEN-LAST:event_formWindowOpened
+
+    private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
+        
+        if (Vacio()==false) {
+            int resp = JOptionPane.showConfirmDialog(null, 
+                "¿Los datos son correctos?", "Registrar.",JOptionPane.OK_CANCEL_OPTION);
+            if(resp == 0){
+                RegistraUsuario();
+                int resp2 = JOptionPane.showConfirmDialog(null, 
+                    "¿Desea hacer un nuevo registro?", "Registrar.",JOptionPane.YES_NO_OPTION);
+                if(resp2 == 1)
+                    MandaInfoVUP();
+                else
+                    Limpiar();
+                }
+            else{
+                JOptionPane.showMessageDialog(null, "Se ha cancelado el registro.");
+                Limpiar();
+            }
+            
+        }
+        else
+            JOptionPane.showMessageDialog(null, "Hay campos vacios.");
+        
+    }//GEN-LAST:event_btnRegistrarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -428,7 +530,6 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
     private javax.swing.JTextField txtContraseña;
     private javax.swing.JTextField txtCorreo;
     private javax.swing.JTextField txtDireccion;
-    private javax.swing.JTextField txtFechaNac;
     private javax.swing.JTextField txtNombre;
     private javax.swing.JTextField txtTelefono;
     private javax.swing.JTextField txtUsuario;
