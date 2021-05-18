@@ -7,6 +7,12 @@ package Proyecto;
 
 import java.awt.Color;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -56,13 +62,10 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         btnConsultaNombre = new javax.swing.JButton();
         btnEliminarPedido = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         txtNombreProducto = new javax.swing.JTextField();
-        txtIdProducto = new javax.swing.JTextField();
         btnRegresar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblPedidos = new javax.swing.JTable();
-        btnConsultaId = new javax.swing.JButton();
+        tblProductos = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1270, 583));
@@ -148,12 +151,6 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         panelClaro.add(jLabel1);
         jLabel1.setBounds(340, 270, 200, 30);
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel2.setText("idProducto");
-        panelClaro.add(jLabel2);
-        jLabel2.setBounds(340, 220, 200, 30);
-
         txtNombreProducto.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtNombreProducto.setForeground(new java.awt.Color(102, 102, 102));
         txtNombreProducto.setText("NombreProducto");
@@ -168,20 +165,6 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         panelClaro.add(txtNombreProducto);
         txtNombreProducto.setBounds(560, 270, 200, 30);
 
-        txtIdProducto.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtIdProducto.setForeground(new java.awt.Color(102, 102, 102));
-        txtIdProducto.setText("idProducto");
-        txtIdProducto.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtIdProductoFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtIdProductoFocusLost(evt);
-            }
-        });
-        panelClaro.add(txtIdProducto);
-        txtIdProducto.setBounds(560, 220, 200, 30);
-
         btnRegresar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnRegresar.setText("Regresar");
         btnRegresar.setActionCommand("Registrar");
@@ -194,9 +177,9 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         panelClaro.add(btnRegresar);
         btnRegresar.setBounds(760, 480, 170, 60);
 
-        tblPedidos.setBackground(new java.awt.Color(244, 241, 222));
-        tblPedidos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        tblPedidos.setModel(new javax.swing.table.DefaultTableModel(
+        tblProductos.setBackground(new java.awt.Color(244, 241, 222));
+        tblProductos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        tblProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -212,31 +195,25 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tblPedidos.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(tblPedidos);
-        if (tblPedidos.getColumnModel().getColumnCount() > 0) {
-            tblPedidos.getColumnModel().getColumn(0).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(1).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(2).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(3).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(4).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(5).setResizable(false);
+        tblProductos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblProductos.getTableHeader().setReorderingAllowed(false);
+        tblProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblProductosMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblProductos);
+        if (tblProductos.getColumnModel().getColumnCount() > 0) {
+            tblProductos.getColumnModel().getColumn(0).setResizable(false);
+            tblProductos.getColumnModel().getColumn(1).setResizable(false);
+            tblProductos.getColumnModel().getColumn(2).setResizable(false);
+            tblProductos.getColumnModel().getColumn(3).setResizable(false);
+            tblProductos.getColumnModel().getColumn(4).setResizable(false);
+            tblProductos.getColumnModel().getColumn(5).setResizable(false);
         }
 
         panelClaro.add(jScrollPane1);
         jScrollPane1.setBounds(370, 320, 560, 140);
-
-        btnConsultaId.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnConsultaId.setText("Consultar");
-        btnConsultaId.setActionCommand("Registrar");
-        btnConsultaId.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, new java.awt.Color(0, 0, 0), java.awt.Color.black, java.awt.Color.black));
-        btnConsultaId.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConsultaIdActionPerformed(evt);
-            }
-        });
-        panelClaro.add(btnConsultaId);
-        btnConsultaId.setBounds(800, 220, 130, 30);
 
         getContentPane().add(panelClaro);
         panelClaro.setBounds(0, 0, 1270, 590);
@@ -245,24 +222,62 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void EliminarProducto(){
+        int id, fila;
+        fila = tblProductos.getSelectedRow();
+                
+        id= Integer.parseInt(tblProductos.getValueAt(fila, 0).toString());
+        try {
+                Connection conectar = CBD.conectar();
+                String sql = "delete from productos where ID_Productos = ?";
+                
+                PreparedStatement pst = conectar.prepareStatement(sql);
+                pst.setInt(1, id);
+                
+                pst.executeUpdate();
+                
+                JOptionPane.showMessageDialog(null, "Eliminación exitosa.");
+               
+         } catch (Exception e) {
+             JOptionPane.showMessageDialog(null, "Error al eliminar.");
+         }
+    }
     private void btnEliminarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarPedidoActionPerformed
-        
+        try {
+            int resp = JOptionPane.showConfirmDialog(null, 
+                "¿Desea eliminar?", "Eliminar",JOptionPane.OK_CANCEL_OPTION);
+            if(resp==0){
+                EliminarProducto();
+                    limpiarTabla();
+                    cargarProductos();
+                    txtNombreProducto.setText("NombreProducto");
+                    txtNombreProducto.setForeground(new Color(102,102,102));                
+            }
+                else{
+                JOptionPane.showMessageDialog(null, "Se ha cancelado la eliminación");
+                txtNombreProducto.setText("NombreProducto");
+                txtNombreProducto.setForeground(new Color(102,102,102));
+            }
+         } catch (Exception e) {
+        }
     }//GEN-LAST:event_btnEliminarPedidoActionPerformed
 
     private void btnConsultaNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultaNombreActionPerformed
-        // TODO add your handling code here:
+         try {
+            if (txtNombreProducto.getText().equals("NombreProducto")) {
+                cargarProductos();
+            }
+            else
+                ConsultaProductos();
+            txtNombreProducto.setText("NombreProducto");
+            txtNombreProducto.setForeground(new Color(102,102,102));
+        } catch (Exception e) {
+          }
     }//GEN-LAST:event_btnConsultaNombreActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
         MandaInfoVPP();
     }//GEN-LAST:event_btnRegresarActionPerformed
-
-    private void txtIdProductoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtIdProductoFocusGained
-        if(txtIdProducto.getText().equals("idProducto")){
-            txtIdProducto.setText("");
-            txtIdProducto.setForeground(Color.black);
-        }
-    }//GEN-LAST:event_txtIdProductoFocusGained
 
     private void txtNombreProductoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNombreProductoFocusLost
        if(txtNombreProducto.getText().equals("")){
@@ -271,23 +286,12 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtNombreProductoFocusLost
 
-    private void txtIdProductoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtIdProductoFocusLost
-        if(txtIdProducto.getText().equals("")){
-            txtIdProducto.setText("idProducto");
-            txtIdProducto.setForeground(new Color(102,102,102));
-        }
-    }//GEN-LAST:event_txtIdProductoFocusLost
-
     private void txtNombreProductoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNombreProductoFocusGained
         if(txtNombreProducto.getText().equals("NombreProducto")){
             txtNombreProducto.setText("");
             txtNombreProducto.setForeground(Color.black);
         }
     }//GEN-LAST:event_txtNombreProductoFocusGained
-
-    private void btnConsultaIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultaIdActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnConsultaIdActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
         this.dispose();
@@ -299,6 +303,103 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
     }//GEN-LAST:event_formWindowOpened
 
+    private void tblProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblProductosMouseClicked
+        try {
+            int Fila = tblProductos.getSelectedRow();
+            ProductoSeleccionado(Fila);
+            CargaProducto();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar los datos e la tabla.(clic)");
+        }        // TODO add your handling code here:
+    }//GEN-LAST:event_tblProductosMouseClicked
+
+        public void limpiarTabla(){
+        try {
+            //System.out.println("Limpiando tabla");
+            DefaultTableModel mod=(DefaultTableModel) tblProductos.getModel();
+            int a=tblProductos.getRowCount()-1;
+            for (int i = a; i >= 0; i--) {
+                mod.removeRow(mod.getRowCount()-1);
+            }
+        } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Error al limpiar la tabla.");
+        }
+    }
+    
+    private void cargarProductos(){
+        limpiarTabla();
+        DefaultTableModel mod=(DefaultTableModel) tblProductos.getModel(); 
+        tblProductos.setModel(mod);
+        
+        String sql=""; 
+        sql = "select * from productos";
+        String[] Datos = new String[6];
+        try {
+            Connection conectar = CBD.conectar();
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            
+            while (rs.next()){
+                Datos[0]=rs.getString(1);
+                Datos[1]=rs.getString(2);
+                Datos[2]=rs.getString(3);
+                Datos[3]=rs.getString(4);
+                Datos[4]=rs.getString(5);
+                Datos[5]=rs.getString(6); 
+                
+                mod.addRow(Datos);
+            }
+        conectar.close();    
+        } catch (Exception e) {
+        }
+    
+    }
+    
+    private void ConsultaProductos(){
+        limpiarTabla();
+        String nombre = txtNombreProducto.getText()+"%";
+        String sql="select * from productos where Nom_Producto like '"+nombre+"'";
+        
+        String[] Datos = new String[6];
+        DefaultTableModel mod=(DefaultTableModel) tblProductos.getModel();
+        try {
+            Connection conectar = CBD.conectar();
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            
+            while (rs.next()){
+                Datos[0]=rs.getString(1);
+                Datos[1]=rs.getString(2);
+                Datos[2]=rs.getString(3);
+                Datos[3]=rs.getString(4);
+                Datos[4]=rs.getString(5);
+                Datos[5]=rs.getString(6);
+                
+                mod.addRow(Datos);
+            }
+           // Limpiar();
+        conectar.close();    
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar los datos de la tabla.(ConsultaProductos)");
+        }
+    }
+    
+    
+    private void Limpiar(){
+        txtNombreProducto.setText("NombreProducto");
+        txtNombreProducto.setForeground(new Color(102,102,102));
+        
+    }
+    
+     public void ProductoSeleccionado(int Fila){
+        
+        Nom_Producto = tblProductos.getValueAt(Fila, 1).toString();
+    }
+     
+     private void CargaProducto(){
+        txtNombreProducto.setText(Nom_Producto);
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -343,19 +444,16 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCerrarSesion;
-    private javax.swing.JButton btnConsultaId;
     private javax.swing.JButton btnConsultaNombre;
     private javax.swing.JButton btnEliminarPedido;
     private javax.swing.JButton btnRegresar;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JLabel lblUsuario;
     private javax.swing.JPanel panelClaro;
     private javax.swing.JPanel pnlCabezera;
-    private javax.swing.JTable tblPedidos;
-    private javax.swing.JTextField txtIdProducto;
+    private javax.swing.JTable tblProductos;
     private javax.swing.JTextField txtNombreProducto;
     // End of variables declaration//GEN-END:variables
 }
