@@ -5,6 +5,11 @@
  */
 package Proyecto;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author diana
@@ -17,7 +22,79 @@ public class Ventana_Cliente_Principal extends javax.swing.JFrame {
     public Ventana_Cliente_Principal() {
         initComponents();
     }
+    public String Tel_Cliente="",Nom_Cliente="",Ape_Cliente="",Direccion_Cliente="";
+    
+    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Cargo;
+    
+    private ConeccionBD CBD = new ConeccionBD();
+    Connection conectar = CBD.conectar();
+    
+    private void MandaInfoIP(){
+        Interfaz_Principal IP = new Interfaz_Principal();
+            IP.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+            IP.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+            IP.Actual_Cargo=Actual_Cargo;
+            this.dispose();
+            IP.setVisible(true);
+    }
+    
+    public void ClienteSeleccionado(int Fila){
+        Tel_Cliente = tblCliente.getValueAt(Fila, 0).toString();
+        Nom_Cliente= tblCliente.getValueAt(Fila, 1).toString();
+        Ape_Cliente= tblCliente.getValueAt(Fila, 2).toString();
+        Direccion_Cliente= tblCliente.getValueAt(Fila, 3).toString();
 
+        
+    }
+    
+    private void CargarClientes(){
+        DefaultTableModel mod=(DefaultTableModel) tblCliente.getModel();
+        tblCliente.setModel(mod);
+        String sql= "select * from cliente";
+        String[] Datos = new String[4];
+        try {
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            
+            while (rs.next()){
+                Datos[0]=rs.getString(1);
+                Datos[1]=rs.getString(2);
+                Datos[2]=rs.getString(3);
+                Datos[3]=rs.getString(4);
+                
+                mod.addRow(Datos);
+            }
+        conectar.close();    
+        } catch (Exception e) {
+        }
+       
+    }
+    
+    private void MandaInfoVCR(){
+        Ventana_Cliente_Registrar VUR = new Ventana_Cliente_Registrar();
+        VUR.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VUR.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VUR.Actual_Cargo=Actual_Cargo;
+        
+        this.dispose();        
+        VUR.setVisible(true);
+    }
+    private void MandaInfoVCM(){
+        Ventana_Cliente_Modificar VCM = new Ventana_Cliente_Modificar();
+        VCM.Tel_Cliente=Tel_Cliente;
+        VCM.Nom_Cliente=Nom_Cliente;
+        VCM.Ape_Cliente=Ape_Cliente;
+        VCM.Direccion_Cliente=Direccion_Cliente;
+        
+        VCM.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VCM.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VCM.Actual_Cargo=Actual_Cargo;
+        
+        this.dispose();        
+        VCM.setVisible(true);
+    }
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -42,6 +119,11 @@ public class Ventana_Cliente_Principal extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(1270, 583));
         setUndecorated(true);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
         getContentPane().setLayout(null);
 
         btnEliminarUsuario.setBackground(new java.awt.Color(244, 241, 222));
@@ -65,7 +147,7 @@ public class Ventana_Cliente_Principal extends javax.swing.JFrame {
         lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblUsuario.setText("Administrador: Nombre_Usuario");
         pnlCabezera.add(lblUsuario);
-        lblUsuario.setBounds(10, 20, 291, 30);
+        lblUsuario.setBounds(10, 20, 880, 30);
 
         btnCerrarSesion.setBackground(new java.awt.Color(224, 122, 95));
         btnCerrarSesion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -129,7 +211,7 @@ public class Ventana_Cliente_Principal extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Nombre", "Apellido", "Dirección", "Telefono"
+                "Telefono", "Nombre", "Apellido", "Dirección"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -140,7 +222,13 @@ public class Ventana_Cliente_Principal extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tblCliente.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tblCliente.getTableHeader().setReorderingAllowed(false);
+        tblCliente.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblClienteMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblCliente);
         if (tblCliente.getColumnModel().getColumnCount() > 0) {
             tblCliente.getColumnModel().getColumn(0).setResizable(false);
@@ -163,20 +251,24 @@ public class Ventana_Cliente_Principal extends javax.swing.JFrame {
         this.dispose();
         Ventana_Cliente_Registrar VCR = new Ventana_Cliente_Registrar();
         VCR.setVisible(true);
+        try {
+            MandaInfoVCR();
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_btnRegistrarClienteActionPerformed
 
     private void btnModificarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarClienteActionPerformed
-       
-        this.dispose();
-        Ventana_Cliente_Modificar VCM = new Ventana_Cliente_Modificar();
-        VCM.setVisible(true);
-       
+       try {
+            MandaInfoVCM();
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_btnModificarClienteActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
-        this.dispose();
-        Interfaz_Principal IA = new Interfaz_Principal();
-        IA.setVisible(true);
+        try {
+            MandaInfoIP();
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_btnRegresarActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
@@ -184,6 +276,22 @@ public class Ventana_Cliente_Principal extends javax.swing.JFrame {
         Ventana_Acceso VA = new Ventana_Acceso();
         VA.setVisible(true);
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
+
+    private void tblClienteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblClienteMouseClicked
+        try {
+            int Fila = tblCliente.getSelectedRow();
+            ClienteSeleccionado(Fila);
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_tblClienteMouseClicked
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        try {
+            CargarClientes();
+            lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments

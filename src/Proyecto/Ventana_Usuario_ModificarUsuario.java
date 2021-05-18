@@ -833,11 +833,12 @@ public class Ventana_Usuario_ModificarUsuario extends javax.swing.JFrame {
                 if(Vacio()==false){
                     ModificaUsuario();
                     int resp2 = JOptionPane.showConfirmDialog(null, 
-                    "¿Desea hacer un nuevo registro?", "Registrar.",JOptionPane.YES_NO_OPTION);
+                    "¿Desea modificar otro usuario?", "Modificar.",JOptionPane.YES_NO_OPTION);
                     if(resp2 == 1)
                         MandaInfoVUP();
-                    else
+                    else{
                         Limpiar();
+                    }
                 }
                 else
                     JOptionPane.showMessageDialog(null, "Hay campos vacios.");
