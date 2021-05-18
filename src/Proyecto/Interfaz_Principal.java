@@ -57,6 +57,15 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         this.dispose();
         VUP.setVisible(true);
     }
+    
+    private void MandaInfoVIP(){
+        Ventana_Inventario_Principal VIP = new Ventana_Inventario_Principal();
+        VIP.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VIP.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VIP.Actual_Cargo=Actual_Cargo;
+        this.dispose();
+        VIP.setVisible(true);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -265,9 +274,10 @@ public class Interfaz_Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnClientesMouseReleased
 
     private void btnInventarioMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnInventarioMouseReleased
-        this.dispose();
-        Ventana_Inventario_Principal VIP = new Ventana_Inventario_Principal();
-        VIP.setVisible(true);
+        try {
+            MandaInfoVIP();
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_btnInventarioMouseReleased
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
