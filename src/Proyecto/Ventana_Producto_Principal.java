@@ -5,6 +5,12 @@
  */
 package Proyecto;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author arlet
@@ -17,7 +23,100 @@ public class Ventana_Producto_Principal extends javax.swing.JFrame {
     public Ventana_Producto_Principal() {
         initComponents();
     }
+    
+    public String Nom_Producto="",Tipo="",Tamaño="",Descripcion="";
+    
+    public float Precio=0;
+    
+    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Cargo;
+    
+    private ConeccionBD CBD = new ConeccionBD();
+    Connection conectar = CBD.conectar();
+    
 
+    private void CargarProductos(){
+        DefaultTableModel mod=(DefaultTableModel) tblProductos.getModel();
+        tblProductos.setModel(mod);
+        String sql="select Nom_Producto,Tipo,Tamaño,Precio,Descripcion from productos";
+        String[] Datos = new String[5];
+        try {
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            
+            while (rs.next()){
+                Datos[0]=rs.getString(1);
+                Datos[1]=rs.getString(2);
+                Datos[2]=rs.getString(3);
+                Datos[3]=rs.getString(4);
+                Datos[4]=rs.getString(5);
+                
+                mod.addRow(Datos);
+            }
+        conectar.close();    
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al consultar los datos");
+        }       
+    }
+    
+    public void UsuarioSeleccionado(int Fila){
+        Nom_Producto = tblProductos.getValueAt(Fila, 0).toString();
+        Tipo = tblProductos.getValueAt(Fila, 1).toString();
+        Tamaño = tblProductos.getValueAt(Fila, 2).toString();
+        Precio = Float.parseFloat(tblProductos.getValueAt(Fila, 3).toString());
+        Descripcion = tblProductos.getValueAt(Fila, 4).toString();
+    }
+    
+    private void MandaInfoVPM(){
+        Ventana_Producto_Modificar VPM = new Ventana_Producto_Modificar();
+        VPM.Nom_Producto = Nom_Producto;
+        VPM.Tipo = Tipo;
+        VPM.Tamaño = Tamaño;
+        VPM.Precio = Precio;
+        VPM.Descripcion = Descripcion;
+                
+        VPM.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VPM.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VPM.Actual_Cargo=Actual_Cargo;
+            
+        this.dispose();
+        VPM.setVisible(true);
+    }
+    
+    private void MandaInfoVPR(){
+        Ventana_Producto_Registrar VPR = new Ventana_Producto_Registrar();
+        VPR.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VPR.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VPR.Actual_Cargo=Actual_Cargo;
+        
+        this.dispose();        
+        VPR.setVisible(true);
+    }
+    
+    private void MandaInfoVPE(){
+        Ventana_Producto_Eliminar VPE = new Ventana_Producto_Eliminar();
+        VPE.Nom_Producto = Nom_Producto;
+        VPE.Tipo = Tipo;
+        VPE.Tamaño = Tamaño;
+        VPE.Precio = Precio;
+        VPE.Descripcion = Descripcion;
+             
+        VPE.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VPE.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VPE.Actual_Cargo=Actual_Cargo;
+        
+        this.dispose();        
+        VPE.setVisible(true);
+    }
+    
+    private void MandaInfoIP(){
+        Interfaz_Principal IP = new Interfaz_Principal();
+            IP.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+            IP.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+            IP.Actual_Cargo=Actual_Cargo;
+            this.dispose();
+            IP.setVisible(true);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -37,7 +136,7 @@ public class Ventana_Producto_Principal extends javax.swing.JFrame {
         btnModificarProducto = new javax.swing.JButton();
         btnRegistrarProducto = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblPedidos = new javax.swing.JTable();
+        tblProductos = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(1270, 583));
@@ -45,6 +144,11 @@ public class Ventana_Producto_Principal extends javax.swing.JFrame {
         setUndecorated(true);
         setResizable(false);
         setSize(new java.awt.Dimension(1270, 583));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
         getContentPane().setLayout(null);
 
         btnEliminarUsuario.setBackground(new java.awt.Color(244, 241, 222));
@@ -68,7 +172,7 @@ public class Ventana_Producto_Principal extends javax.swing.JFrame {
         lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblUsuario.setText("Administrador: Nombre_Usuario");
         pnlCabezera.add(lblUsuario);
-        lblUsuario.setBounds(10, 20, 330, 30);
+        lblUsuario.setBounds(10, 20, 560, 30);
 
         btnCerrarSesion.setBackground(new java.awt.Color(224, 122, 95));
         btnCerrarSesion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -138,9 +242,9 @@ public class Ventana_Producto_Principal extends javax.swing.JFrame {
         btnEliminarUsuario.add(btnRegistrarProducto);
         btnRegistrarProducto.setBounds(290, 480, 170, 70);
 
-        tblPedidos.setBackground(new java.awt.Color(244, 241, 222));
-        tblPedidos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        tblPedidos.setModel(new javax.swing.table.DefaultTableModel(
+        tblProductos.setBackground(new java.awt.Color(244, 241, 222));
+        tblProductos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        tblProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -156,14 +260,14 @@ public class Ventana_Producto_Principal extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tblPedidos.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(tblPedidos);
-        if (tblPedidos.getColumnModel().getColumnCount() > 0) {
-            tblPedidos.getColumnModel().getColumn(0).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(1).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(2).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(3).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(4).setResizable(false);
+        tblProductos.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(tblProductos);
+        if (tblProductos.getColumnModel().getColumnCount() > 0) {
+            tblProductos.getColumnModel().getColumn(0).setResizable(false);
+            tblProductos.getColumnModel().getColumn(1).setResizable(false);
+            tblProductos.getColumnModel().getColumn(2).setResizable(false);
+            tblProductos.getColumnModel().getColumn(3).setResizable(false);
+            tblProductos.getColumnModel().getColumn(4).setResizable(false);
         }
 
         btnEliminarUsuario.add(jScrollPane1);
@@ -177,27 +281,19 @@ public class Ventana_Producto_Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRegistrarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarProductoActionPerformed
-        this.dispose();
-        Ventana_Producto_Registrar VPR = new Ventana_Producto_Registrar();
-        VPR.setVisible(true);
+        MandaInfoVPR();
     }//GEN-LAST:event_btnRegistrarProductoActionPerformed
 
     private void btnModificarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarProductoActionPerformed
-        this.dispose();
-        Ventana_Producto_Modificar VPM = new Ventana_Producto_Modificar();
-        VPM.setVisible(true);
+        MandaInfoVPM();
     }//GEN-LAST:event_btnModificarProductoActionPerformed
 
     private void btnEliminarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarProductoActionPerformed
-        this.dispose();
-        Ventana_Producto_Eliminar VPE = new Ventana_Producto_Eliminar();
-        VPE.setVisible(true);
+        MandaInfoVPE();
     }//GEN-LAST:event_btnEliminarProductoActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
-        this.dispose();
-        Interfaz_Principal IA = new Interfaz_Principal();
-        IA.setVisible(true);
+        MandaInfoIP();
     }//GEN-LAST:event_btnRegresarActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
@@ -205,6 +301,11 @@ public class Ventana_Producto_Principal extends javax.swing.JFrame {
         Ventana_Acceso VA = new Ventana_Acceso();
         VA.setVisible(true);
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+            CargarProductos();
+            lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments
@@ -255,6 +356,6 @@ public class Ventana_Producto_Principal extends javax.swing.JFrame {
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JLabel lblUsuario;
     private javax.swing.JPanel pnlCabezera;
-    private javax.swing.JTable tblPedidos;
+    private javax.swing.JTable tblProductos;
     // End of variables declaration//GEN-END:variables
 }

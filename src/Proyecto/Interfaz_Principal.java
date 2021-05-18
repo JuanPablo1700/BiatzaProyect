@@ -57,6 +57,29 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         this.dispose();
         VUP.setVisible(true);
     }
+    
+    private void MandaInfoVPP(){
+        Ventana_Producto_Principal VPP = new Ventana_Producto_Principal();
+                
+        VPP.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VPP.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VPP.Actual_Cargo=Actual_Cargo;
+            
+        this.dispose();
+        VPP.setVisible(true);
+    }
+    
+    private void MandaInfoGRV(){
+        GenerarReporteVenta GRV = new GenerarReporteVenta();
+                
+        GRV.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        GRV.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        GRV.Actual_Cargo=Actual_Cargo;
+            
+        this.dispose();
+        GRV.setVisible(true);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -207,7 +230,7 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         labelNombre.setText("Administrador: Nombre_Usuario");
         labelNombre.setMaximumSize(new java.awt.Dimension(1270, 66));
         labelNombre.setMinimumSize(new java.awt.Dimension(1270, 66));
-        pnlNaranja.add(labelNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 23, -1, -1));
+        pnlNaranja.add(labelNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 23, 520, 30));
 
         btnCerrarSesion.setBackground(new java.awt.Color(224, 122, 95));
         btnCerrarSesion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -239,9 +262,7 @@ public class Interfaz_Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnUsuariosMouseReleased
 
     private void btnReporteMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReporteMouseReleased
-        this.dispose();
-        GenerarReporteVenta GRP = new GenerarReporteVenta();
-        GRP.setVisible(true);
+        MandaInfoGRV();
     }//GEN-LAST:event_btnReporteMouseReleased
 
     private void btnPedidosMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPedidosMouseReleased
@@ -253,9 +274,7 @@ public class Interfaz_Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnPedidosMouseReleased
 
     private void btnProductosMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnProductosMouseReleased
-        this.dispose();
-        Ventana_Producto_Principal VPP = new Ventana_Producto_Principal();
-        VPP.setVisible(true);
+        MandaInfoVPP();
     }//GEN-LAST:event_btnProductosMouseReleased
 
     private void btnClientesMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClientesMouseReleased

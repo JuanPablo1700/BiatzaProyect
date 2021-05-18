@@ -1,6 +1,7 @@
 package Proyecto;
 
 import java.awt.Color;
+import java.sql.Connection;
 
 
 public class GenerarReporteVenta extends javax.swing.JFrame {
@@ -13,6 +14,11 @@ public class GenerarReporteVenta extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
 
+    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Cargo;
+    
+    private ConeccionBD CBD = new ConeccionBD();
+    Connection conectar = CBD.conectar();
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -60,25 +66,29 @@ public class GenerarReporteVenta extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblReporteVentas = new javax.swing.JTable();
-        rbtnFiltro = new javax.swing.JRadioButton();
+        rbFiltro = new javax.swing.JRadioButton();
         lblDia1 = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        fecha1 = new com.toedter.calendar.JDateChooser();
         lblDia2 = new javax.swing.JLabel();
-        jDateChooser2 = new com.toedter.calendar.JDateChooser();
-        lblNomUsuario = new javax.swing.JLabel();
-        cmbUsuario = new javax.swing.JComboBox<>();
+        fecha2 = new com.toedter.calendar.JDateChooser();
         btnImprimir = new javax.swing.JButton();
         btnConsultar = new javax.swing.JButton();
         btnRegresar = new javax.swing.JButton();
-        txtNombre = new javax.swing.JTextField();
+        tel_Cliente = new javax.swing.JTextField();
         pnlNaranja = new javax.swing.JPanel();
-        lblNombreUsuario = new javax.swing.JLabel();
+        lblUsuario = new javax.swing.JLabel();
         btnCerrarSesion = new javax.swing.JButton();
+        txt_Nombre = new javax.swing.JTextField();
 
         setMaximumSize(new java.awt.Dimension(1270, 583));
         setMinimumSize(new java.awt.Dimension(1270, 583));
         setUndecorated(true);
         setSize(new java.awt.Dimension(1270, 583));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
         getContentPane().setLayout(null);
 
         pnlClaro.setBackground(new java.awt.Color(244, 241, 222));
@@ -98,11 +108,11 @@ public class GenerarReporteVenta extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Num_Venta", "Fecha", "Descripción", "Cliente", "Monto total"
+                "Num_Venta", "Usuario", "Fecha", "Cliente", "Monto total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, true, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -121,39 +131,33 @@ public class GenerarReporteVenta extends javax.swing.JFrame {
         pnlClaro.add(jScrollPane1);
         jScrollPane1.setBounds(230, 250, 780, 210);
 
-        rbtnFiltro.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        rbtnFiltro.setText("Filtrar por fecha");
-        rbtnFiltro.addActionListener(new java.awt.event.ActionListener() {
+        rbFiltro.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        rbFiltro.setText("Filtrar por fecha");
+        rbFiltro.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbtnFiltroActionPerformed(evt);
+                rbFiltroActionPerformed(evt);
             }
         });
-        pnlClaro.add(rbtnFiltro);
-        rbtnFiltro.setBounds(230, 160, 149, 31);
+        pnlClaro.add(rbFiltro);
+        rbFiltro.setBounds(230, 160, 149, 31);
 
         lblDia1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         lblDia1.setText("Filtrar del día:");
         pnlClaro.add(lblDia1);
         lblDia1.setBounds(430, 160, 110, 30);
-        pnlClaro.add(jDateChooser1);
-        jDateChooser1.setBounds(540, 160, 160, 30);
+
+        fecha1.setEnabled(false);
+        pnlClaro.add(fecha1);
+        fecha1.setBounds(540, 160, 160, 30);
 
         lblDia2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         lblDia2.setText("Al dia:");
         pnlClaro.add(lblDia2);
         lblDia2.setBounds(770, 160, 60, 30);
-        pnlClaro.add(jDateChooser2);
-        jDateChooser2.setBounds(840, 160, 160, 30);
 
-        lblNomUsuario.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        lblNomUsuario.setText("Nombre Usuario:");
-        pnlClaro.add(lblNomUsuario);
-        lblNomUsuario.setBounds(230, 210, 140, 30);
-
-        cmbUsuario.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        cmbUsuario.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar" }));
-        pnlClaro.add(cmbUsuario);
-        cmbUsuario.setBounds(370, 210, 220, 30);
+        fecha2.setEnabled(false);
+        pnlClaro.add(fecha2);
+        fecha2.setBounds(840, 160, 160, 30);
 
         btnImprimir.setBackground(new java.awt.Color(204, 204, 204));
         btnImprimir.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -187,24 +191,24 @@ public class GenerarReporteVenta extends javax.swing.JFrame {
         pnlClaro.add(btnRegresar);
         btnRegresar.setBounds(840, 470, 170, 70);
 
-        txtNombre.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtNombre.setForeground(new java.awt.Color(102, 102, 102));
-        txtNombre.setText("Telefono del cliente.");
-        txtNombre.addFocusListener(new java.awt.event.FocusAdapter() {
+        tel_Cliente.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        tel_Cliente.setForeground(new java.awt.Color(102, 102, 102));
+        tel_Cliente.setText("Telefono del cliente.");
+        tel_Cliente.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                txtNombreFocusGained(evt);
+                tel_ClienteFocusGained(evt);
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
-                txtNombreFocusLost(evt);
+                tel_ClienteFocusLost(evt);
             }
         });
-        txtNombre.addActionListener(new java.awt.event.ActionListener() {
+        tel_Cliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNombreActionPerformed(evt);
+                tel_ClienteActionPerformed(evt);
             }
         });
-        pnlClaro.add(txtNombre);
-        txtNombre.setBounds(810, 210, 202, 28);
+        pnlClaro.add(tel_Cliente);
+        tel_Cliente.setBounds(800, 210, 202, 28);
 
         pnlNaranja.setBackground(new java.awt.Color(224, 122, 95));
         pnlNaranja.setMaximumSize(new java.awt.Dimension(1270, 66));
@@ -212,10 +216,10 @@ public class GenerarReporteVenta extends javax.swing.JFrame {
         pnlNaranja.setPreferredSize(new java.awt.Dimension(1270, 66));
         pnlNaranja.setLayout(null);
 
-        lblNombreUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        lblNombreUsuario.setText("Administrador: Nombre_Usuario");
-        pnlNaranja.add(lblNombreUsuario);
-        lblNombreUsuario.setBounds(10, 23, 291, 22);
+        lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblUsuario.setText("Administrador: Nombre_Usuario");
+        pnlNaranja.add(lblUsuario);
+        lblUsuario.setBounds(10, 15, 680, 30);
 
         btnCerrarSesion.setBackground(new java.awt.Color(224, 122, 95));
         btnCerrarSesion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -237,6 +241,20 @@ public class GenerarReporteVenta extends javax.swing.JFrame {
         pnlClaro.add(pnlNaranja);
         pnlNaranja.setBounds(0, 0, 1270, 66);
 
+        txt_Nombre.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txt_Nombre.setForeground(new java.awt.Color(102, 102, 102));
+        txt_Nombre.setText("Nombre del Usuario");
+        txt_Nombre.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txt_NombreFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txt_NombreFocusLost(evt);
+            }
+        });
+        pnlClaro.add(txt_Nombre);
+        txt_Nombre.setBounds(230, 210, 202, 28);
+
         getContentPane().add(pnlClaro);
         pnlClaro.setBounds(0, 0, 1270, 583);
     }// </editor-fold>//GEN-END:initComponents
@@ -252,54 +270,84 @@ public class GenerarReporteVenta extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
-    private void rbtnFiltroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbtnFiltroActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_rbtnFiltroActionPerformed
+    private void rbFiltroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbFiltroActionPerformed
+        if (rbFiltro.isSelected()){
+            fecha1.setEnabled(true);
+            fecha2.setEnabled(true);
+        }else{
+            fecha1.setEnabled(false);
+            fecha2.setEnabled(false);
+        }
+    }//GEN-LAST:event_rbFiltroActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
-        this.dispose();
-        Interfaz_Principal IP = new Interfaz_Principal();
-        IP.setVisible(true);
-        
+        MandaInfoIP();
     }//GEN-LAST:event_btnRegresarActionPerformed
 
-    private void txtNombreFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNombreFocusGained
-        if(txtNombre.getText().equals("Telefono del cliente.")){
-            txtNombre.setText("");
-            txtNombre.setForeground(Color.black);
+    private void tel_ClienteFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tel_ClienteFocusGained
+        if(tel_Cliente.getText().equals("Telefono del cliente.")){
+            tel_Cliente.setText("");
+            tel_Cliente.setForeground(Color.black);
         }
-    }//GEN-LAST:event_txtNombreFocusGained
+    }//GEN-LAST:event_tel_ClienteFocusGained
 
-    private void txtNombreFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNombreFocusLost
-        if(txtNombre.getText().equals("")){
-            txtNombre.setText("Telefono del cliente.");
-            txtNombre.setForeground(new Color(102,102,102));
+    private void tel_ClienteFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tel_ClienteFocusLost
+        if(tel_Cliente.getText().equals("")){
+            tel_Cliente.setText("Telefono del cliente.");
+            tel_Cliente.setForeground(new Color(102,102,102));
         }
-    }//GEN-LAST:event_txtNombreFocusLost
+    }//GEN-LAST:event_tel_ClienteFocusLost
 
-    private void txtNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreActionPerformed
+    private void tel_ClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tel_ClienteActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtNombreActionPerformed
+    }//GEN-LAST:event_tel_ClienteActionPerformed
 
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
+    }//GEN-LAST:event_formWindowOpened
+
+    private void txt_NombreFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txt_NombreFocusGained
+        if(txt_Nombre.getText().equals("Nombre del Usuario")){
+            txt_Nombre.setText("");
+            txt_Nombre.setForeground(Color.black);
+        }
+    }//GEN-LAST:event_txt_NombreFocusGained
+
+    private void txt_NombreFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txt_NombreFocusLost
+        if(txt_Nombre.getText().equals("")){
+            txt_Nombre.setText("Nombre del Usuario");
+            txt_Nombre.setForeground(new Color(102,102,102));
+        }
+    }//GEN-LAST:event_txt_NombreFocusLost
+
+    
+    private void MandaInfoIP(){
+        Interfaz_Principal IP = new Interfaz_Principal();
+            IP.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+            IP.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+            IP.Actual_Cargo=Actual_Cargo;
+            this.dispose();
+            IP.setVisible(true);
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCerrarSesion;
     private javax.swing.JButton btnConsultar;
     private javax.swing.JButton btnImprimir;
     private javax.swing.JButton btnRegresar;
-    private javax.swing.JComboBox<String> cmbUsuario;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
-    private com.toedter.calendar.JDateChooser jDateChooser2;
+    private com.toedter.calendar.JDateChooser fecha1;
+    private com.toedter.calendar.JDateChooser fecha2;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblDia1;
     private javax.swing.JLabel lblDia2;
-    private javax.swing.JLabel lblNomUsuario;
-    private javax.swing.JLabel lblNombreUsuario;
+    private javax.swing.JLabel lblUsuario;
     private javax.swing.JPanel pnlClaro;
     private javax.swing.JPanel pnlNaranja;
-    private javax.swing.JRadioButton rbtnFiltro;
+    private javax.swing.JRadioButton rbFiltro;
     private javax.swing.JTable tblReporteVentas;
-    private javax.swing.JTextField txtNombre;
+    private javax.swing.JTextField tel_Cliente;
+    private javax.swing.JTextField txt_Nombre;
     // End of variables declaration//GEN-END:variables
 }
