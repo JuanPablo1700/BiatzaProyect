@@ -29,6 +29,23 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         btnInventario.setVisible(false);
     }
     
+ private void mandaInfoVPP(Ventana_Pedido_Principal vtn){
+        vtn.Actual_Status=Actual_Status;
+        vtn.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        vtn.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        vtn.Actual_Telefono=Actual_Telefono;
+        vtn.Actual_U=Actual_U;
+        vtn.Actual_C=Actual_C;
+        vtn.Actual_Correo=Actual_Correo;
+        vtn.Actual_Direccion=Actual_Direccion;
+        vtn.Actual_Cargo=Actual_Cargo;
+        vtn.Actual_Fecha=Actual_Fecha;
+        this.dispose();
+        vtn.setVisible(true);
+    }
+    
+    
+    
     private void MandaInfoVUM(){
         Ventana_Usuario_ModificarUsuario VUM = new Ventana_Usuario_ModificarUsuario();
         VUM.Nombre_Usuario=Actual_Nombre_Usuario;
@@ -284,11 +301,10 @@ public class Interfaz_Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnReporteMouseReleased
 
     private void btnPedidosMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPedidosMouseReleased
-        this.dispose();
-        Ventana_Pedido_Principal VPP = new Ventana_Pedido_Principal();
-        VPP.setVisible(true);
-        
-        
+        try{
+            Ventana_Pedido_Principal vtn = new Ventana_Pedido_Principal();
+            mandaInfoVPP(vtn);
+        }catch(Exception e){}
     }//GEN-LAST:event_btnPedidosMouseReleased
 
     private void btnProductosMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnProductosMouseReleased
