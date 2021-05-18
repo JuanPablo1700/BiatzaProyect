@@ -80,6 +80,15 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         GRV.setVisible(true);
     }
     
+    private void MandaInfoVCP(){
+        Ventana_Cliente_Principal VCP = new Ventana_Cliente_Principal();
+        VCP.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VCP.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VCP.Actual_Cargo=Actual_Cargo;
+        this.dispose();
+        VCP.setVisible(true);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -278,9 +287,10 @@ public class Interfaz_Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnProductosMouseReleased
 
     private void btnClientesMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClientesMouseReleased
-        this.dispose();
-        Ventana_Cliente_Principal VPP = new Ventana_Cliente_Principal();
-        VPP.setVisible(true);
+        try {
+            MandaInfoVCP();
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_btnClientesMouseReleased
 
     private void btnInventarioMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnInventarioMouseReleased

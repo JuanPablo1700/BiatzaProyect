@@ -397,7 +397,7 @@ public class Ventana_Usuario_EliminarUsuario extends javax.swing.JFrame {
             if(resp==0){
                 EliminarUsuario();
                 int resp2 = JOptionPane.showConfirmDialog(null, 
-                    "¿Desea hacer un nuevo registro?", "Registrar.",JOptionPane.YES_NO_OPTION);
+                    "¿Desea eliminar otro usuario?", "Eliminar.",JOptionPane.YES_NO_OPTION);
                 if(resp2 == 1)
                     MandaInfoVUP();
                 else{

@@ -75,10 +75,8 @@ public class Ventana_Usuario_RegistrarUsuario extends javax.swing.JFrame {
                 pst.setString(7, direccion);
                 pst.setString(8, cargo);
                 pst.setString(9, fecha);
-                if (cmbCargo.getSelectedItem().equals("Cajero"))
-                    pst.setInt(10, 0);
-                else
-                    pst.setInt(10, 1);
+                pst.setInt(10, 0);
+                
                 pst.executeUpdate();
                 
                 JOptionPane.showMessageDialog(null, "Registro exitoso.");
