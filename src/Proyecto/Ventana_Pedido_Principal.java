@@ -5,6 +5,11 @@
  */
 package Proyecto;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author arlet
@@ -14,10 +19,86 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
     /**
      * Creates new form Ventana_Usuario_Principal
      */
+    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Telefono,Actual_U,Actual_C,
+            Actual_Correo,Actual_Direccion,Actual_Cargo,Actual_Fecha,Actual_Status;
+
+    private ConeccionBD CBD = new ConeccionBD();
+    
+    
+    /**
+     * Creates new form Ventana_Usuario_Principal
+     */
+    private void mandaInfoIPP(Interfaz_Principal vtn){
+        vtn.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        vtn.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        vtn.Actual_Telefono=Actual_Telefono;
+        vtn.Actual_U=Actual_U;
+        vtn.Actual_C=Actual_C;
+        vtn.Actual_Correo=Actual_Correo;
+        vtn.Actual_Direccion=Actual_Direccion;
+        vtn.Actual_Cargo=Actual_Cargo;
+        vtn.Actual_Fecha=Actual_Fecha;
+        vtn.Actual_Status=Actual_Status;
+        this.dispose();
+        vtn.setVisible(true);
+    }
+    private void mandaInfoIPR(Ventana_Pedido_Registrar vtn){
+        vtn.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        vtn.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        vtn.Actual_Telefono=Actual_Telefono;
+        vtn.Actual_U=Actual_U;
+        vtn.Actual_C=Actual_C;
+        vtn.Actual_Correo=Actual_Correo;
+        vtn.Actual_Direccion=Actual_Direccion;
+        vtn.Actual_Cargo=Actual_Cargo;
+        vtn.Actual_Fecha=Actual_Fecha;
+        vtn.Actual_Status=Actual_Status;
+        this.dispose();
+        vtn.setVisible(true);
+    }
+    
+    private void mandaInfoVPB(Ventana_Pedido_Eliminar vtn){
+        vtn.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        vtn.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        vtn.Actual_Telefono=Actual_Telefono;
+        vtn.Actual_U=Actual_U;
+        vtn.Actual_C=Actual_C;
+        vtn.Actual_Correo=Actual_Correo;
+        vtn.Actual_Direccion=Actual_Direccion;
+        vtn.Actual_Cargo=Actual_Cargo;
+        vtn.Actual_Fecha=Actual_Fecha;
+        vtn.Actual_Status=Actual_Status;
+        this.dispose();
+        vtn.setVisible(true);
+    }
+    
     public Ventana_Pedido_Principal() {
         initComponents();
     }
 
+    public void inicializarVentana(){
+        lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
+        DefaultTableModel m = new DefaultTableModel();
+        m = (DefaultTableModel) tblPedidos.getModel();
+        tblPedidos.setModel(m);
+        String sql = "select ID_Pedido,Usuarios_ID_Usuario,Cliente_Tel_Cliente,Fecha,Hora,Total from pedido";
+        Connection conectar = CBD.conectar();
+        try{
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            String[] O = new String[6];
+            while(rs.next()){
+                O[0] = rs.getString(1);
+                O[1] = rs.getString(2);
+                O[2] = rs.getString(3);
+                O[3] = rs.getString(4);
+                O[4] = rs.getString(5);
+                O[5] = rs.getString(6);
+                m.addRow(O);
+            }
+            conectar.close(); 
+        }catch(Exception e){}
+    }//En este metodo se inicializa la tabla y el label con los datos
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -42,6 +123,11 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(1270, 583));
         setUndecorated(true);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
         getContentPane().setLayout(null);
 
         btnEliminarUsuario.setBackground(new java.awt.Color(244, 241, 222));
@@ -91,9 +177,9 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
         btnRegresar.setText("Regresar");
         btnRegresar.setActionCommand("Registrar");
         btnRegresar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        btnRegresar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRegresarActionPerformed(evt);
+        btnRegresar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                btnRegresarMouseReleased(evt);
             }
         });
         btnEliminarUsuario.add(btnRegresar);
@@ -130,17 +216,18 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
 
             },
             new String [] {
-                "idPedido", "idUsuario", "Teléfono", "Fecha", "Hora", "Total"
+                "idPedido", "idUsuario", "Cliente Telefono", "Fecha", "Hora", "Total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, true, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
+        tblPedidos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tblPedidos.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tblPedidos);
         if (tblPedidos.getColumnModel().getColumnCount() > 0) {
@@ -163,28 +250,30 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRegistrarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarPedidoActionPerformed
-        this.dispose();
-        Ventana_Pedido_Registrar VPR = new Ventana_Pedido_Registrar();
-        VPR.setVisible(true);
+        Ventana_Pedido_Registrar vtn = new Ventana_Pedido_Registrar();
+        mandaInfoIPR(vtn);
+        
     }//GEN-LAST:event_btnRegistrarPedidoActionPerformed
 
     private void btnEliminarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarPedidoActionPerformed
-        this.dispose();
-        Ventana_Pedido_Eliminar VPE = new Ventana_Pedido_Eliminar();
-        VPE.setVisible(true);
+        Ventana_Pedido_Eliminar vtn = new Ventana_Pedido_Eliminar();
+        mandaInfoVPB(vtn);
     }//GEN-LAST:event_btnEliminarPedidoActionPerformed
-
-    private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
-        this.dispose();
-        Interfaz_Principal IA = new Interfaz_Principal();
-        IA.setVisible(true);
-    }//GEN-LAST:event_btnRegresarActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
         this.dispose();
         Ventana_Acceso VA = new Ventana_Acceso();
         VA.setVisible(true);
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        inicializarVentana();
+    }//GEN-LAST:event_formWindowOpened
+
+    private void btnRegresarMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegresarMouseReleased
+        Interfaz_Principal IA = new Interfaz_Principal();
+        mandaInfoIPP(IA);
+    }//GEN-LAST:event_btnRegresarMouseReleased
 
     /**
      * @param args the command line arguments
@@ -211,6 +300,12 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Ventana_Pedido_Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
