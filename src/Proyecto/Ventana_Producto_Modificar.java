@@ -6,6 +6,12 @@
 package Proyecto;
 
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -21,6 +27,155 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
         
     }
 
+    public String Nom_Producto="",Tipo="",Tamaño="",Descripcion="";
+    
+    public float Precio=0;
+    
+    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Cargo;
+    
+    private ConeccionBD CBD = new ConeccionBD();
+    Connection conectar = CBD.conectar();
+    
+    public void ProductoSeleccionado(int Fila){
+        Nom_Producto = tblProductos.getValueAt(Fila, 1).toString();
+        Tipo = tblProductos.getValueAt(Fila, 2).toString();
+        Tamaño = tblProductos.getValueAt(Fila, 3).toString();
+        Precio = Float.parseFloat(tblProductos.getValueAt(Fila, 4).toString());
+        Descripcion = tblProductos.getValueAt(Fila, 5).toString();
+    }
+    
+    private void Limpiar(){
+        txtNomProducto.setText("Nombre del producto");
+        txtNomProducto.setForeground(new Color(102,102,102));
+        txtPrecioProducto.setText("Precio");
+        txtPrecioProducto.setForeground(new Color(102,102,102));
+        ta_desc.setText("Descripcion del Producto");
+        ta_desc.setForeground(new Color(102,102,102));
+        cmbTipo.setForeground(new Color(102,102,102));
+        cmbTipo.setSelectedIndex(0);
+        cmbTam.setForeground(new Color(102,102,102));
+        cmbTam.setSelectedIndex(0);
+    }
+    
+    public void limpiarTabla(){
+        try {
+            //System.out.println("Limpiando tabla");
+            DefaultTableModel mod=(DefaultTableModel) tblProductos.getModel();
+            int a=tblProductos.getRowCount()-1;
+            for (int i = a; i >= 0; i--) {
+                mod.removeRow(mod.getRowCount()-1);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al limpiar la tabla.");
+        }
+    }
+    
+    private void CargarProductos(){
+        limpiarTabla();
+        DefaultTableModel mod =(DefaultTableModel) tblProductos.getModel();
+        tblProductos.setModel(mod);
+        String sql="select * from productos";
+        String[] Datos = new String[6];
+        try {
+            CBD.conectar();
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            
+            while (rs.next()){
+                Datos[0]=rs.getString(1);
+                Datos[1]=rs.getString(2);
+                Datos[2]=rs.getString(3);
+                Datos[3]=rs.getString(4);
+                Datos[4]=rs.getString(5);
+                Datos[5]=rs.getString(6);
+                
+                mod.addRow(Datos);
+            }
+        conectar.close();    
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar los datos e la tabla.");
+        }        
+    }
+    
+    private void CargaProducto(){
+        txtNomProducto.setText(Nom_Producto);
+        txtPrecioProducto.setText(Precio+"");
+        ta_desc.setText(Descripcion);
+        
+        switch (Tamaño) {
+            case "Chico":
+                cmbTam.setSelectedIndex(1);
+                break;
+            case "Mediano":
+                cmbTam.setSelectedIndex(2);
+                break;
+            case "Grande":
+                cmbTam.setSelectedIndex(3);
+                break;
+            default:
+                cmbTam.setSelectedIndex(0);
+                break;
+        }
+        
+        switch (Tipo) {
+            case "Pizza":
+                cmbTipo.setSelectedIndex(1);
+                break;
+            case "Refresco":
+                cmbTipo.setSelectedIndex(2);
+                break;
+            case "Otro":
+                cmbTipo.setSelectedIndex(3);
+                break;
+            default:
+                cmbTipo.setSelectedIndex(0);
+                break;
+        }
+    }
+    
+
+
+    private void ConsultaProductos(){
+        limpiarTabla();
+        String nombre = txtNomProducto.getText()+"%";
+        String tipo = cmbTipo.getSelectedItem().toString();
+        String sql="";
+        if (txtNomProducto.getText().equals("Nombre del producto") && cmbTipo.getSelectedIndex() > 0){
+            sql = "select * from productos where Tipo like '"+tipo+"'";
+        }
+        else if(!txtNomProducto.getText().equals("Nombre del producto") && cmbTipo.getSelectedIndex() > 0){
+            sql = "select * from productos where Nom_Productos like '"+nombre+"' and Tipo like '"+tipo+"'";
+        }
+        else if(!txtNomProducto.getText().equals("Nombre del producto") && cmbTipo.getSelectedIndex() == 0){
+            sql = "select * from productos where Nom_Productos like '"+nombre+"'";
+        }else{
+            JOptionPane.showMessageDialog(null, "Ingresa un Nombre y/o Tipo de Producto.");
+        }
+        
+        String[] Datos = new String[6];
+        DefaultTableModel mod=(DefaultTableModel) tblProductos.getModel();
+        try {
+            CBD.conectar();
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            
+            while (rs.next()){
+                Datos[0]=rs.getString(1);
+                Datos[1]=rs.getString(2);
+                Datos[2]=rs.getString(3);
+                Datos[3]=rs.getString(4);
+                Datos[4]=rs.getString(5);
+                Datos[5]=rs.getString(6);
+                
+                mod.addRow(Datos);
+            }
+            Limpiar();
+        conectar.close();    
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar los datos e la tabla.");
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -38,20 +193,25 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
         pnlInformacion = new javax.swing.JPanel();
         txtPrecioProducto = new javax.swing.JTextField();
         txtNomProducto = new javax.swing.JTextField();
-        cmbCargo = new javax.swing.JComboBox<>();
-        cmbCargo1 = new javax.swing.JComboBox<>();
+        cmbTam = new javax.swing.JComboBox<>();
+        cmbTipo = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         ta_desc = new javax.swing.JTextArea();
-        btnBuscar1 = new javax.swing.JButton();
+        btnConsultar = new javax.swing.JButton();
         btnRegistrar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tblPedidos = new javax.swing.JTable();
+        tblProductos = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1270, 583));
         setUndecorated(true);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         pnlFondo.setBackground(new java.awt.Color(244, 241, 222));
         pnlFondo.setMaximumSize(new java.awt.Dimension(1270, 583));
@@ -84,7 +244,7 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
         lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblUsuario.setText("Administrador: Nombre_Usuario");
         pnlCabezera.add(lblUsuario);
-        lblUsuario.setBounds(10, 20, 310, 30);
+        lblUsuario.setBounds(10, 20, 530, 30);
 
         pnlFondo.add(pnlCabezera);
         pnlCabezera.setBounds(0, 0, 1270, 66);
@@ -130,15 +290,15 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
         pnlInformacion.add(txtNomProducto);
         txtNomProducto.setBounds(230, 10, 202, 28);
 
-        cmbCargo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        cmbCargo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tamaño", "Chico", "Mediano", "Grande" }));
-        pnlInformacion.add(cmbCargo);
-        cmbCargo.setBounds(0, 70, 200, 30);
+        cmbTam.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        cmbTam.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tamaño", "Chico", "Mediano", "Grande" }));
+        pnlInformacion.add(cmbTam);
+        cmbTam.setBounds(0, 70, 200, 30);
 
-        cmbCargo1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        cmbCargo1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tipo de producto", "Pizza", "Refresco", "Otro" }));
-        pnlInformacion.add(cmbCargo1);
-        cmbCargo1.setBounds(0, 10, 200, 30);
+        cmbTipo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        cmbTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tipo de producto", "Pizza", "Refresco", "Otro" }));
+        pnlInformacion.add(cmbTipo);
+        cmbTipo.setBounds(0, 10, 200, 30);
 
         jScrollPane1.setForeground(new java.awt.Color(102, 102, 102));
 
@@ -160,17 +320,17 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
         pnlInformacion.add(jScrollPane1);
         jScrollPane1.setBounds(0, 130, 430, 100);
 
-        btnBuscar1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnBuscar1.setText("Consultar");
-        btnBuscar1.setActionCommand("Registrar");
-        btnBuscar1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, new java.awt.Color(0, 0, 0), java.awt.Color.black, java.awt.Color.black));
-        btnBuscar1.addActionListener(new java.awt.event.ActionListener() {
+        btnConsultar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnConsultar.setText("Consultar");
+        btnConsultar.setActionCommand("Registrar");
+        btnConsultar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, new java.awt.Color(0, 0, 0), java.awt.Color.black, java.awt.Color.black));
+        btnConsultar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscar1ActionPerformed(evt);
+                btnConsultarActionPerformed(evt);
             }
         });
-        pnlInformacion.add(btnBuscar1);
-        btnBuscar1.setBounds(440, 10, 130, 30);
+        pnlInformacion.add(btnConsultar);
+        btnConsultar.setBounds(440, 10, 130, 30);
 
         pnlFondo.add(pnlInformacion);
         pnlInformacion.setBounds(70, 180, 570, 240);
@@ -178,6 +338,11 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
         btnRegistrar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnRegistrar.setText("Modificar producto");
         btnRegistrar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnRegistrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegistrarActionPerformed(evt);
+            }
+        });
         pnlFondo.add(btnRegistrar);
         btnRegistrar.setBounds(410, 460, 170, 70);
 
@@ -192,9 +357,9 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
         pnlFondo.add(btnCancelar);
         btnCancelar.setBounds(670, 460, 170, 70);
 
-        tblPedidos.setBackground(new java.awt.Color(244, 241, 222));
-        tblPedidos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        tblPedidos.setModel(new javax.swing.table.DefaultTableModel(
+        tblProductos.setBackground(new java.awt.Color(244, 241, 222));
+        tblProductos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        tblProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -210,15 +375,20 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tblPedidos.getTableHeader().setReorderingAllowed(false);
-        jScrollPane2.setViewportView(tblPedidos);
-        if (tblPedidos.getColumnModel().getColumnCount() > 0) {
-            tblPedidos.getColumnModel().getColumn(0).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(1).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(2).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(3).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(4).setResizable(false);
-            tblPedidos.getColumnModel().getColumn(5).setResizable(false);
+        tblProductos.getTableHeader().setReorderingAllowed(false);
+        tblProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblProductosMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tblProductos);
+        if (tblProductos.getColumnModel().getColumnCount() > 0) {
+            tblProductos.getColumnModel().getColumn(0).setResizable(false);
+            tblProductos.getColumnModel().getColumn(1).setResizable(false);
+            tblProductos.getColumnModel().getColumn(2).setResizable(false);
+            tblProductos.getColumnModel().getColumn(3).setResizable(false);
+            tblProductos.getColumnModel().getColumn(4).setResizable(false);
+            tblProductos.getColumnModel().getColumn(5).setResizable(false);
         }
 
         pnlFondo.add(jScrollPane2);
@@ -251,9 +421,7 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        this.dispose();
-        Ventana_Producto_Principal VPP = new Ventana_Producto_Principal();
-        VPP.setVisible(true);
+        MandaInfoVPP();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void txtNomProductoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNomProductoFocusGained
@@ -306,10 +474,77 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_ta_descFocusLost
 
-    private void btnBuscar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscar1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnBuscar1ActionPerformed
+    private void btnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarActionPerformed
+        try {    
+            if(txtNomProducto.getText().equals("Nombre del producto") && cmbTipo.getSelectedIndex() == 0)CargarProductos();
+            else ConsultaProductos();
+            Limpiar();
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_btnConsultarActionPerformed
 
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
+    }//GEN-LAST:event_formWindowOpened
+
+    private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
+        /*try {
+            int resp = JOptionPane.showConfirmDialog(null, 
+                "¿Los datos son correctos?", "Registrar.",JOptionPane.OK_CANCEL_OPTION);
+            if(resp==0){
+            if(Actual_Status==null)Actual_Status="1";
+            //System.out.println("Actual Status: "+Actual_Status);
+            if(Actual_Status.equals("0")){
+                if(Vacio()==false){
+                    ModificaUsuarioInicio();
+                    MandaInfoIP();
+                }
+                else
+                    JOptionPane.showMessageDialog(null, "Hay campos vacios.");
+            
+            }   
+            else {
+                if(Vacio()==false){
+                    ModificaUsuario();
+                    int resp2 = JOptionPane.showConfirmDialog(null, 
+                    "¿Desea hacer un nuevo registro?", "Registrar.",JOptionPane.YES_NO_OPTION);
+                    if(resp2 == 1)
+                        MandaInfoVUP();
+                    else
+                        Limpiar();
+                }
+                else
+                    JOptionPane.showMessageDialog(null, "Hay campos vacios.");
+            }
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Se ha cancelado el registro.");
+                Limpiar();
+            }
+        } catch (Exception e) {
+        }*/
+    }//GEN-LAST:event_btnRegistrarActionPerformed
+
+    private void tblProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblProductosMouseClicked
+        try {
+            int Fila = tblProductos.getSelectedRow();
+            ProductoSeleccionado(Fila);
+            CargaProducto();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar los datos e la tabla.");
+        }
+    }//GEN-LAST:event_tblProductosMouseClicked
+
+    private void MandaInfoVPP(){
+        Ventana_Producto_Principal VPP = new Ventana_Producto_Principal();
+        VPP.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VPP.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VPP.Actual_Cargo=Actual_Cargo;
+        this.dispose();
+        VPP.setVisible(true);
+    }
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -377,12 +612,12 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBuscar1;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnCerrarSesion;
+    private javax.swing.JButton btnConsultar;
     private javax.swing.JButton btnRegistrar;
-    private javax.swing.JComboBox<String> cmbCargo;
-    private javax.swing.JComboBox<String> cmbCargo1;
+    private javax.swing.JComboBox<String> cmbTam;
+    private javax.swing.JComboBox<String> cmbTipo;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -391,7 +626,7 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
     private javax.swing.JPanel pnlFondo;
     private javax.swing.JPanel pnlInformacion;
     private javax.swing.JTextArea ta_desc;
-    private javax.swing.JTable tblPedidos;
+    private javax.swing.JTable tblProductos;
     private javax.swing.JTextField txtNomProducto;
     private javax.swing.JTextField txtPrecioProducto;
     // End of variables declaration//GEN-END:variables

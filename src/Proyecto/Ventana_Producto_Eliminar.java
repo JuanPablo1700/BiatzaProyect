@@ -6,6 +6,7 @@
 package Proyecto;
 
 import java.awt.Color;
+import java.sql.Connection;
 
 /**
  *
@@ -20,6 +21,24 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         initComponents();
     }
 
+    public String Nom_Producto="",Tipo="",Tamaño="",Descripcion="";
+    
+    public float Precio=0;
+    
+    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Cargo;
+    
+    private ConeccionBD CBD = new ConeccionBD();
+    Connection conectar = CBD.conectar();
+    
+    private void MandaInfoVPP(){
+        Ventana_Producto_Principal VPP = new Ventana_Producto_Principal();
+        VPP.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VPP.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VPP.Actual_Cargo=Actual_Cargo;
+        this.dispose();
+        VPP.setVisible(true);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -34,7 +53,7 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         pnlCabezera = new javax.swing.JPanel();
         lblUsuario = new javax.swing.JLabel();
         btnCerrarSesion = new javax.swing.JButton();
-        btnBuscar = new javax.swing.JButton();
+        btnConsultaNombre = new javax.swing.JButton();
         btnEliminarPedido = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -43,12 +62,17 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         btnRegresar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblPedidos = new javax.swing.JTable();
-        btnBuscar1 = new javax.swing.JButton();
+        btnConsultaId = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1270, 583));
         setUndecorated(true);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
         getContentPane().setLayout(null);
 
         panelClaro.setBackground(new java.awt.Color(244, 241, 222));
@@ -72,7 +96,7 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblUsuario.setText("Administrador: Nombre_Usuario");
         pnlCabezera.add(lblUsuario);
-        lblUsuario.setBounds(10, 20, 310, 30);
+        lblUsuario.setBounds(10, 20, 500, 30);
 
         btnCerrarSesion.setBackground(new java.awt.Color(224, 122, 95));
         btnCerrarSesion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -94,17 +118,17 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         panelClaro.add(pnlCabezera);
         pnlCabezera.setBounds(0, 0, 1270, 60);
 
-        btnBuscar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnBuscar.setText("Consultar");
-        btnBuscar.setActionCommand("Registrar");
-        btnBuscar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, new java.awt.Color(0, 0, 0), java.awt.Color.black, java.awt.Color.black));
-        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+        btnConsultaNombre.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnConsultaNombre.setText("Consultar");
+        btnConsultaNombre.setActionCommand("Registrar");
+        btnConsultaNombre.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, new java.awt.Color(0, 0, 0), java.awt.Color.black, java.awt.Color.black));
+        btnConsultaNombre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscarActionPerformed(evt);
+                btnConsultaNombreActionPerformed(evt);
             }
         });
-        panelClaro.add(btnBuscar);
-        btnBuscar.setBounds(800, 270, 130, 30);
+        panelClaro.add(btnConsultaNombre);
+        btnConsultaNombre.setBounds(800, 270, 130, 30);
 
         btnEliminarPedido.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnEliminarPedido.setText("Eliminar Producto");
@@ -141,11 +165,6 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
                 txtNombreProductoFocusLost(evt);
             }
         });
-        txtNombreProducto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNombreProductoActionPerformed(evt);
-            }
-        });
         panelClaro.add(txtNombreProducto);
         txtNombreProducto.setBounds(560, 270, 200, 30);
 
@@ -158,11 +177,6 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txtIdProductoFocusLost(evt);
-            }
-        });
-        txtIdProducto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtIdProductoActionPerformed(evt);
             }
         });
         panelClaro.add(txtIdProducto);
@@ -212,17 +226,17 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         panelClaro.add(jScrollPane1);
         jScrollPane1.setBounds(370, 320, 560, 140);
 
-        btnBuscar1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnBuscar1.setText("Consultar");
-        btnBuscar1.setActionCommand("Registrar");
-        btnBuscar1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, new java.awt.Color(0, 0, 0), java.awt.Color.black, java.awt.Color.black));
-        btnBuscar1.addActionListener(new java.awt.event.ActionListener() {
+        btnConsultaId.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnConsultaId.setText("Consultar");
+        btnConsultaId.setActionCommand("Registrar");
+        btnConsultaId.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, new java.awt.Color(0, 0, 0), java.awt.Color.black, java.awt.Color.black));
+        btnConsultaId.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscar1ActionPerformed(evt);
+                btnConsultaIdActionPerformed(evt);
             }
         });
-        panelClaro.add(btnBuscar1);
-        btnBuscar1.setBounds(800, 220, 130, 30);
+        panelClaro.add(btnConsultaId);
+        btnConsultaId.setBounds(800, 220, 130, 30);
 
         getContentPane().add(panelClaro);
         panelClaro.setBounds(0, 0, 1270, 590);
@@ -235,22 +249,12 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         
     }//GEN-LAST:event_btnEliminarPedidoActionPerformed
 
-    private void txtNombreProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreProductoActionPerformed
+    private void btnConsultaNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultaNombreActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtNombreProductoActionPerformed
-
-    private void txtIdProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdProductoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtIdProductoActionPerformed
-
-    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnBuscarActionPerformed
+    }//GEN-LAST:event_btnConsultaNombreActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
-       this.dispose();
-        Ventana_Producto_Principal Vpp = new Ventana_Producto_Principal();
-        Vpp.setVisible(true);
+        MandaInfoVPP();
     }//GEN-LAST:event_btnRegresarActionPerformed
 
     private void txtIdProductoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtIdProductoFocusGained
@@ -281,15 +285,19 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtNombreProductoFocusGained
 
-    private void btnBuscar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscar1ActionPerformed
+    private void btnConsultaIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultaIdActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnBuscar1ActionPerformed
+    }//GEN-LAST:event_btnConsultaIdActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
         this.dispose();
         Ventana_Acceso VA = new Ventana_Acceso();
         VA.setVisible(true);
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments
@@ -334,9 +342,9 @@ public class Ventana_Producto_Eliminar extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBuscar;
-    private javax.swing.JButton btnBuscar1;
     private javax.swing.JButton btnCerrarSesion;
+    private javax.swing.JButton btnConsultaId;
+    private javax.swing.JButton btnConsultaNombre;
     private javax.swing.JButton btnEliminarPedido;
     private javax.swing.JButton btnRegresar;
     private javax.swing.JLabel jLabel1;

@@ -6,6 +6,7 @@
 package Proyecto;
 
 import java.awt.Color;
+import java.sql.Connection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
@@ -16,8 +17,14 @@ import javax.swing.JTextField;
 
 public class Ventana_Producto_Registrar extends javax.swing.JFrame {
     
-    private String tipoProducto, nomProducto, tamaño, descripcion, sql;
-    private float precioProducto;
+    public String Nom_Producto="",Tipo="",Tamaño="",Descripcion="";
+    
+    public float Precio=0;
+    
+    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Cargo;
+    
+    private ConeccionBD CBD = new ConeccionBD();
+    Connection conectar = CBD.conectar();
     
     /**
      * Creates new form Ventana_Usuario_RegistrarUsuario
@@ -55,6 +62,11 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(1270, 583));
         setUndecorated(true);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         pnlFondo.setBackground(new java.awt.Color(244, 241, 222));
         pnlFondo.setMaximumSize(new java.awt.Dimension(1270, 583));
@@ -111,11 +123,6 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txtPrecioProductoFocusLost(evt);
-            }
-        });
-        txtPrecioProducto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtPrecioProductoActionPerformed(evt);
             }
         });
         pnlInformacion.add(txtPrecioProducto);
@@ -210,9 +217,7 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        this.dispose();
-        Ventana_Producto_Principal VPP = new Ventana_Producto_Principal();
-        VPP.setVisible(true);
+        MandaInfoVPP();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void txtNomProductoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNomProductoFocusGained
@@ -228,10 +233,6 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
             txtNomProducto.setForeground(Color.black);
         }
     }//GEN-LAST:event_txtNomProductoFocusLost
-
-    private void txtPrecioProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPrecioProductoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtPrecioProductoActionPerformed
 
     private void txtPrecioProductoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtPrecioProductoFocusGained
         if(txtPrecioProducto.getText().equals("Precio")){
@@ -286,6 +287,10 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
+    }//GEN-LAST:event_formWindowOpened
+
     private void limpiarCampos(){
         cmbTipoProducto.setSelectedIndex(0);
         txtNomProducto.setText("");
@@ -297,27 +302,25 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
     private boolean guardar(){
         boolean estado = false;
         
-        tipoProducto = cmbTipoProducto.getSelectedItem().toString();
-        nomProducto = txtNomProducto.getText();
-        tamaño = cmbTamaño.getSelectedItem().toString();
-        precioProducto = Float.parseFloat(txtPrecioProducto.getText());
-        descripcion = ta_desc.getText();
-        /*if(CBD.conectar()){
-            sql = "insert into productos (Nom_Producto, Tipo, Tamaño, Precio, Descripcion) "
-                    + "values("
-                    + "'" + nomProducto + "',"
-                    + "'" + tipoProducto + "',"
-                    + "'" + tamaño + "',"
-                    + precioProducto + ","
-                    + "'" + descripcion + "'"
-                    + ")";
-            if(CBD.ejecutar(sql)){
-                estado = true;
-            }
-            CBD.desconectar();
-        }else{
-            JOptionPane.showMessageDialog(null, "Error al conectar a la Base de Datos");
-        }*/
+        Tipo = cmbTipoProducto.getSelectedItem().toString();
+        Nom_Producto = txtNomProducto.getText();
+        Tamaño = cmbTamaño.getSelectedItem().toString();
+        Precio = Float.parseFloat(txtPrecioProducto.getText());
+        Descripcion = ta_desc.getText();
+        
+        CBD.conectar();
+        String sql = "insert into productos (Nom_Producto, Tipo, Tamaño, Precio, Descripcion) "
+                + "values("
+                + "'" + Nom_Producto + "',"
+                + "'" + Tipo + "',"
+                + "'" + Tamaño + "',"
+                + Precio + ","
+                + "'" + Descripcion + "'"
+                + ")";
+        if(CBD.ejecutar(sql)){
+            estado = true;
+        }
+        CBD.desconectar();
         return estado;
     }
     
@@ -386,6 +389,15 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
         return true;
     }
     
+    private void MandaInfoVPP(){
+        Ventana_Producto_Principal VPP = new Ventana_Producto_Principal();
+        VPP.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VPP.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VPP.Actual_Cargo=Actual_Cargo;
+        this.dispose();
+        VPP.setVisible(true);
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -427,7 +439,6 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
             }
         });
     }
-    private final ConeccionBD CBD = new ConeccionBD();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnCerrarSesion;

@@ -12,7 +12,7 @@ public class ConeccionBD {
     private final String puerto = "3307";
     private final String BD = "BaseDatosBiatza";
     private final String usuario = "root";
-    private final String clave = "admin";
+    private final String clave = "contraseña12345";
     private final String URL = "jdbc:mysql://"+
             servidor + ":" + puerto + "/" + BD;
     
@@ -42,11 +42,7 @@ public class ConeccionBD {
         return conexion;
     }
     
-    /**
-     * Para ejecutar sentencias SQL: SELECT
-     * @param sql texto con el script sql para seleccionar registros
-     * @return ResulSet con la informacion selecionada o null en caso de no
-     */
+    
     /**
      * Para ejecutar sentencias SQL: INSERT, UPDATE, DELETE
      * @param sql texto con el script sql para ejecutar sobre la BD
@@ -61,7 +57,7 @@ public class ConeccionBD {
             sentencia.close();
             estado = true;
         } catch (SQLException sqle) {
-            System.err.println("ERROR: ConectorBD.seleccionar(sql)");
+            System.err.println("ERROR: ConectorBD.ejecutar(sql)");
             System.err.println(sqle.getMessage());
         }
         return estado;
