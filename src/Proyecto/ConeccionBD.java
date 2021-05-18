@@ -9,10 +9,10 @@ public class ConeccionBD {
     
     //Datos para la conexion de la BD
     private final String servidor = "localhost";
-    private final String puerto = "3306";
+    private final String puerto = "3307";
     private final String BD = "BiatzaBD";
     private final String usuario = "root";
-    private final String clave = "18401145";
+    private final String clave = "contraseña12345";
     private final String URL = "jdbc:mysql://"+
             servidor + ":" + puerto + "/" + BD;
     
