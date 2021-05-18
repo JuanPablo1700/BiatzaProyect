@@ -5,6 +5,11 @@
  */
 package Proyecto;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author diana
@@ -18,6 +23,79 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         initComponents();
     }
 
+    public String Nombre_Inventario="",Cantidad="",Costo="",Descripción="";
+    
+    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Cargo;
+    
+    private ConeccionBD CBD = new ConeccionBD();
+    Connection conectar = CBD.conectar();
+    
+    private void CargarInventario(){
+        DefaultTableModel mod=(DefaultTableModel) tblInventario.getModel();
+        tblInventario.setModel(mod);
+        String sql=""; 
+        sql = "select Nombre,Cantidad,Costo,Descripcion from Inventario";
+        String[] Datos = new String[4];
+        try {
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            
+            while (rs.next()){
+                Datos[0]=rs.getString(1);
+                Datos[1]=rs.getString(2);
+                Datos[2]=rs.getString(3);
+                Datos[3]=rs.getString(4);
+                
+                mod.addRow(Datos);
+            }
+        conectar.close();    
+        } catch (Exception e) {
+        }   
+        
+    }
+    
+    public void InventarioSeleccionado(int Fila){
+        Nombre_Inventario = tblInventario.getValueAt(Fila, 0).toString();
+        Cantidad= tblInventario.getValueAt(Fila, 1).toString();
+        Costo= tblInventario.getValueAt(Fila, 2).toString();
+        Descripción= tblInventario.getValueAt(Fila, 3).toString();
+          
+    }
+    
+    private void MandaInfoVIA(){
+        Ventana_Inventario_Agregar VIA = new Ventana_Inventario_Agregar();
+        
+        VIA.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VIA.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VIA.Actual_Cargo=Actual_Cargo;
+        
+        this.dispose();        
+        VIA.setVisible(true);
+    }
+    
+    private void MandaInfoVIE(){
+        Ventana_Inventario_Eliminar VIE = new Ventana_Inventario_Eliminar();
+        VIE.Nombre_Inventario=Nombre_Inventario;
+        VIE.Cantidad=Cantidad;
+        VIE.Costo=Costo;
+        VIE.Descripción=Descripción;
+        
+        VIE.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VIE.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VIE.Actual_Cargo=Actual_Cargo;
+        
+        this.dispose();        
+        VIE.setVisible(true);
+    }
+    
+    private void MandaInfoIP(){
+        Interfaz_Principal IP = new Interfaz_Principal();
+            IP.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+            IP.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+            IP.Actual_Cargo=Actual_Cargo;
+            this.dispose();
+            IP.setVisible(true);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -42,6 +120,11 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(1270, 583));
         setUndecorated(true);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
         getContentPane().setLayout(null);
 
         btnEliminarUsuario.setBackground(new java.awt.Color(244, 241, 222));
@@ -142,6 +225,11 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
             }
         });
         tblInventario.getTableHeader().setReorderingAllowed(false);
+        tblInventario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblInventarioMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblInventario);
         if (tblInventario.getColumnModel().getColumnCount() > 0) {
             tblInventario.getColumnModel().getColumn(0).setResizable(false);
@@ -161,21 +249,24 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAgregarInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarInventarioActionPerformed
-        this.dispose();
-        Ventana_Inventario_Agregar VIA = new Ventana_Inventario_Agregar();
-        VIA.setVisible(true);
+        try {
+            MandaInfoVIA();
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_btnAgregarInventarioActionPerformed
 
     private void btnEliminarInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarInventarioActionPerformed
-        this.dispose();
-        Ventana_Inventario_Eliminar VURU = new Ventana_Inventario_Eliminar();
-        VURU.setVisible(true);
+        try {
+            MandaInfoVIE();
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_btnEliminarInventarioActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
-        this.dispose();
-        Interfaz_Principal IA = new Interfaz_Principal();
-        IA.setVisible(true);
+        try {
+            MandaInfoIP();
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_btnRegresarActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
@@ -184,6 +275,23 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         VA.setVisible(true);
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
+    private void tblInventarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblInventarioMouseClicked
+        try {
+            int Fila = tblInventario.getSelectedRow();
+            InventarioSeleccionado(Fila);
+        } catch (Exception e) {
+        }        // TODO add your handling code here:
+    }//GEN-LAST:event_tblInventarioMouseClicked
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+         try {
+            CargarInventario();
+            lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_formWindowOpened
+
+    
     /**
      * @param args the command line arguments
      */
@@ -209,6 +317,10 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Ventana_Inventario_Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
