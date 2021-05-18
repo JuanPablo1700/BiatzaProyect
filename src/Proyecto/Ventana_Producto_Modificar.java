@@ -143,19 +143,23 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
         if (txtNomProducto.getText().equals("Nombre del producto") && cmbTipo.getSelectedIndex() > 0){
             sql = "select * from productos where Tipo like '"+tipo+"'";
         }
-        else if(!txtNomProducto.getText().equals("Nombre del producto") && cmbTipo.getSelectedIndex() > 0){
-            sql = "select * from productos where Nom_Productos like '"+nombre+"' and Tipo like '"+tipo+"'";
+        
+        if(!txtNomProducto.getText().equals("Nombre del producto") && cmbTipo.getSelectedIndex() > 0){
+            sql = "select * from productos where Nom_Producto like '"+nombre+"' and Tipo like '"+tipo+"'";
         }
-        else if(!txtNomProducto.getText().equals("Nombre del producto") && cmbTipo.getSelectedIndex() == 0){
-            sql = "select * from productos where Nom_Productos like '"+nombre+"'";
-        }else{
+        
+        if(!txtNomProducto.getText().equals("Nombre del producto") && cmbTipo.getSelectedIndex() == 0){
+            sql = "select * from productos where Nom_Producto like '"+nombre+"'";
+        }
+        
+        if(txtNomProducto.getText().equals("Nombre del producto") && cmbTipo.getSelectedIndex() == 0){
             JOptionPane.showMessageDialog(null, "Ingresa un Nombre y/o Tipo de Producto.");
         }
         
         String[] Datos = new String[6];
         DefaultTableModel mod=(DefaultTableModel) tblProductos.getModel();
         try {
-            CBD.conectar();
+            Connection conectar = CBD.conectar();
             Statement st = conectar.createStatement();
             ResultSet rs = st.executeQuery(sql);
             
@@ -172,7 +176,7 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
             Limpiar();
         conectar.close();    
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al cargar los datos e la tabla.");
+            JOptionPane.showMessageDialog(null, "Error al cargar los datos en la tabla.");
         }
     }
     
@@ -476,8 +480,12 @@ public class Ventana_Producto_Modificar extends javax.swing.JFrame {
 
     private void btnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarActionPerformed
         try {    
-            if(txtNomProducto.getText().equals("Nombre del producto") && cmbTipo.getSelectedIndex() == 0)CargarProductos();
-            else ConsultaProductos();
+            limpiarTabla();
+            if(txtNomProducto.getText().equals("Nombre del producto") && cmbTipo.getSelectedIndex() == 0){
+                CargarProductos();
+            }else{
+                ConsultaProductos();
+            }
             Limpiar();
         } catch (Exception e) {
         }

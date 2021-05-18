@@ -37,8 +37,8 @@ public class Ventana_Producto_Principal extends javax.swing.JFrame {
     private void CargarProductos(){
         DefaultTableModel mod=(DefaultTableModel) tblProductos.getModel();
         tblProductos.setModel(mod);
-        String sql="select Nom_Producto,Tipo,Tamaño,Precio,Descripcion from productos";
-        String[] Datos = new String[5];
+        String sql="select ID_Productos,Nom_Producto,Tipo,Tamaño,Precio,Descripcion from productos";
+        String[] Datos = new String[6];
         try {
             Statement st = conectar.createStatement();
             ResultSet rs = st.executeQuery(sql);
@@ -49,7 +49,7 @@ public class Ventana_Producto_Principal extends javax.swing.JFrame {
                 Datos[2]=rs.getString(3);
                 Datos[3]=rs.getString(4);
                 Datos[4]=rs.getString(5);
-                
+                Datos[5]=rs.getString(6);
                 mod.addRow(Datos);
             }
         conectar.close();    
@@ -59,11 +59,11 @@ public class Ventana_Producto_Principal extends javax.swing.JFrame {
     }
     
     public void UsuarioSeleccionado(int Fila){
-        Nom_Producto = tblProductos.getValueAt(Fila, 0).toString();
-        Tipo = tblProductos.getValueAt(Fila, 1).toString();
-        Tamaño = tblProductos.getValueAt(Fila, 2).toString();
-        Precio = Float.parseFloat(tblProductos.getValueAt(Fila, 3).toString());
-        Descripcion = tblProductos.getValueAt(Fila, 4).toString();
+        Nom_Producto = tblProductos.getValueAt(Fila, 1).toString();
+        Tipo = tblProductos.getValueAt(Fila, 2).toString();
+        Tamaño = tblProductos.getValueAt(Fila, 3).toString();
+        Precio = Float.parseFloat(tblProductos.getValueAt(Fila, 4).toString());
+        Descripcion = tblProductos.getValueAt(Fila, 5).toString();
     }
     
     private void MandaInfoVPM(){
@@ -249,11 +249,11 @@ public class Ventana_Producto_Principal extends javax.swing.JFrame {
 
             },
             new String [] {
-                "idProducto", "NombreProducto", "Cantidad", "Precio", "Descripción"
+                "idProducto", "NombreProducto", "Tipo", "Tamaño", "Precio", "Descripción"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
