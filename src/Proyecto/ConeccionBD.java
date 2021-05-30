@@ -12,7 +12,7 @@ public class ConeccionBD {
     private final String puerto = "3307";
     private final String BD = "BiatzaBD";
     private final String usuario = "root";
-    private final String clave = "contraseña12345";
+    private final String clave = "admin";
     private final String URL = "jdbc:mysql://"+
             servidor + ":" + puerto + "/" + BD;
     

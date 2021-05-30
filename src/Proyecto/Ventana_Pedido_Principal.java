@@ -151,7 +151,7 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
         lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblUsuario.setText("Administrador: Nombre_Usuario");
         pnlCabezera.add(lblUsuario);
-        lblUsuario.setBounds(10, 20, 320, 30);
+        lblUsuario.setBounds(10, 20, 720, 30);
 
         btnCerrarSesion.setBackground(new java.awt.Color(224, 122, 95));
         btnCerrarSesion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N

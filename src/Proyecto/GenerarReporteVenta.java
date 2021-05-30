@@ -139,7 +139,7 @@ public class GenerarReporteVenta extends javax.swing.JFrame {
             }
         });
         pnlClaro.add(rbFiltro);
-        rbFiltro.setBounds(230, 160, 149, 31);
+        rbFiltro.setBounds(230, 160, 149, 30);
 
         lblDia1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         lblDia1.setText("Filtrar del día:");
@@ -208,7 +208,7 @@ public class GenerarReporteVenta extends javax.swing.JFrame {
             }
         });
         pnlClaro.add(tel_Cliente);
-        tel_Cliente.setBounds(800, 210, 202, 28);
+        tel_Cliente.setBounds(800, 210, 202, 26);
 
         pnlNaranja.setBackground(new java.awt.Color(224, 122, 95));
         pnlNaranja.setMaximumSize(new java.awt.Dimension(1270, 66));
@@ -253,7 +253,7 @@ public class GenerarReporteVenta extends javax.swing.JFrame {
             }
         });
         pnlClaro.add(txt_Nombre);
-        txt_Nombre.setBounds(230, 210, 202, 28);
+        txt_Nombre.setBounds(230, 210, 202, 26);
 
         getContentPane().add(pnlClaro);
         pnlClaro.setBounds(0, 0, 1270, 583);
