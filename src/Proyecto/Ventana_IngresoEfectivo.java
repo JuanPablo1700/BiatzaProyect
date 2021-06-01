@@ -3,8 +3,6 @@ package Proyecto;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
@@ -20,12 +18,12 @@ import javax.swing.JTextField;
  *
  * @author arlet
  */
-public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
+public class Ventana_IngresoEfectivo extends javax.swing.JFrame {
 
     public String Concepto = "", Detalles = "", Saldo = "0";
-    public float Retiro = 0;
+    public float Ingreso = 0;
 
-    public String Actual_Nombre_Usuario, Actual_Apellido_Usuario, Actual_Cargo, id_Usuario;
+    public String Actual_Nombre_Usuario, Actual_Apellido_Usuario, Actual_Cargo;
 
     private ConeccionBD CBD = new ConeccionBD();
     Connection conectar = CBD.conectar();
@@ -33,7 +31,7 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
     /**
      * Creates new form RetiroEfectivo
      */
-    public Ventana_RetiroEfectivo() {
+    public Ventana_IngresoEfectivo() {
         initComponents();
         this.setSize(new Dimension(1275, 585));
         setLocationRelativeTo(null);
@@ -58,7 +56,7 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
         lblSaldo = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         TxtDecripción = new javax.swing.JTextArea();
-        btnRealizarRetiro = new javax.swing.JButton();
+        btnRealizarIngreso = new javax.swing.JButton();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         cmbConcepto = new javax.swing.JComboBox<>();
@@ -79,7 +77,7 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
         lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblUsuario.setText("Administrador: Nombre_Usuario");
         pnlNaranja.add(lblUsuario);
-        lblUsuario.setBounds(10, 23, 500, 22);
+        lblUsuario.setBounds(10, 23, 510, 22);
 
         btnCerrarSesion.setBackground(new java.awt.Color(224, 122, 95));
         btnCerrarSesion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -109,7 +107,7 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel7.setText("Retiro de efectivo");
+        jLabel7.setText("Ingreso de efectivo");
         pnlClaro.add(jLabel7);
         jLabel7.setBounds(0, 120, 1270, 58);
 
@@ -170,18 +168,18 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
         pnlClaro.add(jScrollPane1);
         jScrollPane1.setBounds(560, 360, 320, 70);
 
-        btnRealizarRetiro.setBackground(new java.awt.Color(204, 204, 204));
-        btnRealizarRetiro.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnRealizarRetiro.setText("Realizar retiro");
-        btnRealizarRetiro.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        btnRealizarRetiro.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnRealizarRetiro.addActionListener(new java.awt.event.ActionListener() {
+        btnRealizarIngreso.setBackground(new java.awt.Color(204, 204, 204));
+        btnRealizarIngreso.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnRealizarIngreso.setText("Realizar ingreso");
+        btnRealizarIngreso.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnRealizarIngreso.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnRealizarIngreso.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRealizarRetiroActionPerformed(evt);
+                btnRealizarIngresoActionPerformed(evt);
             }
         });
-        pnlClaro.add(btnRealizarRetiro);
-        btnRealizarRetiro.setBounds(380, 450, 170, 70);
+        pnlClaro.add(btnRealizarIngreso);
+        btnRealizarIngreso.setBounds(380, 450, 170, 70);
 
         jLabel14.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel14.setText("Saldo total en caja $");
@@ -189,12 +187,12 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
         jLabel14.setBounds(370, 220, 170, 30);
 
         jLabel15.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel15.setText("Monto a retirar   $");
+        jLabel15.setText("Monto a ingresar   $");
         pnlClaro.add(jLabel15);
         jLabel15.setBounds(370, 280, 170, 30);
 
         cmbConcepto.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        cmbConcepto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Concepto", "Pago", "Fin de turno", "Otro", " " }));
+        cmbConcepto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Concepto", "Fondos a caja", "Otro(describir)", " " }));
         cmbConcepto.setActionCommand("cmbConcepto");
         cmbConcepto.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         pnlClaro.add(cmbConcepto);
@@ -231,7 +229,7 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Ventana_RetiroEfectivo().setVisible(true);
+                new Ventana_IngresoEfectivo().setVisible(true);
             }
         });
     }
@@ -280,36 +278,17 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, e.getMessage());
             valor.setText(""); valor.requestFocus(); return false;
         }
-        if(Float.parseFloat(Saldo)<Float.parseFloat(valor.getText())){
-            JOptionPane.showMessageDialog(this, "No se cuenta con el saldo suficiente");
-            valor.setText(""); valor.requestFocus(); return false;
-        }
+        
         return true;
     }
-    
-    private void obtenerIdUsuario(){
-        String sql = "select ID_Usuario from usuarios where nombre='"+Actual_Nombre_Usuario+"';";
-        System.out.print(sql);
-        try{
-            Connection conectar = CBD.conectar();
-            Statement st = conectar.createStatement();
-            ResultSet rs = st.executeQuery(sql);
-            rs.next();
-            id_Usuario = rs.getString(1);
-            System.out.println(id_Usuario);
-            conectar.close(); 
-        }catch(Exception e){}
-    }
-    
      private boolean guardar(){
         boolean estado = false;
-        float saldoNuevo;
-        int idUser = Integer.parseInt(id_Usuario);
+        float saldoNuevo = Float.parseFloat(Saldo);
         
         Concepto = cmbConcepto.getSelectedItem().toString();
-        Retiro = Float.parseFloat(txtMonto.getText());
+        Ingreso = Float.parseFloat(txtMonto.getText());
         
-        saldoNuevo = Float.parseFloat(Saldo)- Retiro;
+        saldoNuevo = saldoNuevo + Ingreso;
         Saldo = saldoNuevo +"";
         if(TxtDecripción.getText().equals("Escribe aquí los detalles")){
             Detalles = "";
@@ -317,13 +296,13 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
             Detalles = TxtDecripción.getText();
         
         CBD.conectar();
-        String sql = "insert into Corte_caja(Fecha, Concepto, Retiro, Saldo, Detalles, Id_Usuario) "
+        String sql = "insert into Corte_caja(Fecha, Concepto, Ingreso, Saldo, Detalles, Id_Usuario) "
                 + "values(curdate(),"
                 + "'" + Concepto + "',"
-                + Retiro + ","
+                + Ingreso + ","
                 + saldoNuevo + ","
                 + "'" + Detalles + "',"
-                + idUser /***********OBTENER ID DE USUARIO**************/
+                + 1 /***********OBTENER ID DE USUARIO**************/
                 + ")";
         if(CBD.ejecutar(sql)){
             estado = true;
@@ -336,7 +315,7 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
         txtMonto.setText("");
         TxtDecripción.setText("Escribe aquí los detalles del ingreso");
     }
-    private void btnRealizarRetiroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRealizarRetiroActionPerformed
+    private void btnRealizarIngresoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRealizarIngresoActionPerformed
         if (!ValidaCombos(cmbConcepto)) {
             return;
         }
@@ -354,7 +333,7 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error: No se registraron los datos.");
         }
 
-    }//GEN-LAST:event_btnRealizarRetiroActionPerformed
+    }//GEN-LAST:event_btnRealizarIngresoActionPerformed
 
 
     private void txtMontoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtMontoFocusGained
@@ -394,7 +373,6 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
         lblSaldo.setText(Saldo + "");
-        obtenerIdUsuario();
     }//GEN-LAST:event_formWindowOpened
 
 
@@ -402,7 +380,7 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
     private javax.swing.JTextArea TxtDecripción;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnCerrarSesion;
-    private javax.swing.JButton btnRealizarRetiro;
+    private javax.swing.JButton btnRealizarIngreso;
     private javax.swing.JComboBox<String> cmbConcepto;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;

@@ -187,7 +187,7 @@ public class Interfaz_Principal extends javax.swing.JFrame {
         btnRetiro.setForeground(new java.awt.Color(244, 241, 222));
         btnRetiro.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         btnRetiro.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/retiro.png"))); // NOI18N
-        btnRetiro.setText("Retiro de efectivo");
+        btnRetiro.setText("Caja");
         btnRetiro.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(244, 241, 222)));
         btnRetiro.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRetiro.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -351,7 +351,12 @@ public class Interfaz_Principal extends javax.swing.JFrame {
 
     private void btnRetiroMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRetiroMouseReleased
         this.dispose();
-        new Ventana_RetiroEfectivo().setVisible(true);
+        Ventana_CorteDeCaja VCC = new Ventana_CorteDeCaja();
+        VCC.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VCC.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VCC.Actual_Cargo=Actual_Cargo;
+        this.dispose();
+        VCC.setVisible(true);
     }//GEN-LAST:event_btnRetiroMouseReleased
 
     /**

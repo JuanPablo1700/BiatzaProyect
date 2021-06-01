@@ -10,6 +10,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import javax.swing.table.DefaultTableModel;
 
+
+        
+
 /**
  *
  * @author arlet
@@ -72,6 +75,21 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
         vtn.setVisible(true);
     }
     
+    private void mandaInfoVPC(Ventana_Pedido_Consultar vtn){
+        vtn.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        vtn.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        vtn.Actual_Telefono=Actual_Telefono;
+        vtn.Actual_U=Actual_U;
+        vtn.Actual_C=Actual_C;
+        vtn.Actual_Correo=Actual_Correo;
+        vtn.Actual_Direccion=Actual_Direccion;
+        vtn.Actual_Cargo=Actual_Cargo;
+        vtn.Actual_Fecha=Actual_Fecha;
+        vtn.Actual_Status=Actual_Status;
+        this.dispose();
+        vtn.setVisible(true);
+    }
+    
     public Ventana_Pedido_Principal() {
         initComponents();
     }
@@ -118,6 +136,7 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
         btnRegistrarPedido = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblPedidos = new javax.swing.JTable();
+        btnConsultarPedido = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1270, 583));
@@ -195,7 +214,7 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
             }
         });
         btnEliminarUsuario.add(btnEliminarPedido);
-        btnEliminarPedido.setBounds(590, 480, 170, 70);
+        btnEliminarPedido.setBounds(490, 480, 170, 70);
 
         btnRegistrarPedido.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnRegistrarPedido.setText("Registrar Pedido");
@@ -242,6 +261,18 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
         btnEliminarUsuario.add(jScrollPane1);
         jScrollPane1.setBounds(290, 210, 760, 250);
 
+        btnConsultarPedido.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnConsultarPedido.setText("Consultar Pedido");
+        btnConsultarPedido.setActionCommand("Registrar");
+        btnConsultarPedido.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnConsultarPedido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsultarPedidoActionPerformed(evt);
+            }
+        });
+        btnEliminarUsuario.add(btnConsultarPedido);
+        btnConsultarPedido.setBounds(690, 480, 170, 70);
+
         getContentPane().add(btnEliminarUsuario);
         btnEliminarUsuario.setBounds(0, 0, 1270, 590);
 
@@ -274,6 +305,11 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
         Interfaz_Principal IA = new Interfaz_Principal();
         mandaInfoIPP(IA);
     }//GEN-LAST:event_btnRegresarMouseReleased
+
+    private void btnConsultarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarPedidoActionPerformed
+        Ventana_Pedido_Consultar vtn = new Ventana_Pedido_Consultar();
+        mandaInfoVPC(vtn);
+    }//GEN-LAST:event_btnConsultarPedidoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -308,6 +344,30 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -319,6 +379,7 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCerrarSesion;
+    private javax.swing.JButton btnConsultarPedido;
     private javax.swing.JButton btnEliminarPedido;
     private javax.swing.JPanel btnEliminarUsuario;
     private javax.swing.JButton btnRegistrarPedido;
