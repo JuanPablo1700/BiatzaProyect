@@ -31,7 +31,7 @@ public class Ventana_Inventario_Eliminar extends javax.swing.JFrame {
         initComponents();
         
     }
-    public String Nombre_Inventario="",Cantidad="",Costo="",Descripción="";
+    public String Nombre="",Stock="",Costo="",Unidad_Medida="";
     
     public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Cargo;
     public int id_Inventario;
@@ -39,7 +39,7 @@ public class Ventana_Inventario_Eliminar extends javax.swing.JFrame {
     
 
     private void SacaID(){
-            String sql = "select * from Inventario where Nombre='"+Nombre_Inventario+"'";
+            String sql = "select * from Inventario where Nombre='"+Nombre+"'";
             try {
                 Connection conectar = CBD.conectar();
                 Statement st = conectar.createStatement();
@@ -58,10 +58,10 @@ public class Ventana_Inventario_Eliminar extends javax.swing.JFrame {
     }
     
     public void InventarioSeleccionado(int Fila){
-        Nombre_Inventario = tblInventario.getValueAt(Fila, 0).toString();
-        Cantidad= tblInventario.getValueAt(Fila, 1).toString();
+        Nombre = tblInventario.getValueAt(Fila, 0).toString();
+        Stock= tblInventario.getValueAt(Fila, 1).toString();
         Costo= tblInventario.getValueAt(Fila, 2).toString();
-        Descripción= tblInventario.getValueAt(Fila, 3).toString();
+        Unidad_Medida= tblInventario.getValueAt(Fila, 3).toString();
         
     }
     
@@ -109,8 +109,8 @@ public class Ventana_Inventario_Eliminar extends javax.swing.JFrame {
     
     private void ConsultaInventario(){
         limpiarTabla();
-        String nombre = txtNombre.getText()+"%";
-        String sql = "select * from Inventario where Nombre like '"+nombre+"'";
+        String Nombre = txtNombre.getText()+"%";
+        String sql = "select * from Inventario where Nombre like '"+Nombre+"'";
                 
         String[] Datos = new String[4];
         DefaultTableModel mod=(DefaultTableModel) tblInventario.getModel();
@@ -137,7 +137,7 @@ public class Ventana_Inventario_Eliminar extends javax.swing.JFrame {
         DefaultTableModel mod=(DefaultTableModel) tblInventario.getModel();
         tblInventario.setModel(mod);
         String sql=""; 
-        sql = "select Nombre,Cantidad,Costo,Descripcion from Inventario";
+        sql = "select Nombre,Stock,Costo,Unidad_Medida from Inventario";
         String[] Datos = new String[4];
         try {
             Connection conectar = CBD.conectar();
@@ -204,7 +204,7 @@ public class Ventana_Inventario_Eliminar extends javax.swing.JFrame {
         lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblUsuario.setText("Administrador: Nombre_Usuario");
         pnlCabezera.add(lblUsuario);
-        lblUsuario.setBounds(0, 20, 580, 30);
+        lblUsuario.setBounds(0, 20, 720, 30);
 
         btnCerrarSesion.setBackground(new java.awt.Color(224, 122, 95));
         btnCerrarSesion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -286,7 +286,7 @@ public class Ventana_Inventario_Eliminar extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Nombre", "Cantidad", "Costo", "Descripción"
+                "Nombre", "Stock", "Costo", "Unidad_Medida"
             }
         ) {
             Class[] types = new Class [] {
@@ -374,8 +374,7 @@ public class Ventana_Inventario_Eliminar extends javax.swing.JFrame {
             }
             else
                 ConsultaInventario();
-            txtNombre.setText("Nombre.");
-            txtNombre.setForeground(new Color(102,102,102));
+            
         } catch (Exception e) {
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
@@ -448,6 +447,22 @@ public class Ventana_Inventario_Eliminar extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Ventana_Inventario_Eliminar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>

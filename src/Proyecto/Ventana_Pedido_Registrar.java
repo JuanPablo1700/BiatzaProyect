@@ -21,6 +21,7 @@ import java.util.GregorianCalendar;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
+import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 
@@ -82,12 +83,34 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
         vtn.setVisible(true);
     }
     private void mandaInfoPedTick(Ventana_Pedido_Ticket VPT){
-        VPT.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
-        VPT.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
-        VPT.Actual_Telefono=Actual_Telefono;
-        VPT.Actual_Cargo=Actual_Cargo;
-        this.dispose();
-        VPT.setVisible(true);
+        try {
+           VPT.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+            VPT.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+            VPT.Actual_Telefono=Actual_Telefono;
+            VPT.Actual_Cargo=Actual_Cargo;
+            VPT.contenidoTbl=GuardaContTabla();
+            VPT.total=lblTotal.getText();
+            VPT.id_Pedido=obtenerIndiceMax();
+            this.dispose();
+            VPT.setVisible(true); 
+        } catch (Exception e) {
+        }
+        
+    }
+    private String[] GuardaContTabla(){
+        String[]contenidoTbl=new String[tblDetalle.getRowCount()];
+        String cad="";
+        for (int i = 0; i < tblDetalle.getRowCount(); i++) {
+            /*contenidoTbl[i]="         "+tblDetalle.getValueAt(i, 0).toString() +", "+"            "+tblDetalle.getValueAt(i, 1).toString()
+                    +", "+"      "+tblDetalle.getValueAt(i, 2).toString()+", "+"         "+tblDetalle.getValueAt(i, 3).toString();
+            */
+            //cad+=contenidoTbl[i]+"\n";
+            contenidoTbl[i]=tblDetalle.getValueAt(i, 0).toString() +"\n "+tblDetalle.getValueAt(i, 1).toString()
+                    +"\n "+tblDetalle.getValueAt(i, 2).toString()+"\n "+tblDetalle.getValueAt(i, 3).toString();
+            
+        }
+        //System.out.println(cad);
+        return contenidoTbl;
     }
     
     private void Limpiar(){
@@ -108,10 +131,26 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
         this.dispose();
         vtn.setVisible(true);
     }
-    
-    private void consultarCliente(){
+    private boolean existeCliente(){
+        boolean resp = false;
         String sql = "select Nom_Cliente,Ape_Cliente,Direccion_cliente from cliente where Tel_Cliente = '"+txtTelefono.getText()+"';";
-        System.out.print(sql);
+        //System.out.print(sql);
+        try{
+            Connection conectar = CBD.conectar();
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            if(rs.next()){
+                resp=true;
+            }
+        }catch(Exception e){}
+        return resp;
+    }
+    private void consultarCliente(){
+        if(!validaTel(txtTelefono)){
+            JOptionPane.showMessageDialog(this,"Número de telefono invalido"); return;
+        }
+        String sql = "select Nom_Cliente,Ape_Cliente,Direccion_cliente from cliente where Tel_Cliente = '"+txtTelefono.getText()+"';";
+        //System.out.print(sql);
         try{
             Connection conectar = CBD.conectar();
             Statement st = conectar.createStatement();
@@ -367,8 +406,8 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
         
         try {
                 Connection conectar = CBD.conectar();
-                String sql = "insert into pedido(Usuarios_ID_Usuario,Cliente_Tel_Cliente,Fecha,Hora,Total)"
-                        + "values (?,?,?,?,?);";
+                String sql = "insert into pedido(Usuarios_ID_Usuario,Cliente_Tel_Cliente,Fecha,Hora,Total,Status)"
+                        + "values (?,?,?,?,?,?);";
                 
                 PreparedStatement pst = conectar.prepareStatement(sql);
                 pst.setString(1, id_Usuario);
@@ -376,6 +415,7 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
                 pst.setString(3, fCompleta);
                 pst.setString(4, hCompleta);
                 pst.setString(5, lblTotal.getText());
+                pst.setString(6, "Activo");
                 pst.executeUpdate();
                 
                 //JOptionPane.showMessageDialog(null, "Pedido: Registro exitoso.");
@@ -407,7 +447,7 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
                 
                 //JOptionPane.showMessageDialog(null, "Det pedido: Registro exitoso.");
                CBD.desconectar();
-               JOptionPane.showMessageDialog(this, "Pedido registrado con éxito.");
+               //JOptionPane.showMessageDialog(this, "Pedido registrado con éxito.");
          } catch (SQLException e) {
              JOptionPane.showMessageDialog(null, e.getMessage());
          }
@@ -469,8 +509,11 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
             
         }catch(Exception e){}
     }
-    private void filtraProducto(String tipo){
-        
+    private boolean validaTel(JTextField texto){
+        boolean res=false;
+        res=texto.getText().matches("\\d{10}");
+        texto.requestFocus();
+        return res;
     }
     
     @SuppressWarnings("unchecked")
@@ -515,7 +558,6 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
         btnBuscar = new javax.swing.JButton();
         txtNombre = new javax.swing.JTextField();
         txtDireccion = new javax.swing.JTextField();
-        btnImprimir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1270, 583));
@@ -931,15 +973,6 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
         pnlFondo.add(txtDireccion);
         txtDireccion.setBounds(590, 210, 260, 40);
 
-        btnImprimir.setText("Imprimir");
-        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnImprimirActionPerformed(evt);
-            }
-        });
-        pnlFondo.add(btnImprimir);
-        btnImprimir.setBounds(870, 530, 70, 25);
-
         getContentPane().add(pnlFondo);
         pnlFondo.setBounds(0, 0, 1270, 583);
 
@@ -954,8 +987,31 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
-        JOptionPane.showMessageDialog(this, id_Usuario);
+        //JOptionPane.showMessageDialog(this, id_Usuario);
+        
+        if(tblDetalle.getRowCount()==0){ JOptionPane.showMessageDialog(this, "No hay ningún producto."); return;}
+        if(!existeCliente()){int seleccion = JOptionPane.showOptionDialog(
+                null,
+                "Cliente no encontrado \n Se necesita registrar el cliente", 
+                "Registrar",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,    // null para icono por defecto.
+                new Object[] { "Registrar", "Cancelar" },   // null para Ok y CANCEL
+                "Registrar");
+                //JOptionPane.showMessageDialog(this, seleccion);
+                if(seleccion == 0){
+                    Ventana_Cliente_Registrar vtn = new Ventana_Cliente_Registrar();
+                    btnBuscar.setVisible(true);
+                    mandaInfoVCR(vtn);
+                }
+                else {txtTelefono.requestFocus(); Limpiar(); }
+                return;
+        }
+        
         registrarPedidoYDetalle();
+        Ventana_Pedido_Ticket VPT = new Ventana_Pedido_Ticket();
+        mandaInfoPedTick(VPT);
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
@@ -1134,11 +1190,6 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
         
     }//GEN-LAST:event_cmbTipoActionPerformed
 
-    private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
-        Ventana_Pedido_Ticket VPT = new Ventana_Pedido_Ticket();
-        mandaInfoPedTick(VPT);
-    }//GEN-LAST:event_btnImprimirActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -1165,6 +1216,7 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Ventana_Pedido_Registrar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
    
 
         /* Create and display the form */
@@ -1180,7 +1232,6 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
     private javax.swing.JButton btnCerrarSesion;
     private javax.swing.JButton btnDere;
     private javax.swing.JButton btnEliminar;
-    private javax.swing.JButton btnImprimir;
     private javax.swing.JButton btnIzq;
     private javax.swing.JButton btnIzq1;
     private javax.swing.JButton btnProdu1;

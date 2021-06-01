@@ -24,7 +24,7 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
      */
     public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Telefono,Actual_U,Actual_C,
             Actual_Correo,Actual_Direccion,Actual_Cargo,Actual_Fecha,Actual_Status;
-
+    private DefaultTableModel m = new DefaultTableModel();
     private ConeccionBD CBD = new ConeccionBD();
     
     
@@ -89,6 +89,21 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
         this.dispose();
         vtn.setVisible(true);
     }
+    private void mandaInfoVCS(Ventana_Pedido_Cambiar_Status vtn,int id){
+        vtn.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        vtn.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        vtn.Actual_Telefono=Actual_Telefono;
+        vtn.Actual_U=Actual_U;
+        vtn.Actual_C=Actual_C;
+        vtn.Actual_Correo=Actual_Correo;
+        vtn.Actual_Direccion=Actual_Direccion;
+        vtn.Actual_Cargo=Actual_Cargo;
+        vtn.Actual_Fecha=Actual_Fecha;
+        vtn.Actual_Status=Actual_Status;
+        vtn.Actual_ID=id;
+        this.dispose();
+        vtn.setVisible(true);
+    }
     
     public Ventana_Pedido_Principal() {
         initComponents();
@@ -96,10 +111,10 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
 
     public void inicializarVentana(){
         lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
-        DefaultTableModel m = new DefaultTableModel();
+        
         m = (DefaultTableModel) tblPedidos.getModel();
         tblPedidos.setModel(m);
-        String sql = "select ID_Pedido,Usuarios_ID_Usuario,Cliente_Tel_Cliente,Fecha,Hora,Total from pedido";
+        String sql = "select ID_Pedido,Usuarios_ID_Usuario,Cliente_Tel_Cliente,Fecha,Hora,Total from pedido where Status ='Activo';";
         Connection conectar = CBD.conectar();
         try{
             Statement st = conectar.createStatement();
@@ -248,6 +263,11 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
         });
         tblPedidos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tblPedidos.getTableHeader().setReorderingAllowed(false);
+        tblPedidos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tblPedidosMouseReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblPedidos);
         if (tblPedidos.getColumnModel().getColumnCount() > 0) {
             tblPedidos.getColumnModel().getColumn(0).setResizable(false);
@@ -311,6 +331,12 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
         mandaInfoVPC(vtn);
     }//GEN-LAST:event_btnConsultarPedidoActionPerformed
 
+    private void tblPedidosMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPedidosMouseReleased
+        Ventana_Pedido_Cambiar_Status vtn = new Ventana_Pedido_Cambiar_Status();
+        int r = Integer.parseInt(m.getValueAt(tblPedidos.getSelectedRow(), 0)+"");
+        mandaInfoVCS(vtn,r);
+    }//GEN-LAST:event_tblPedidosMouseReleased
+
     /**
      * @param args the command line arguments
      */
@@ -336,6 +362,38 @@ public class Ventana_Pedido_Principal extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Ventana_Pedido_Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
