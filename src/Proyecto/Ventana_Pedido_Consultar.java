@@ -27,7 +27,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author arlet
  */
-public class Ventana_Pedido_Eliminar extends javax.swing.JFrame {
+public class Ventana_Pedido_Consultar extends javax.swing.JFrame {
 
     /**
      * Creates new form Ventana_Usuario_Principal
@@ -35,15 +35,16 @@ public class Ventana_Pedido_Eliminar extends javax.swing.JFrame {
     public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Telefono,Actual_U,Actual_C,
             Actual_Correo,Actual_Direccion,Actual_Cargo,Actual_Fecha,Actual_Status;
     private DefaultTableModel m;
+    private DefaultTableModel m2;
     private ConeccionBD CBD = new ConeccionBD();
     
     
-    public Ventana_Pedido_Eliminar() {
+    public Ventana_Pedido_Consultar() {
         initComponents();
     }
 
     public void cargarTabla(String sql){
-        
+        m.setRowCount(0);
         Connection conectar = CBD.conectar();
         try{
             Statement st = conectar.createStatement();
@@ -88,37 +89,32 @@ public class Ventana_Pedido_Eliminar extends javax.swing.JFrame {
         return true;
     }
     
-    private boolean eliminarPedido(){
-        String ID = txtIdPedido.getText();
-        
-        try {
-                Connection conectar = CBD.conectar();
-                String sql = "DELETE FROM Detalle_Pedido where Pedido_ID_Pedido = ?";
-                
-                PreparedStatement pst = conectar.prepareStatement(sql);
-                pst.setInt(1, Integer.parseInt(ID));
-                if(pst.executeUpdate()>0);
-                CBD.desconectar();
-         } catch (Exception e) {
-             JOptionPane.showMessageDialog(null, "Error al eliminar.");
-         }
-        
-        try {
-                Connection conectar = CBD.conectar();
-                String sql = "DELETE FROM pedido where ID_Pedido = ?";
-                
-                PreparedStatement pst = conectar.prepareStatement(sql);
-                pst.setInt(1, Integer.parseInt(ID));
-                if(pst.executeUpdate()>0)return true;
-                CBD.desconectar();
-         } catch (Exception e) {
-             JOptionPane.showMessageDialog(null, "Error al eliminar.");
-         }
-        return false;
+    private void cargarDetallePedido(int id){
+        m2.setRowCount(0);
+        lblTotal.setText("");
+        String sql = "select p.Nom_Producto,dp.Cantidad,dp.PrecioUnitario,dp.Importe "
+                + "from detalle_pedido dp inner join productos p on dp.Productos_ID_Productos=p.ID_Productos where "
+                + "dp.Pedido_ID_Pedido= "+id;
+        Connection conectar = CBD.conectar();
+        try{
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            String[] O = new String[4];
+            float total=0;
+            while(rs.next()){
+                O[0] = rs.getString(1);
+                O[1] = rs.getString(2);
+                O[2] = rs.getString(3);
+                O[3] = rs.getString(4);
+                total+=Float.parseFloat(O[3]+"");
+                m2.addRow(O);
+            }
+            lblTotal.setText(total+"");
+            conectar.close(); 
+        }catch(Exception e){}
     }
-    private void vaciarTabla(){
-        m.setRowCount(0);
-    }
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -134,13 +130,15 @@ public class Ventana_Pedido_Eliminar extends javax.swing.JFrame {
         lblUsuario = new javax.swing.JLabel();
         btnCerrarSesion = new javax.swing.JButton();
         btnBuscar = new javax.swing.JButton();
-        btnEliminarPedido = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        txtIdPedido = new javax.swing.JTextField();
+        lblTotal = new javax.swing.JLabel();
         btnRegresar1 = new javax.swing.JButton();
         dcFecha = new com.toedter.calendar.JDateChooser();
         jScrollPane1 = new javax.swing.JScrollPane();
+        tblDetalle = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
         tblPedidos = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1270, 583));
@@ -161,7 +159,7 @@ public class Ventana_Pedido_Eliminar extends javax.swing.JFrame {
 
         lblTitulo.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
         lblTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTitulo.setText("Eliminar pedido");
+        lblTitulo.setText("Consultar pedido");
         panelClaro.add(lblTitulo);
         lblTitulo.setBounds(0, 80, 1270, 58);
 
@@ -206,45 +204,12 @@ public class Ventana_Pedido_Eliminar extends javax.swing.JFrame {
             }
         });
         panelClaro.add(btnBuscar);
-        btnBuscar.setBounds(750, 170, 130, 30);
+        btnBuscar.setBounds(790, 160, 130, 30);
 
-        btnEliminarPedido.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnEliminarPedido.setText("Eliminar Pedido");
-        btnEliminarPedido.setActionCommand("Registrar");
-        btnEliminarPedido.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        btnEliminarPedido.setEnabled(false);
-        btnEliminarPedido.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEliminarPedidoActionPerformed(evt);
-            }
-        });
-        panelClaro.add(btnEliminarPedido);
-        btnEliminarPedido.setBounds(410, 460, 170, 60);
-
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText("Fecha:");
-        panelClaro.add(jLabel1);
-        jLabel1.setBounds(390, 170, 60, 30);
-
-        txtIdPedido.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        txtIdPedido.setForeground(new java.awt.Color(102, 102, 102));
-        txtIdPedido.setText("IdPedido");
-        txtIdPedido.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtIdPedidoFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtIdPedidoFocusLost(evt);
-            }
-        });
-        txtIdPedido.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtIdPedidoActionPerformed(evt);
-            }
-        });
-        panelClaro.add(txtIdPedido);
-        txtIdPedido.setBounds(460, 220, 260, 30);
+        lblTotal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblTotal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        panelClaro.add(lblTotal);
+        lblTotal.setBounds(850, 490, 200, 30);
 
         btnRegresar1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnRegresar1.setText("Regresar");
@@ -256,9 +221,39 @@ public class Ventana_Pedido_Eliminar extends javax.swing.JFrame {
             }
         });
         panelClaro.add(btnRegresar1);
-        btnRegresar1.setBounds(710, 460, 170, 60);
+        btnRegresar1.setBounds(580, 510, 170, 60);
         panelClaro.add(dcFecha);
-        dcFecha.setBounds(460, 170, 280, 30);
+        dcFecha.setBounds(410, 160, 280, 30);
+
+        tblDetalle.setBackground(new java.awt.Color(244, 241, 222));
+        tblDetalle.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        tblDetalle.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Producto", "Cantidad", "Precio Unitario", "Importe"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblDetalle.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblDetalle.getTableHeader().setReorderingAllowed(false);
+        tblDetalle.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblDetalleMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblDetalle);
+
+        panelClaro.add(jScrollPane1);
+        jScrollPane1.setBounds(300, 320, 750, 170);
 
         tblPedidos.setBackground(new java.awt.Color(244, 241, 222));
         tblPedidos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
@@ -285,40 +280,29 @@ public class Ventana_Pedido_Eliminar extends javax.swing.JFrame {
                 tblPedidosMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tblPedidos);
+        jScrollPane2.setViewportView(tblPedidos);
 
-        panelClaro.add(jScrollPane1);
-        jScrollPane1.setBounds(290, 260, 750, 180);
+        panelClaro.add(jScrollPane2);
+        jScrollPane2.setBounds(300, 200, 750, 90);
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel2.setText("Fecha:");
+        panelClaro.add(jLabel2);
+        jLabel2.setBounds(340, 160, 60, 30);
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel3.setText("Total:");
+        panelClaro.add(jLabel3);
+        jLabel3.setBounds(790, 490, 60, 30);
 
         getContentPane().add(panelClaro);
-        panelClaro.setBounds(0, 0, 1270, 590);
+        panelClaro.setBounds(0, 0, 1270, 680);
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnEliminarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarPedidoActionPerformed
-        int dialogButton = YES_NO_OPTION;
-            int i = showConfirmDialog (null, "Seguro que deseas eliminar el pedido con el ID: "+txtIdPedido.getText()+"?","WARNING", dialogButton);
-            if(i == 0) {
-                String resultado="Eliminacion Fallida";
-                if(eliminarPedido()){
-                    resultado="Eliminacion Exitosa";
-                    dcFecha.setCalendar(null);
-                    vaciarTabla();
-                    cargarTabla("select ID_Pedido,Usuarios_ID_Usuario,Cliente_Tel_Cliente,Fecha,Hora,Total from pedido");
-                    btnEliminarPedido.setEnabled(false);
-                }
-                showMessageDialog(this,resultado);
-            if(i == 1) {
-                  remove(dialogButton);
-                }
-            }
-    }//GEN-LAST:event_btnEliminarPedidoActionPerformed
-
-    private void txtIdPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdPedidoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtIdPedidoActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         String query = "";
@@ -326,36 +310,21 @@ public class Ventana_Pedido_Eliminar extends javax.swing.JFrame {
             String fecha = dcFecha.getDate().getYear()+"/"+((dcFecha.getDate().getMonth())+1)+"/"+dcFecha.getDate().getDate();
             fecha = fecha.substring(1, fecha.length());
             query = "select ID_Pedido,Usuarios_ID_Usuario,Cliente_Tel_Cliente,Fecha,Hora,Total from pedido where Fecha = '"+fecha+"';";
-            vaciarTabla();
+            //vaciarTabla();
+            //btnEliminarPedido.setEnabled(true);
         }else query = "select ID_Pedido,Usuarios_ID_Usuario,Cliente_Tel_Cliente,Fecha,Hora,Total from pedido;";
         cargarTabla(query);
-        
-        btnEliminarPedido.setEnabled(true);
         
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnRegresar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresar1ActionPerformed
-        txtIdPedido.setEnabled(false);
+        //txtIdPedido.setEnabled(false);
         Ventana_Pedido_Principal vtn = new Ventana_Pedido_Principal();
         mandaInfoVPP(vtn);
     }//GEN-LAST:event_btnRegresar1ActionPerformed
 
-    private void txtIdPedidoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtIdPedidoFocusGained
-         if(txtIdPedido.getText().equals("IdPedido")){
-            txtIdPedido.setText("");
-            txtIdPedido.setForeground(Color.black);
-        }
-    }//GEN-LAST:event_txtIdPedidoFocusGained
-
-    private void txtIdPedidoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtIdPedidoFocusLost
-        if(txtIdPedido.getText().equals("")){
-            txtIdPedido.setText("IdPedido");
-            txtIdPedido.setForeground(new Color(102,102,102));
-        }
-    }//GEN-LAST:event_txtIdPedidoFocusLost
-
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
-        txtIdPedido.setEnabled(false);
+    //txtIdPedido.setEnabled(false);
         this.dispose();
         Ventana_Acceso VA = new Ventana_Acceso();
         VA.setVisible(true);
@@ -365,14 +334,22 @@ public class Ventana_Pedido_Eliminar extends javax.swing.JFrame {
         lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
         m = (DefaultTableModel) tblPedidos.getModel();
         tblPedidos.setModel(m);
+        m2 = (DefaultTableModel) tblDetalle.getModel();
+        tblDetalle.setModel(m2);
         cargarTabla("select ID_Pedido,Usuarios_ID_Usuario,Cliente_Tel_Cliente,Fecha,Hora,Total from pedido");
     }//GEN-LAST:event_formWindowOpened
 
+    private void tblDetalleMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDetalleMouseClicked
+        
+    }//GEN-LAST:event_tblDetalleMouseClicked
+
     private void tblPedidosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPedidosMouseClicked
+
         try {
             int Fila = tblPedidos.getSelectedRow();
-            txtIdPedido.setText(tblPedidos.getValueAt(Fila,0)+"");
-            btnEliminarPedido.setEnabled(true);
+            int id_Det = Integer.parseInt(m.getValueAt(Fila,0)+"");
+            
+            cargarDetallePedido(id_Det);
         } catch (Exception e) {
         }
     }//GEN-LAST:event_tblPedidosMouseClicked
@@ -394,13 +371,13 @@ public class Ventana_Pedido_Eliminar extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Ventana_Pedido_Eliminar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Ventana_Pedido_Consultar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Ventana_Pedido_Eliminar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Ventana_Pedido_Consultar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Ventana_Pedido_Eliminar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Ventana_Pedido_Consultar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Ventana_Pedido_Eliminar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Ventana_Pedido_Consultar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
@@ -470,7 +447,7 @@ public class Ventana_Pedido_Eliminar extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Ventana_Pedido_Eliminar().setVisible(true);
+                new Ventana_Pedido_Consultar().setVisible(true);
             }
         });
     }
@@ -478,16 +455,18 @@ public class Ventana_Pedido_Eliminar extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCerrarSesion;
-    private javax.swing.JButton btnEliminarPedido;
     private javax.swing.JButton btnRegresar1;
     private com.toedter.calendar.JDateChooser dcFecha;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblTitulo;
+    private javax.swing.JLabel lblTotal;
     private javax.swing.JLabel lblUsuario;
     private javax.swing.JPanel panelClaro;
     private javax.swing.JPanel pnlCabezera;
+    private javax.swing.JTable tblDetalle;
     private javax.swing.JTable tblPedidos;
-    private javax.swing.JTextField txtIdPedido;
     // End of variables declaration//GEN-END:variables
 }

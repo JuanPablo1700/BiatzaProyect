@@ -5,6 +5,9 @@
  */
 package Proyecto;
 
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,8 +18,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -30,10 +35,13 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
      */
     public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Telefono,Actual_U,Actual_C,
             Actual_Correo,Actual_Direccion,Actual_Cargo,Actual_Fecha,Actual_Status,id_Usuario;
+    public String Reg_Telefono,Reg_Nombre, Reg_Direccion;
+    public String Cli_Tel,Cli_Nombre,Cli_Direccion;
 
     private ConeccionBD CBD = new ConeccionBD();
     private DefaultTableModel m;
-    
+    private int indice=1;
+    private String[] IDsTabla;
     public Ventana_Pedido_Registrar() {
         initComponents();
         m = (DefaultTableModel) tblDetalle.getModel();
@@ -54,6 +62,7 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
             ResultSet rs = st.executeQuery(sql);
             rs.next();
             id_Usuario = rs.getString(1);
+            System.out.println(id_Usuario);
             conectar.close(); 
         }catch(Exception e){}
     }
@@ -72,11 +81,30 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
         this.dispose();
         vtn.setVisible(true);
     }
+    private void mandaInfoPedTick(Ventana_Pedido_Ticket VPT){
+        VPT.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VPT.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VPT.Actual_Telefono=Actual_Telefono;
+        VPT.Actual_Cargo=Actual_Cargo;
+        this.dispose();
+        VPT.setVisible(true);
+    }
     
-    private void mandaInfoIPP(Ventana_Cliente_Registrar vtn){
+    private void Limpiar(){
+        txtNombre.setText("Nombre del cliente. *");
+        txtNombre.setForeground(new Color(102,102,102));
+        txtTelefono.setText("Teléfono. *");
+        txtTelefono.setForeground(new Color(102,102,102));
+        txtDireccion.setText("Dirección. *");
+        txtDireccion.setForeground(new Color(102,102,102));
+    }
+    
+    private void mandaInfoVCR(Ventana_Cliente_Registrar vtn){
         vtn.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
         vtn.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
         vtn.Actual_Cargo=Actual_Cargo;
+        vtn.Actual_Telefono=Actual_Telefono;
+        vtn.pedido=1;
         this.dispose();
         vtn.setVisible(true);
     }
@@ -91,18 +119,35 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
             if(rs.next()){
                 txtNombre.setText(rs.getString(1)+" "+rs.getString(2));
                 txtDireccion.setText(rs.getString(3));
+                Cli_Tel=txtTelefono.getText();
+                Cli_Nombre=txtNombre.getText();
+                Cli_Direccion=txtDireccion.getText();
             }else{
-                btnRegistrarClientes.setEnabled(true);
-                showMessageDialog(this,"Se necesita registrar el cliente");
-                txtNombre.requestFocus();
-                txtNombre.setEnabled(true);
-                txtDireccion.setEnabled(true);
+                int seleccion = JOptionPane.showOptionDialog(
+                null,
+                "Cliente no encontrado \n Se necesita registrar el cliente", 
+                "Registrar",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,    // null para icono por defecto.
+                new Object[] { "Registrar", "Cancelar" },   // null para Ok y CANCEL
+                "Registrar");
+                //JOptionPane.showMessageDialog(this, seleccion);
+                if(seleccion == 0){
+                    Ventana_Cliente_Registrar vtn = new Ventana_Cliente_Registrar();
+                    btnBuscar.setVisible(true);
+                    mandaInfoVCR(vtn);
+                }
+                else {txtTelefono.requestFocus(); Limpiar();}
+                
+                //txtNombre.setEnabled(true);
+                //txtDireccion.setEnabled(true);
             }
             conectar.close(); 
         }catch(Exception e){}
     }
     
-    private void cargarCombos(){
+    /*private void cargarCombos(){
         String sql = "";
         try{
             sql="select ID_Productos,Nom_Producto,Tamaño,Precio from productos order by Nom_Producto;";
@@ -114,6 +159,183 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
             }
             conectar.close(); 
         }catch(Exception e){}
+    }
+    */
+    private void sacaProductos(String tipo){
+        
+        String sql = "";
+        try{
+            
+            sql="select ID_Productos,Nom_Producto,Tamaño,Precio from productos order by Nom_Producto;";
+            Connection conectar = CBD.conectar();
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            int tam=0;
+            while(rs.next()){
+                tam++;
+            }
+            conectar.close();
+            
+            if(!tipo.equals("")) sql="select ID_Productos,Nom_Producto,Tamaño,Precio,Tipo from productos where Tipo like '"+tipo+"' order by Nom_Producto;";
+            else sql="select ID_Productos,Nom_Producto,Tamaño,Precio,Tipo from productos order by Nom_Producto;";
+            String [] productos = new String[tam];
+            
+            conectar = CBD.conectar();
+            st = conectar.createStatement();
+            rs = st.executeQuery(sql);
+            int i=0;
+            
+            String tipos[]=new String [tam];
+            String IDs[]=new String [tam];
+            
+            while(rs.next()){
+                productos[i]=rs.getString(2)+"\n "+rs.getString(3)+"\n "+rs.getString(4)+"\n ";
+                tipos[i]=rs.getString(5);
+                IDs[i]=rs.getString(1);
+                i++;
+            }
+            
+            conectar.close();
+            llenaBotones(productos,tam,tipos);
+        
+        }catch(Exception e){}
+    }
+    private int sacaI(){
+        int i=0;
+        try {
+            if(indice==1)i=16*0;
+        else if(indice==2)i=16*1;
+        else if(indice==3)i=16*2;
+        else if(indice==4)i=16*3;
+        else if(indice==5)i=16*4;
+        else if(indice==6)i=16*5;
+        else if(indice==7)i=16*6;
+        else if(indice==8)i=16*7;
+        else if(indice==9)i=16*8;
+        else if(indice==10)i=16*9;
+        else if(indice==11)i=16*10;
+        else if(indice==12)i=16*11;
+        else if(indice==13)i=16*12;
+        else if(indice==14)i=16*13;
+        else if(indice==15)i=16*14;
+        else if(indice==16)i=16*15;
+        else if(indice==17)i=16*16;
+        else if(indice==18)i=16*17;
+        else if(indice==19)i=16*18;
+        else if(indice==20)i=16*19;
+        else if(indice==21)i=16*20;
+        else if(indice==22)i=16*21;
+        else if(indice==23)i=16*22;
+        else if(indice==24)i=16*23;
+        else if(indice==25)i=16*24;
+        else if(indice==26)i=16*25;
+        else if(indice==27)i=16*26;
+        else if(indice==28)i=16*27;
+        else if(indice==29)i=16*28;
+        else if(indice==30)i=16*29;
+        else i=16*30;
+        } catch (Exception e) {
+        }
+        
+        return i;
+    }
+    private void pintarBoton(JButton boton,String tipo){
+        if(tipo.equals("Pizza"))boton.setBackground(new Color(88,165,73)); //Verde
+        else if(tipo.equals("Refresco"))boton.setBackground(new Color(166,85,255)); //Morado
+        else boton.setBackground(new Color(153,153,255)); //Azul
+    }
+    private void llenaBotones(String[]productos,int tam,String[]tipos){
+        int i = sacaI();
+        try {
+            btnProdu1.setText(""); btnProdu1.setVisible(false);
+            btnProdu2.setText(""); btnProdu2.setVisible(false);
+            btnProdu3.setText(""); btnProdu3.setVisible(false);
+            btnProdu4.setText(""); btnProdu4.setVisible(false);
+            btnProdu5.setText(""); btnProdu5.setVisible(false);
+            btnProdu6.setText(""); btnProdu6.setVisible(false);
+            btnProdu7.setText(""); btnProdu7.setVisible(false);
+            btnProdu8.setText(""); btnProdu8.setVisible(false);
+            btnProdu9.setText(""); btnProdu9.setVisible(false);
+            btnProdu10.setText(""); btnProdu10.setVisible(false);
+            btnProdu11.setText(""); btnProdu11.setVisible(false);
+            btnProdu12.setText(""); btnProdu12.setVisible(false);
+            btnProdu13.setText(""); btnProdu13.setVisible(false);
+            btnProdu14.setText(""); btnProdu14.setVisible(false);
+            btnProdu15.setText(""); btnProdu15.setVisible(false);
+            btnProdu16.setText(""); btnProdu16.setVisible(false);
+        
+        
+        
+        
+        if(i<=tam){btnProdu1.setText(productos[i]); pintarBoton(btnProdu1, tipos[i]);  btnProdu1.setVisible(true);i++;}
+        if(i<=tam){btnProdu2.setText(productos[i]); pintarBoton(btnProdu2, tipos[i]); btnProdu2.setVisible(true);i++;}
+        if(i<=tam){btnProdu3.setText(productos[i]); pintarBoton(btnProdu3, tipos[i]); btnProdu3.setVisible(true);i++;}
+        if(i<=tam){btnProdu4.setText(productos[i]); pintarBoton(btnProdu4, tipos[i]); btnProdu4.setVisible(true);i++;}
+        if(i<=tam){btnProdu5.setText(productos[i]); pintarBoton(btnProdu5, tipos[i]); btnProdu5.setVisible(true);i++;}
+        if(i<=tam){btnProdu6.setText(productos[i]); pintarBoton(btnProdu6, tipos[i]); btnProdu6.setVisible(true);i++;}
+        if(i<=tam){btnProdu7.setText(productos[i]); pintarBoton(btnProdu7, tipos[i]); btnProdu7.setVisible(true);i++;}
+        if(i<=tam){btnProdu8.setText(productos[i]); pintarBoton(btnProdu8, tipos[i]); btnProdu8.setVisible(true);i++;}
+        if(i<=tam){btnProdu9.setText(productos[i]); pintarBoton(btnProdu9, tipos[i]); btnProdu9.setVisible(true);i++;}
+        if(i<=tam){btnProdu10.setText(productos[i]); pintarBoton(btnProdu10, tipos[i]); btnProdu10.setVisible(true);i++;}
+        if(i<=tam){btnProdu11.setText(productos[i]); pintarBoton(btnProdu11, tipos[i]); btnProdu11.setVisible(true);i++;}
+        if(i<=tam){btnProdu12.setText(productos[i]); pintarBoton(btnProdu12, tipos[i]); btnProdu12.setVisible(true);i++;}
+        if(i<=tam){btnProdu13.setText(productos[i]); pintarBoton(btnProdu13, tipos[i]); btnProdu13.setVisible(true);i++;}
+        if(i<=tam){btnProdu14.setText(productos[i]); pintarBoton(btnProdu14, tipos[i]); btnProdu14.setVisible(true);i++;}
+        if(i<=tam){btnProdu15.setText(productos[i]); pintarBoton(btnProdu15, tipos[i]); btnProdu15.setVisible(true);i++;}
+        if(i<=tam){btnProdu16.setText(productos[i]); pintarBoton(btnProdu16, tipos[i]); btnProdu16.setVisible(true);i++;}
+        
+        } catch (Exception e) {
+        }
+        
+        
+        
+}
+    
+    private void muestraBotones(){
+        btnProdu1.setVisible(true);  btnProdu1.setText("");
+        btnProdu2.setVisible(true);  btnProdu2.setText("");
+        btnProdu3.setVisible(true);  btnProdu3.setText("");
+        btnProdu4.setVisible(true);  btnProdu4.setText("");
+        btnProdu5.setVisible(true);  btnProdu5.setText("");
+        btnProdu6.setVisible(true);  btnProdu6.setText("");
+        btnProdu7.setVisible(true);  btnProdu7.setText("");
+        btnProdu8.setVisible(true);  btnProdu8.setText("");
+        btnProdu9.setVisible(true);  btnProdu9.setText("");
+        btnProdu10.setVisible(true); btnProdu10.setText("");
+        btnProdu11.setVisible(true); btnProdu11.setText("");
+        btnProdu12.setVisible(true); btnProdu12.setText("");
+        btnProdu13.setVisible(true); btnProdu13.setText("");
+        btnProdu14.setVisible(true); btnProdu14.setText("");
+        btnProdu15.setVisible(true); btnProdu15.setText("");
+        btnProdu16.setVisible(true); btnProdu16.setText("");
+        
+    }
+    
+    private int obtieneUltimo(){
+        int ultimo=1;
+        try {
+        if(btnProdu1.isVisible())ultimo++;
+        if(btnProdu2.isVisible())ultimo++;
+        if(btnProdu3.isVisible())ultimo++;
+        if(btnProdu4.isVisible())ultimo++;
+        if(btnProdu5.isVisible())ultimo++;
+        if(btnProdu6.isVisible())ultimo++;
+        if(btnProdu7.isVisible())ultimo++;
+        if(btnProdu8.isVisible())ultimo++;
+        if(btnProdu9.isVisible())ultimo++;
+        if(btnProdu10.isVisible())ultimo++;
+        if(btnProdu11.isVisible())ultimo++;
+        if(btnProdu12.isVisible())ultimo++;
+        if(btnProdu13.isVisible())ultimo++;
+        if(btnProdu14.isVisible())ultimo++;
+        if(btnProdu15.isVisible())ultimo++;
+        if(btnProdu16.isVisible())ultimo++;
+        
+        
+        } catch (Exception e) {
+        }
+                
+        return ultimo;
     }
     
     private String obtenerIndiceMax(){
@@ -156,15 +378,15 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
                 pst.setString(5, lblTotal.getText());
                 pst.executeUpdate();
                 
-                JOptionPane.showMessageDialog(null, "Registro exitoso.");
+                //JOptionPane.showMessageDialog(null, "Pedido: Registro exitoso.");
                CBD.desconectar();
          } catch (Exception e) {
-             JOptionPane.showMessageDialog(null, "Error al registrar.");
+             JOptionPane.showMessageDialog(null, "Pedido: Error al registrar.");
          }
         String indiceMax = obtenerIndiceMax();
         for (int i = 0; i < m.getRowCount(); i++) {
             try {
-                Connection conectar = CBD.conectar();//1            2                           3                           4                   5           6               7
+                Connection conectar = CBD.conectar();           //1            2                           3                           4                   5           6               7
                 String sql = "insert into Detalle_Pedido(Pedido_ID_Pedido, Pedido_Usuarios_ID_Usuario, Pedido_Cliente_Tel_Cliente, Productos_ID_Productos, Cantidad, PrecioUnitario, Importe)"
                         + "values (?,?,?,?,?,?,?);";
                 String c[] = new String[4];
@@ -177,18 +399,78 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
                 pst.setString(1, indiceMax);
                 pst.setString(2, id_Usuario);
                 pst.setString(3, txtTelefono.getText());
-                pst.setString(4, c[0]);
+                pst.setString(4, IDsTabla[i]);
                 pst.setString(5, tblDetalle.getValueAt(i,0)+"");
                 pst.setString(6, tblDetalle.getValueAt(i,2)+"");
                 pst.setString(7, tblDetalle.getValueAt(i,3)+"");
                 pst.executeUpdate();
                 
-                JOptionPane.showMessageDialog(null, "Registro exitoso.");
+                //JOptionPane.showMessageDialog(null, "Det pedido: Registro exitoso.");
                CBD.desconectar();
+               JOptionPane.showMessageDialog(this, "Pedido registrado con éxito.");
          } catch (SQLException e) {
              JOptionPane.showMessageDialog(null, e.getMessage());
          }
         }
+    }
+    
+    private String SacaIDProdSelec(String producto){
+        String ID="";
+        
+        try {
+            
+            String cad[] = new String[3];
+            cad = (producto.split(", "));
+            
+            Float precio = Float.parseFloat(cad[2]);
+            Connection conectar = CBD.conectar();
+            
+            String sql="select ID_Productos from productos where Nom_Producto = '"+cad[0]+"' and "
+                    + "Tamaño = '"+cad[1]+"' and Precio = "+precio+";";
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            rs.next();
+            ID=rs.getString(1);
+            
+            conectar.close();
+            
+        } catch (Exception e) {
+        }
+        return ID;
+    }
+    
+    private void agregaProdSelec(String producto){
+        try{
+        String cad[] = new String[3];
+        int i = sacaI();
+        cad = (producto.split("\n "));
+            Object O[] = new Object[4];
+            int cant = Integer.parseInt(jsCantidad.getValue()+"");
+            float precio = Float.parseFloat(cad[2]);
+            float total = precio*cant;
+            O[0] = cant;
+            O[1] = cad[0]+", "+cad[1];
+            O[2] = precio;
+            O[3] = total;
+            if(m.getRowCount()>0) lblTotal.setText((Float.parseFloat(lblTotal.getText())+total)+"");
+            else lblTotal.setText(total+"");
+             m.addRow(O);
+            IDsTabla = new String [tblDetalle.getRowCount()];
+            String pro[]=new String[2];
+            for (int j = 0; j < IDsTabla.length; j++) {
+                
+                pro = tblDetalle.getValueAt(j, 1).toString().split(", ");
+                String produ = pro[0]+ ", "+pro[1]+", "+tblDetalle.getValueAt(j, 2).toString();
+                IDsTabla[j]=SacaIDProdSelec(produ);
+            }
+           
+            jsCantidad.setValue(1);
+            
+            
+        }catch(Exception e){}
+    }
+    private void filtraProducto(String tipo){
+        
     }
     
     @SuppressWarnings("unchecked")
@@ -200,22 +482,40 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
         pnlCabezera = new javax.swing.JPanel();
         lblUsuario = new javax.swing.JLabel();
         btnCerrarSesion = new javax.swing.JButton();
-        pnlInformacion = new javax.swing.JPanel();
-        txtDireccion = new javax.swing.JTextField();
-        txtTelefono = new javax.swing.JTextField();
-        txtNombre = new javax.swing.JTextField();
-        cmbProductos = new javax.swing.JComboBox<>();
-        btnBuscar = new javax.swing.JButton();
-        btnRegistrarClientes = new javax.swing.JButton();
         jsCantidad = new javax.swing.JSpinner();
-        btnEliminar = new javax.swing.JButton();
-        btnProductos = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblDetalle = new javax.swing.JTable();
         lblTotal = new javax.swing.JLabel();
         btnRegistrar = new javax.swing.JButton();
-        btnCancelar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        btnEliminar = new javax.swing.JButton();
+        pnlProductos = new javax.swing.JPanel();
+        btnProdu1 = new javax.swing.JButton();
+        btnProdu2 = new javax.swing.JButton();
+        btnProdu3 = new javax.swing.JButton();
+        btnProdu4 = new javax.swing.JButton();
+        btnProdu5 = new javax.swing.JButton();
+        btnProdu6 = new javax.swing.JButton();
+        btnProdu7 = new javax.swing.JButton();
+        btnProdu8 = new javax.swing.JButton();
+        btnProdu9 = new javax.swing.JButton();
+        btnProdu10 = new javax.swing.JButton();
+        btnProdu11 = new javax.swing.JButton();
+        btnProdu12 = new javax.swing.JButton();
+        btnProdu13 = new javax.swing.JButton();
+        btnProdu14 = new javax.swing.JButton();
+        btnProdu15 = new javax.swing.JButton();
+        btnProdu16 = new javax.swing.JButton();
+        btnIzq1 = new javax.swing.JButton();
+        btnIzq = new javax.swing.JButton();
+        btnRegresar = new javax.swing.JButton();
+        btnDere = new javax.swing.JButton();
+        cmbTipo = new javax.swing.JComboBox<>();
+        txtTelefono = new javax.swing.JTextField();
+        btnBuscar = new javax.swing.JButton();
+        txtNombre = new javax.swing.JTextField();
+        txtDireccion = new javax.swing.JTextField();
+        btnImprimir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1270, 583));
@@ -238,7 +538,7 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel7.setText("Registrar Pedido");
         pnlFondo.add(jLabel7);
-        jLabel7.setBounds(0, 110, 1270, 58);
+        jLabel7.setBounds(20, 70, 790, 58);
 
         pnlCabezera.setBackground(new java.awt.Color(224, 122, 95));
         pnlCabezera.setMaximumSize(new java.awt.Dimension(1270, 66));
@@ -249,7 +549,7 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
         lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblUsuario.setText("Administrador: Nombre_Usuario");
         pnlCabezera.add(lblUsuario);
-        lblUsuario.setBounds(10, 20, 310, 30);
+        lblUsuario.setBounds(10, 20, 790, 30);
 
         btnCerrarSesion.setBackground(new java.awt.Color(224, 122, 95));
         btnCerrarSesion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -271,91 +571,16 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
         pnlFondo.add(pnlCabezera);
         pnlCabezera.setBounds(0, 0, 1270, 70);
 
-        pnlInformacion.setBackground(new java.awt.Color(244, 241, 222));
-        pnlInformacion.setLayout(null);
-
-        txtDireccion.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtDireccion.setText("Direccion *");
-        txtDireccion.setEnabled(false);
-        pnlInformacion.add(txtDireccion);
-        txtDireccion.setBounds(310, 80, 200, 30);
-
-        txtTelefono.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtTelefono.setText("Telefono *");
-        pnlInformacion.add(txtTelefono);
-        txtTelefono.setBounds(50, 20, 180, 30);
-
-        txtNombre.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtNombre.setText("Nombre del cliente *");
-        txtNombre.setEnabled(false);
-        pnlInformacion.add(txtNombre);
-        txtNombre.setBounds(50, 80, 200, 30);
-
-        cmbProductos.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        cmbProductos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Productos" }));
-        cmbProductos.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbProductosActionPerformed(evt);
+        jsCantidad.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jsCantidad.setRequestFocusEnabled(false);
+        jsCantidad.setValue(1);
+        jsCantidad.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jsCantidadMouseClicked(evt);
             }
         });
-        pnlInformacion.add(cmbProductos);
-        cmbProductos.setBounds(70, 150, 340, 30);
-
-        btnBuscar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnBuscar.setText("Consultar");
-        btnBuscar.setActionCommand("Registrar");
-        btnBuscar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscarActionPerformed(evt);
-            }
-        });
-        pnlInformacion.add(btnBuscar);
-        btnBuscar.setBounds(260, 20, 130, 30);
-
-        btnRegistrarClientes.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnRegistrarClientes.setText("Registrar cliente");
-        btnRegistrarClientes.setActionCommand("Registrar");
-        btnRegistrarClientes.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        btnRegistrarClientes.setEnabled(false);
-        btnRegistrarClientes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRegistrarClientesActionPerformed(evt);
-            }
-        });
-        pnlInformacion.add(btnRegistrarClientes);
-        btnRegistrarClientes.setBounds(440, 20, 130, 30);
-
-        jsCantidad.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        pnlInformacion.add(jsCantidad);
-        jsCantidad.setBounds(0, 150, 60, 30);
-
-        btnEliminar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnEliminar.setText("Eliminar");
-        btnEliminar.setActionCommand("Registrar");
-        btnEliminar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEliminarActionPerformed(evt);
-            }
-        });
-        pnlInformacion.add(btnEliminar);
-        btnEliminar.setBounds(440, 200, 130, 30);
-
-        btnProductos.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnProductos.setText("Agregar");
-        btnProductos.setActionCommand("Registrar");
-        btnProductos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        btnProductos.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnProductosActionPerformed(evt);
-            }
-        });
-        pnlInformacion.add(btnProductos);
-        btnProductos.setBounds(440, 150, 130, 30);
-
-        pnlFondo.add(pnlInformacion);
-        pnlInformacion.setBounds(90, 190, 590, 250);
+        pnlFondo.add(jsCantidad);
+        jsCantidad.setBounds(30, 140, 120, 50);
 
         tblDetalle.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -364,15 +589,28 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
             new String [] {
                 "Cantidad", "Producto", "Precio Unitario", "Importe"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblDetalle.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(tblDetalle);
+        if (tblDetalle.getColumnModel().getColumnCount() > 0) {
+            tblDetalle.getColumnModel().getColumn(2).setResizable(false);
+            tblDetalle.getColumnModel().getColumn(3).setResizable(false);
+        }
 
         pnlFondo.add(jScrollPane1);
-        jScrollPane1.setBounds(720, 190, 480, 230);
+        jScrollPane1.setBounds(870, 80, 390, 380);
 
         lblTotal.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         pnlFondo.add(lblTotal);
-        lblTotal.setBounds(790, 420, 300, 30);
+        lblTotal.setBounds(960, 470, 300, 30);
 
         btnRegistrar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnRegistrar.setText("Registrar pedido");
@@ -383,23 +621,324 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
             }
         });
         pnlFondo.add(btnRegistrar);
-        btnRegistrar.setBounds(370, 490, 170, 70);
-
-        btnCancelar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        btnCancelar.setText("Regresar");
-        btnCancelar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelarActionPerformed(evt);
-            }
-        });
-        pnlFondo.add(btnCancelar);
-        btnCancelar.setBounds(690, 490, 170, 70);
+        btnRegistrar.setBounds(1000, 500, 170, 70);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel2.setText("Total: $");
         pnlFondo.add(jLabel2);
-        jLabel2.setBounds(720, 420, 70, 30);
+        jLabel2.setBounds(890, 470, 70, 30);
+
+        btnEliminar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnEliminar.setText("Eliminar");
+        btnEliminar.setActionCommand("Registrar");
+        btnEliminar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnEliminar.setMaximumSize(new java.awt.Dimension(120, 50));
+        btnEliminar.setMinimumSize(new java.awt.Dimension(120, 50));
+        btnEliminar.setPreferredSize(new java.awt.Dimension(120, 50));
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
+        pnlFondo.add(btnEliminar);
+        btnEliminar.setBounds(730, 140, 120, 50);
+
+        pnlProductos.setBackground(new java.awt.Color(244, 241, 222));
+        pnlProductos.setLayout(new java.awt.GridLayout(4, 0, 5, 5));
+
+        btnProdu1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu1.setHideActionText(true);
+        btnProdu1.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu1.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu1.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu1ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu1);
+
+        btnProdu2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu2.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu2.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu2.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu2ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu2);
+
+        btnProdu3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu3.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu3.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu3.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu3ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu3);
+
+        btnProdu4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu4.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu4.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu4.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu4ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu4);
+
+        btnProdu5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu5.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu5.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu5.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu5ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu5);
+
+        btnProdu6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu6.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu6.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu6.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu6ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu6);
+
+        btnProdu7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu7.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu7.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu7.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu7ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu7);
+
+        btnProdu8.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu8.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu8.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu8.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu8ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu8);
+
+        btnProdu9.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu9.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu9.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu9.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu9ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu9);
+
+        btnProdu10.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu10.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu10.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu10.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu10ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu10);
+
+        btnProdu11.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu11.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu11.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu11.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu11ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu11);
+
+        btnProdu12.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu12.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu12.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu12.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu12ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu12);
+
+        btnProdu13.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu13.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu13.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu13.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu13ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu13);
+
+        btnProdu14.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu14.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu14.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu14.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu14.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu14ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu14);
+
+        btnProdu15.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu15.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu15.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu15.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu15.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu15ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu15);
+
+        btnProdu16.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnProdu16.setMaximumSize(new java.awt.Dimension(120, 90));
+        btnProdu16.setMinimumSize(new java.awt.Dimension(120, 90));
+        btnProdu16.setPreferredSize(new java.awt.Dimension(120, 90));
+        btnProdu16.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProdu16ActionPerformed(evt);
+            }
+        });
+        pnlProductos.add(btnProdu16);
+
+        pnlFondo.add(pnlProductos);
+        pnlProductos.setBounds(30, 260, 820, 260);
+
+        btnIzq1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnIzq1.setText("Cantidad");
+        btnIzq1.setMaximumSize(new java.awt.Dimension(120, 50));
+        btnIzq1.setMinimumSize(new java.awt.Dimension(120, 50));
+        btnIzq1.setPreferredSize(new java.awt.Dimension(120, 50));
+        pnlFondo.add(btnIzq1);
+        btnIzq1.setBounds(30, 140, 120, 50);
+
+        btnIzq.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Flecha izq.png"))); // NOI18N
+        btnIzq.setEnabled(false);
+        btnIzq.setMaximumSize(new java.awt.Dimension(120, 50));
+        btnIzq.setMinimumSize(new java.awt.Dimension(120, 50));
+        btnIzq.setPreferredSize(new java.awt.Dimension(120, 50));
+        btnIzq.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIzqActionPerformed(evt);
+            }
+        });
+        pnlFondo.add(btnIzq);
+        btnIzq.setBounds(30, 530, 120, 50);
+
+        btnRegresar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        btnRegresar.setText("Regresar");
+        btnRegresar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnRegresar.setMaximumSize(new java.awt.Dimension(120, 50));
+        btnRegresar.setMinimumSize(new java.awt.Dimension(120, 50));
+        btnRegresar.setPreferredSize(new java.awt.Dimension(120, 50));
+        btnRegresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegresarActionPerformed(evt);
+            }
+        });
+        pnlFondo.add(btnRegresar);
+        btnRegresar.setBounds(340, 530, 200, 50);
+
+        btnDere.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Flecha dere.png"))); // NOI18N
+        btnDere.setEnabled(false);
+        btnDere.setMaximumSize(new java.awt.Dimension(120, 50));
+        btnDere.setMinimumSize(new java.awt.Dimension(120, 50));
+        btnDere.setPreferredSize(new java.awt.Dimension(120, 50));
+        btnDere.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDereActionPerformed(evt);
+            }
+        });
+        pnlFondo.add(btnDere);
+        btnDere.setBounds(730, 530, 120, 50);
+
+        cmbTipo.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        cmbTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tipo de producto", "Pizza", "Refresco", "Otro" }));
+        cmbTipo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbTipoActionPerformed(evt);
+            }
+        });
+        pnlFondo.add(cmbTipo);
+        cmbTipo.setBounds(250, 140, 330, 50);
+
+        txtTelefono.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtTelefono.setText("Teléfono. *");
+        txtTelefono.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtTelefonoFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtTelefonoFocusLost(evt);
+            }
+        });
+        txtTelefono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtTelefonoActionPerformed(evt);
+            }
+        });
+        txtTelefono.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtTelefonoKeyPressed(evt);
+            }
+        });
+        pnlFondo.add(txtTelefono);
+        txtTelefono.setBounds(30, 210, 180, 40);
+
+        btnBuscar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnBuscar.setText("Consultar");
+        btnBuscar.setActionCommand("Registrar");
+        btnBuscar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
+        pnlFondo.add(btnBuscar);
+        btnBuscar.setBounds(220, 210, 130, 40);
+
+        txtNombre.setEditable(false);
+        txtNombre.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtNombre.setText("Nombre del cliente. *");
+        pnlFondo.add(txtNombre);
+        txtNombre.setBounds(370, 210, 200, 40);
+
+        txtDireccion.setEditable(false);
+        txtDireccion.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtDireccion.setText("Dirección. *");
+        pnlFondo.add(txtDireccion);
+        txtDireccion.setBounds(590, 210, 260, 40);
+
+        btnImprimir.setText("Imprimir");
+        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImprimirActionPerformed(evt);
+            }
+        });
+        pnlFondo.add(btnImprimir);
+        btnImprimir.setBounds(870, 530, 70, 25);
 
         getContentPane().add(pnlFondo);
         pnlFondo.setBounds(0, 0, 1270, 583);
@@ -408,10 +947,6 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void cmbProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbProductosActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbProductosActionPerformed
-
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
         this.dispose();
         Ventana_Acceso VA = new Ventana_Acceso();
@@ -419,47 +954,38 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
+        JOptionPane.showMessageDialog(this, id_Usuario);
         registrarPedidoYDetalle();
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
-    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+    private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
         Ventana_Pedido_Principal vtn = new Ventana_Pedido_Principal();
         mandaInfoIPP(vtn);
-    }//GEN-LAST:event_btnCancelarActionPerformed
+    }//GEN-LAST:event_btnRegresarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         consultarCliente();
     }//GEN-LAST:event_btnBuscarActionPerformed
 
-    private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
-        String cad[] = new String[4];
-        cad = (cmbProductos.getSelectedItem().toString()).split(",");
-        //try{
-            Object O[] = new Object[4];
-            int cant = Integer.parseInt(jsCantidad.getValue()+"");
-            float precio = Float.parseFloat(cad[3].substring(2));
-            float total = precio*cant;
-            O[0] = cant;
-            O[1] = cad[0]+", "+cad[1]+", "+cad[2];
-            O[2] = precio;
-            O[3] = total;
-            if(m.getRowCount()>0) lblTotal.setText((Float.parseFloat(lblTotal.getText())+total)+"");
-            else lblTotal.setText(total+"");
-            m.addRow(O);
-        //}catch(Exception e){}
-        
-    }//GEN-LAST:event_btnProductosActionPerformed
-
-    private void btnRegistrarClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarClientesActionPerformed
-        Ventana_Cliente_Registrar vtn = new Ventana_Cliente_Registrar();
-        mandaInfoIPP(vtn);
-    }//GEN-LAST:event_btnRegistrarClientesActionPerformed
-
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
-        cargarCombos();
+        //cargarCombos();
+        sacaProductos("");
         obtenerIdUsuario();
-        
+        if(obtieneUltimo()>16){
+           btnDere.setEnabled(true);
+        }
+        SpinnerNumberModel modeloSpinner = new SpinnerNumberModel();
+        modeloSpinner.setMaximum(999);
+        modeloSpinner.setMinimum(1);
+        jsCantidad.setModel(modeloSpinner);
+        jsCantidad.setValue(1);
+        try{
+        if(!Reg_Telefono.isEmpty())txtTelefono.setText(Reg_Telefono);
+        if(!Reg_Nombre.isEmpty())txtNombre.setText(Reg_Nombre);
+        if(!Reg_Direccion.isEmpty())txtDireccion.setText(Reg_Direccion);
+        }catch(Exception E){}
+        txtTelefono.requestFocus();
     }//GEN-LAST:event_formWindowOpened
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
@@ -473,6 +999,145 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
             m.removeRow(renglon);
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnProdu1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu1ActionPerformed
+        agregaProdSelec(btnProdu1.getText());
+    }//GEN-LAST:event_btnProdu1ActionPerformed
+
+    private void btnProdu7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu7ActionPerformed
+        agregaProdSelec(btnProdu7.getText());
+    }//GEN-LAST:event_btnProdu7ActionPerformed
+
+    private void btnProdu13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu13ActionPerformed
+        agregaProdSelec(btnProdu13.getText());
+    }//GEN-LAST:event_btnProdu13ActionPerformed
+
+    private void btnDereActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDereActionPerformed
+        indice++;
+        if(cmbTipo.getSelectedIndex()!=0) sacaProductos(cmbTipo.getSelectedItem().toString());
+        else sacaProductos("");
+        if(obtieneUltimo()<=16){
+            btnDere.setEnabled(false);
+        }else btnDere.setEnabled(true);
+        btnIzq.setEnabled(true);
+            
+        
+    }//GEN-LAST:event_btnDereActionPerformed
+
+    private void btnIzqActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIzqActionPerformed
+        indice--;
+        if(cmbTipo.getSelectedIndex()!=0) sacaProductos(cmbTipo.getSelectedItem().toString());
+        else sacaProductos("");
+        if(indice==1)btnIzq.setEnabled(false);
+        btnDere.setEnabled(true);
+    }//GEN-LAST:event_btnIzqActionPerformed
+
+    private void btnProdu2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu2ActionPerformed
+        agregaProdSelec(btnProdu2.getText());
+    }//GEN-LAST:event_btnProdu2ActionPerformed
+
+    private void btnProdu3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu3ActionPerformed
+        agregaProdSelec(btnProdu3.getText());
+    }//GEN-LAST:event_btnProdu3ActionPerformed
+
+    private void btnProdu4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu4ActionPerformed
+        agregaProdSelec(btnProdu4.getText());
+    }//GEN-LAST:event_btnProdu4ActionPerformed
+
+    private void btnProdu5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu5ActionPerformed
+        agregaProdSelec(btnProdu5.getText());
+    }//GEN-LAST:event_btnProdu5ActionPerformed
+
+    private void btnProdu6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu6ActionPerformed
+        agregaProdSelec(btnProdu6.getText());
+    }//GEN-LAST:event_btnProdu6ActionPerformed
+
+    private void btnProdu8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu8ActionPerformed
+        agregaProdSelec(btnProdu8.getText());
+    }//GEN-LAST:event_btnProdu8ActionPerformed
+
+    private void btnProdu9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu9ActionPerformed
+       agregaProdSelec(btnProdu9.getText());
+    }//GEN-LAST:event_btnProdu9ActionPerformed
+
+    private void btnProdu10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu10ActionPerformed
+        agregaProdSelec(btnProdu10.getText());
+    }//GEN-LAST:event_btnProdu10ActionPerformed
+
+    private void btnProdu11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu11ActionPerformed
+        agregaProdSelec(btnProdu11.getText());
+    }//GEN-LAST:event_btnProdu11ActionPerformed
+
+    private void btnProdu12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu12ActionPerformed
+        agregaProdSelec(btnProdu12.getText());
+    }//GEN-LAST:event_btnProdu12ActionPerformed
+
+    private void btnProdu14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu14ActionPerformed
+        agregaProdSelec(btnProdu14.getText());
+    }//GEN-LAST:event_btnProdu14ActionPerformed
+
+    private void btnProdu15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu15ActionPerformed
+        agregaProdSelec(btnProdu15.getText());
+    }//GEN-LAST:event_btnProdu15ActionPerformed
+
+    private void btnProdu16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdu16ActionPerformed
+        agregaProdSelec(btnProdu16.getText());
+    }//GEN-LAST:event_btnProdu16ActionPerformed
+
+    private void jsCantidadMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jsCantidadMouseClicked
+        if(Integer.parseInt(jsCantidad.getValue().toString())<=1)jsCantidad.setValue(1);
+    }//GEN-LAST:event_jsCantidadMouseClicked
+
+    private void txtTelefonoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtTelefonoFocusGained
+        if(txtTelefono.getText().equals("Teléfono. *")){
+            txtTelefono.setText("");
+            txtTelefono.setForeground(Color.black);
+        }
+    }//GEN-LAST:event_txtTelefonoFocusGained
+
+    private void txtTelefonoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtTelefonoFocusLost
+        if(txtTelefono.getText().equals("")){
+            txtTelefono.setText("Teléfono. *");
+            txtTelefono.setForeground(new Color(102,102,102));
+        }
+    }//GEN-LAST:event_txtTelefonoFocusLost
+
+    private void txtTelefonoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTelefonoKeyPressed
+        if(evt.getKeyCode()==KeyEvent.VK_ENTER){
+            consultarCliente();
+        }
+    }//GEN-LAST:event_txtTelefonoKeyPressed
+
+    private void txtTelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTelefonoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtTelefonoActionPerformed
+
+    private void cmbTipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbTipoActionPerformed
+        indice=1;
+        /*try {
+            muestraBotones();
+            
+            btnIzq.setEnabled(false);
+        } catch (Exception ex) {
+        }*/
+        try {
+        btnIzq.setEnabled(false);
+        if(cmbTipo.getSelectedIndex()!=0) sacaProductos(cmbTipo.getSelectedItem().toString());
+        else sacaProductos("");
+        
+        if(obtieneUltimo()<16) btnDere.setEnabled(false);
+        else btnDere.setEnabled(true);
+        } catch (Exception e) {
+        }
+        
+        
+        
+    }//GEN-LAST:event_cmbTipoActionPerformed
+
+    private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
+        Ventana_Pedido_Ticket VPT = new Ventana_Pedido_Ticket();
+        mandaInfoPedTick(VPT);
+    }//GEN-LAST:event_btnImprimirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -500,37 +1165,7 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Ventana_Pedido_Registrar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
+   
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -542,13 +1177,31 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscar;
-    private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnCerrarSesion;
+    private javax.swing.JButton btnDere;
     private javax.swing.JButton btnEliminar;
-    private javax.swing.JButton btnProductos;
+    private javax.swing.JButton btnImprimir;
+    private javax.swing.JButton btnIzq;
+    private javax.swing.JButton btnIzq1;
+    private javax.swing.JButton btnProdu1;
+    private javax.swing.JButton btnProdu10;
+    private javax.swing.JButton btnProdu11;
+    private javax.swing.JButton btnProdu12;
+    private javax.swing.JButton btnProdu13;
+    private javax.swing.JButton btnProdu14;
+    private javax.swing.JButton btnProdu15;
+    private javax.swing.JButton btnProdu16;
+    private javax.swing.JButton btnProdu2;
+    private javax.swing.JButton btnProdu3;
+    private javax.swing.JButton btnProdu4;
+    private javax.swing.JButton btnProdu5;
+    private javax.swing.JButton btnProdu6;
+    private javax.swing.JButton btnProdu7;
+    private javax.swing.JButton btnProdu8;
+    private javax.swing.JButton btnProdu9;
     private javax.swing.JButton btnRegistrar;
-    private javax.swing.JButton btnRegistrarClientes;
-    private javax.swing.JComboBox<String> cmbProductos;
+    private javax.swing.JButton btnRegresar;
+    private javax.swing.JComboBox<String> cmbTipo;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
@@ -557,7 +1210,7 @@ public class Ventana_Pedido_Registrar extends javax.swing.JFrame {
     private javax.swing.JLabel lblUsuario;
     private javax.swing.JPanel pnlCabezera;
     private javax.swing.JPanel pnlFondo;
-    private javax.swing.JPanel pnlInformacion;
+    private javax.swing.JPanel pnlProductos;
     private javax.swing.JTable tblDetalle;
     private javax.swing.JTextField txtDireccion;
     private javax.swing.JTextField txtNombre;

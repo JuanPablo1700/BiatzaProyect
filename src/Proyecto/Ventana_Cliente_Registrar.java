@@ -29,7 +29,8 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
     
     //public String Tel_Cliente="",Nom_Cliente="",Ape_Cliente="",Direccion_Cliente="";
     
-    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Cargo;
+    public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Cargo,Actual_Telefono;
+    public int pedido;
     private ConeccionBD CBD = new ConeccionBD();
     
     private boolean Vacio(){
@@ -47,6 +48,20 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
         VCP.Actual_Cargo = Actual_Cargo;
         this.dispose();
         VCP.setVisible(true);
+    }
+    private void MandaInfoVPR(){
+        Ventana_Pedido_Registrar VPR = new Ventana_Pedido_Registrar();
+        VPR.Actual_Nombre_Usuario = Actual_Nombre_Usuario;
+        VPR.Actual_Apellido_Usuario = Actual_Apellido_Usuario;
+        VPR.Actual_Cargo = Actual_Cargo;
+        VPR.Actual_Telefono= Actual_Telefono;
+        if(!Vacio()){
+        VPR.Reg_Telefono = txtTelefono.getText();
+        VPR.Reg_Nombre = txtNombre.getText()+" "+txtApellido.getText();
+        VPR.Reg_Direccion = txtDireccion.getText();
+        }
+        this.dispose();
+        VPR.setVisible(true);
     }
     
     private void Limpiar(){
@@ -257,7 +272,8 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         try {
-            MandaInfoVCP();
+            if(pedido==1) MandaInfoVPR();
+            else MandaInfoVCP();
         } catch (Exception e) {
         }
     }//GEN-LAST:event_btnCancelarActionPerformed
@@ -282,6 +298,7 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
                 "¿Los datos son correctos?", "Registrar.",JOptionPane.OK_CANCEL_OPTION);
             if(resp == 0){
                 RegistrarCliente();
+                if(pedido!=1){
                 int resp2 = JOptionPane.showConfirmDialog(null, 
                     "¿Desea hacer un nuevo registro?", "Registrar.",JOptionPane.YES_NO_OPTION);
                 if(resp2 == 1)
@@ -289,6 +306,10 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
                 else
                     Limpiar();
                 }
+                else{
+                   MandaInfoVPR();
+                }
+            }
             else{
                 JOptionPane.showMessageDialog(null, "Se ha cancelado el registro.");
                 Limpiar();
@@ -351,6 +372,7 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         try {
             lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
+            
         } catch (Exception e) {
         }
     }//GEN-LAST:event_formWindowOpened
