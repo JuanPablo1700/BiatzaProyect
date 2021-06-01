@@ -1,7 +1,6 @@
 package Proyecto;
 
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -105,7 +104,7 @@ public class Ventana_CorteDeCaja extends javax.swing.JFrame {
 
         lblSaldo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         lblSaldo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblSaldo.setText("2080");
+        lblSaldo.setText("$");
         pnlClaro.add(lblSaldo);
         lblSaldo.setBounds(560, 220, 320, 30);
 
@@ -121,11 +120,11 @@ public class Ventana_CorteDeCaja extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Fecha", "Concepto", "Ingreso", "Retiro", "Saldo", "Detalles"
+                "Fecha", "Tipo", "Concepto", "Monto", "Saldo nuevo", "Detalles", "Usuario"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -185,8 +184,13 @@ public class Ventana_CorteDeCaja extends javax.swing.JFrame {
         DefaultTableModel mod=(DefaultTableModel) tblMovimientosCaja.getModel();
         tblMovimientosCaja.setModel(mod);
         
-        String sql="select Fecha,Concepto, Ingreso, Retiro, Saldo, Detalles from Corte_Caja";
-        String[] Datos = new String[6];
+        String sql="select Fecha, Tipo, Concepto, Monto, Saldo, Detalles, u.nom_Usuario \n" +
+        "from Corte_Caja CC\n" +
+        "inner join usuarios u\n" +
+        "on (cc.Id_Usuario  = u.Id_Usuario )\n" +
+        "where Fecha like curdate();";
+        
+        String[] Datos = new String[7];
         try {
             Statement st = conectar.createStatement();
             ResultSet rs = st.executeQuery(sql);
@@ -198,6 +202,7 @@ public class Ventana_CorteDeCaja extends javax.swing.JFrame {
                 Datos[3]=rs.getString(4);
                 Datos[4]=rs.getString(5);
                 Datos[5]=rs.getString(6);
+                Datos[6]=rs.getString(7);
                 
                 mod.addRow(Datos);
             }
@@ -270,7 +275,10 @@ public class Ventana_CorteDeCaja extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnRealizarIngresoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRealizarIngresoActionPerformed
-        
+        mandaDatosVIE();
+    }//GEN-LAST:event_btnRealizarIngresoActionPerformed
+
+    private void mandaDatosVIE(){
         Ventana_IngresoEfectivo VIE = new Ventana_IngresoEfectivo();
         VIE.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
         VIE.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
@@ -278,8 +286,7 @@ public class Ventana_CorteDeCaja extends javax.swing.JFrame {
         VIE.Saldo = Saldo;
         VIE.setVisible(true);
         this.dispose();
-    }//GEN-LAST:event_btnRealizarIngresoActionPerformed
-
+    }
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
         
@@ -287,13 +294,13 @@ public class Ventana_CorteDeCaja extends javax.swing.JFrame {
         
         //si es la primera vez que se loguea el usuario en el día soliciar ingreso inicial
         if(tblMovimientosCaja.getRowCount() == 0){
-            this.dispose();
-            Ventana_IngresoEfectivo VIE = new Ventana_IngresoEfectivo();
-            VIE.setVisible(true);
+            mandaDatosVIE();
         }
-        Saldo =  tblMovimientosCaja.getValueAt(tblMovimientosCaja.getRowCount()-1, 4) + "";
-        //Saldo = tblMovimientosCaja.getValueAt(tblMovimientosCaja.getRowCount()-1, 4);
-        lblSaldo.setText(Saldo + "");
+        else{
+            Saldo =  tblMovimientosCaja.getValueAt(tblMovimientosCaja.getRowCount()-1, 4) + "";
+
+            lblSaldo.setText(Saldo + "");
+        }
     }//GEN-LAST:event_formWindowOpened
 
 

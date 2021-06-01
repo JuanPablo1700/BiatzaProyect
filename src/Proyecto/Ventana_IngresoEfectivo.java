@@ -3,6 +3,8 @@ package Proyecto;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
@@ -20,8 +22,9 @@ import javax.swing.JTextField;
  */
 public class Ventana_IngresoEfectivo extends javax.swing.JFrame {
 
-    public String Concepto = "", Detalles = "", Saldo = "0";
-    public float Ingreso = 0;
+    public String Concepto = "", Detalles = "", Saldo = "0", id_Usuario;
+    public String Tipo = "Ingreso";
+    public float Monto = 0;
 
     public String Actual_Nombre_Usuario, Actual_Apellido_Usuario, Actual_Cargo;
 
@@ -146,7 +149,7 @@ public class Ventana_IngresoEfectivo extends javax.swing.JFrame {
 
         lblSaldo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         lblSaldo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblSaldo.setText("2080");
+        lblSaldo.setText("$");
         pnlClaro.add(lblSaldo);
         lblSaldo.setBounds(560, 220, 320, 30);
 
@@ -192,7 +195,7 @@ public class Ventana_IngresoEfectivo extends javax.swing.JFrame {
         jLabel15.setBounds(370, 280, 170, 30);
 
         cmbConcepto.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        cmbConcepto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Concepto", "Fondos a caja", "Otro(describir)", " " }));
+        cmbConcepto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Concepto", "Fondos a caja", "Venta", "Otro", " " }));
         cmbConcepto.setActionCommand("cmbConcepto");
         cmbConcepto.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         pnlClaro.add(cmbConcepto);
@@ -267,7 +270,7 @@ public class Ventana_IngresoEfectivo extends javax.swing.JFrame {
             throw new Exception("Error, ingresa el saldo.");
         }
         if (!saldo.matches("[\\d]?[\\d]?[\\d]?[\\d][.]?[\\d]?[\\d]?[\\d]?")) {
-            throw new Exception("Saldo invalido, solo Numeros.");
+            throw new Exception("Monto inválido, solo números.");
         }
     }
 
@@ -281,14 +284,28 @@ public class Ventana_IngresoEfectivo extends javax.swing.JFrame {
         
         return true;
     }
+    private void obtenerIdUsuario(){
+        String sql = "select ID_Usuario from usuarios where nombre='"+Actual_Nombre_Usuario+"';";
+        System.out.print(sql);
+        try{
+            Connection conectar = CBD.conectar();
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            rs.next();
+            id_Usuario = rs.getString(1);
+            System.out.println(id_Usuario);
+            conectar.close(); 
+        }catch(Exception e){}
+    }
      private boolean guardar(){
         boolean estado = false;
         float saldoNuevo = Float.parseFloat(Saldo);
+        int idUser = Integer.parseInt(id_Usuario);
         
         Concepto = cmbConcepto.getSelectedItem().toString();
-        Ingreso = Float.parseFloat(txtMonto.getText());
+        Monto = Float.parseFloat(txtMonto.getText());
         
-        saldoNuevo = saldoNuevo + Ingreso;
+        saldoNuevo = saldoNuevo + Monto;
         Saldo = saldoNuevo +"";
         if(TxtDecripción.getText().equals("Escribe aquí los detalles")){
             Detalles = "";
@@ -296,13 +313,14 @@ public class Ventana_IngresoEfectivo extends javax.swing.JFrame {
             Detalles = TxtDecripción.getText();
         
         CBD.conectar();
-        String sql = "insert into Corte_caja(Fecha, Concepto, Ingreso, Saldo, Detalles, Id_Usuario) "
+        String sql = "insert into Corte_caja(Fecha,Tipo, Concepto, Monto, Saldo, Detalles, Id_Usuario) "
                 + "values(curdate(),"
+                + "'" + Tipo + "',"
                 + "'" + Concepto + "',"
-                + Ingreso + ","
+                + Monto + ","
                 + saldoNuevo + ","
                 + "'" + Detalles + "',"
-                + 1 /***********OBTENER ID DE USUARIO**************/
+                + idUser 
                 + ")";
         if(CBD.ejecutar(sql)){
             estado = true;
@@ -373,6 +391,7 @@ public class Ventana_IngresoEfectivo extends javax.swing.JFrame {
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         lblUsuario.setText(Actual_Cargo+": "+Actual_Nombre_Usuario+" "+Actual_Apellido_Usuario);
         lblSaldo.setText(Saldo + "");
+        obtenerIdUsuario();
     }//GEN-LAST:event_formWindowOpened
 
 
