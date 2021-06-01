@@ -23,7 +23,8 @@ import javax.swing.JTextField;
 public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
 
     public String Concepto = "", Detalles = "", Saldo = "0";
-    public float Retiro = 0;
+    public String Tipo = "Egreso";
+    public float Monto = 0;
 
     public String Actual_Nombre_Usuario, Actual_Apellido_Usuario, Actual_Cargo, id_Usuario;
 
@@ -148,7 +149,7 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
 
         lblSaldo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         lblSaldo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblSaldo.setText("2080");
+        lblSaldo.setText("$");
         pnlClaro.add(lblSaldo);
         lblSaldo.setBounds(560, 220, 320, 30);
 
@@ -269,7 +270,7 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
             throw new Exception("Error, ingresa el saldo.");
         }
         if (!saldo.matches("[\\d]?[\\d]?[\\d]?[\\d][.]?[\\d]?[\\d]?[\\d]?")) {
-            throw new Exception("Saldo invalido, solo Numeros.");
+            throw new Exception("Monto inválido, solo números.");
         }
     }
 
@@ -307,9 +308,9 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
         int idUser = Integer.parseInt(id_Usuario);
         
         Concepto = cmbConcepto.getSelectedItem().toString();
-        Retiro = Float.parseFloat(txtMonto.getText());
+        Monto = Float.parseFloat(txtMonto.getText());
         
-        saldoNuevo = Float.parseFloat(Saldo)- Retiro;
+        saldoNuevo = Float.parseFloat(Saldo)- Monto;
         Saldo = saldoNuevo +"";
         if(TxtDecripción.getText().equals("Escribe aquí los detalles")){
             Detalles = "";
@@ -317,13 +318,14 @@ public class Ventana_RetiroEfectivo extends javax.swing.JFrame {
             Detalles = TxtDecripción.getText();
         
         CBD.conectar();
-        String sql = "insert into Corte_caja(Fecha, Concepto, Retiro, Saldo, Detalles, Id_Usuario) "
+         String sql = "insert into Corte_caja(Fecha,Tipo, Concepto, Monto, Saldo, Detalles, Id_Usuario) "
                 + "values(curdate(),"
-                + "'" + Concepto + "',"
-                + Retiro + ","
+                + "'" + Tipo + "',"
+                + "'" + Concepto + "', -"
+                + Monto + ","
                 + saldoNuevo + ","
                 + "'" + Detalles + "',"
-                + idUser /***********OBTENER ID DE USUARIO**************/
+                + idUser 
                 + ")";
         if(CBD.ejecutar(sql)){
             estado = true;
