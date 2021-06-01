@@ -20,25 +20,25 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author diana
  */
-public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
+public class Ventana_Inventario_Retirar extends javax.swing.JFrame {
 
     /**
      * Creates new form Ventana_Usuario_RegistrarUsuario
      */
-    public Ventana_Inventario_Agregar() {
+    public Ventana_Inventario_Retirar() {
         initComponents();
         
     }
     
     public String Nombre="",Stock="",Costo="",Unidad_Medida="";
+    
     public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Cargo;
     public int id_Inventario;
-    private ConeccionBD CBD = new ConeccionBD();
+    private final ConeccionBD CBD = new ConeccionBD();
     
     private boolean Vacio(){
         boolean vacio=true;
-        if(!txtNombre.getText().equals("") && !txtStock.getText().equals("") && !txtCosto.getText().equals("")
-                && cmbUnidad_Medida.getSelectedIndex()!=0)vacio=false;
+        if(!txtNombre.getText().equals("") )vacio=false;
 
         return vacio;
     }
@@ -68,6 +68,14 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
             }
     }
     
+    public void InventarioSeleccionado(int Fila){
+        Nombre = tblInventario.getValueAt(Fila, 0).toString();
+        Stock= tblInventario.getValueAt(Fila, 1).toString();
+        Costo= tblInventario.getValueAt(Fila, 2).toString();
+        Unidad_Medida= tblInventario.getValueAt(Fila, 3).toString();
+        
+    }
+    
     private void MandaInfoVIP(){
         Ventana_Inventario_Principal VIP = new Ventana_Inventario_Principal();
         VIP.Actual_Nombre_Usuario = Actual_Nombre_Usuario;
@@ -77,55 +85,11 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
         VIP.setVisible(true);
     }
     
-    private void AgregarInventario(){
-         String nombre,  unidad_medida;
-         float stock, costo;
-            nombre=txtNombre.getText();
-            stock=Float.parseFloat(txtStock.getText());
-            costo=Float.parseFloat( txtCosto.getText());
-            unidad_medida=cmbUnidad_Medida.getSelectedItem().toString();
-      
-            try {
-                Connection conectar = CBD.conectar();
-                String sql = "insert into inventario (Nombre,Stock,Costo,Unidad_Medida)"
-                        + "values (?,?,?,?)";
-                
-                
-                
-                PreparedStatement pst = conectar.prepareStatement(sql);
-                pst.setString(1, nombre);
-                pst.setFloat(2, stock);
-                pst.setFloat(3, costo);
-                pst.setString(4, unidad_medida);
-                
-                System.out.println(nombre+" "+ stock+""+ costo +""+ unidad_medida);
-                pst.executeUpdate();
-                
-                JOptionPane.showMessageDialog(null, "Registro exitoso.");
-               
-         } catch (Exception e) {
-             JOptionPane.showMessageDialog(null, "Error al registrar.");
-         }
-     }
+    
     
     private void Limpiar(){
         txtNombre.setText("Nombre.");
-        txtNombre.setForeground(new Color(102,102,102));
-        txtStock.setText("Stock.");
-        txtStock.setForeground(new Color(102,102,102));
-        txtCosto.setText("Costo.");
-        txtCosto.setForeground(new Color(102,102,102));  
-        cmbUnidad_Medida.setSelectedIndex(0);
-        cmbUnidad_Medida.setForeground(new Color(102,102,102));
-          
-    }
-    
-    public void InventarioSeleccionado(int Fila){
-        Nombre = tblInventario.getValueAt(Fila, 0).toString();
-        Stock= tblInventario.getValueAt(Fila, 1).toString();
-        Costo= tblInventario.getValueAt(Fila, 2).toString();
-        Unidad_Medida= tblInventario.getValueAt(Fila, 3).toString();
-        
+        txtNombre.setForeground(new Color(102,102,102));  
     }
     
     public void limpiarTabla(){
@@ -140,6 +104,7 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, "Error al limpiar la tabla.");
         }
     }
+    
     
     private void CargarInventario(){
         limpiarTabla();
@@ -165,8 +130,9 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
         } catch (Exception e) {
         }
     }
-
-    private void ConsultaInventario(){
+   
+    
+     private void ConsultaInventario(){
         limpiarTabla();
         String nombre = txtNombre.getText()+"%";
         String sql = "select * from Inventario where Nombre like '"+nombre+"'";
@@ -190,8 +156,8 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
         } catch (Exception e) {
         }
     }
-    
-    /*private void SumaInventario(){//muy dificil
+     
+     private void RetiraInventario(){
       float stock_actual=0;
         String sql=""; 
         sql = "select Stock from Inventario where ID_Inventario = "+id_Inventario+"";
@@ -209,6 +175,14 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
         } catch (Exception e) {
         }  
         
+        if (stock_actual< Float.parseFloat(jsCantidad.getValue().toString())){
+            JOptionPane.showMessageDialog(null, "Asigne un valor menor a la existencia");
+            jsCantidad.setValue(0);
+              
+        } else if (Float.parseFloat(jsCantidad.getValue().toString())<0){
+            JOptionPane.showMessageDialog(null, "Asigne Valores positivos para retirar");
+            jsCantidad.setValue(0);
+        }
             
             stock_actual-= Float.parseFloat(jsCantidad.getValue().toString());
 
@@ -229,7 +203,12 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
          
             
         
-     }    */
+     }    
+       
+        
+     
+    
+     
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -246,11 +225,10 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
         btnCerrarSesion = new javax.swing.JButton();
         pnlInformacion = new javax.swing.JPanel();
         txtNombre = new javax.swing.JTextField();
-        txtStock = new javax.swing.JTextField();
-        txtCosto = new javax.swing.JTextField();
-        cmbUnidad_Medida = new javax.swing.JComboBox<>();
+        jsCantidad = new javax.swing.JSpinner();
+        btnRetirar = new javax.swing.JButton();
+        btnBuscar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
-        btnRegistrar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblInventario = new javax.swing.JTable();
 
@@ -272,9 +250,9 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel7.setText("Agregar Inventario");
+        jLabel7.setText("Retirar Inventario");
         pnlFondo.add(jLabel7);
-        jLabel7.setBounds(0, 120, 1270, 58);
+        jLabel7.setBounds(0, 100, 1270, 58);
 
         pnlCabezera.setBackground(new java.awt.Color(224, 122, 95));
         pnlCabezera.setMaximumSize(new java.awt.Dimension(1270, 66));
@@ -327,58 +305,44 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
             }
         });
         pnlInformacion.add(txtNombre);
-        txtNombre.setBounds(20, 30, 202, 40);
+        txtNombre.setBounds(0, 20, 202, 30);
 
-        txtStock.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtStock.setForeground(new java.awt.Color(102, 102, 102));
-        txtStock.setText("Stock.");
-        txtStock.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtStockFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtStockFocusLost(evt);
+        jsCantidad.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jsCantidad.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jsCantidad.setRequestFocusEnabled(false);
+        jsCantidad.setValue(1);
+        jsCantidad.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jsCantidadMouseClicked(evt);
             }
         });
-        txtStock.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtStockActionPerformed(evt);
-            }
-        });
-        pnlInformacion.add(txtStock);
-        txtStock.setBounds(20, 108, 202, 40);
+        pnlInformacion.add(jsCantidad);
+        jsCantidad.setBounds(400, 20, 120, 30);
 
-        txtCosto.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtCosto.setForeground(new java.awt.Color(102, 102, 102));
-        txtCosto.setText("Costo.");
-        txtCosto.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtCostoFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtCostoFocusLost(evt);
-            }
-        });
-        txtCosto.addActionListener(new java.awt.event.ActionListener() {
+        btnRetirar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        btnRetirar.setText("Retirar");
+        btnRetirar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnRetirar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtCostoActionPerformed(evt);
+                btnRetirarActionPerformed(evt);
             }
         });
-        pnlInformacion.add(txtCosto);
-        txtCosto.setBounds(250, 30, 202, 40);
+        pnlInformacion.add(btnRetirar);
+        btnRetirar.setBounds(580, 20, 120, 30);
 
-        cmbUnidad_Medida.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        cmbUnidad_Medida.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Unidad de Medida", "KG", "Litros" }));
-        cmbUnidad_Medida.addActionListener(new java.awt.event.ActionListener() {
+        btnBuscar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        btnBuscar.setText("Buscar");
+        btnBuscar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbUnidad_MedidaActionPerformed(evt);
+                btnBuscarActionPerformed(evt);
             }
         });
-        pnlInformacion.add(cmbUnidad_Medida);
-        cmbUnidad_Medida.setBounds(250, 110, 200, 40);
+        pnlInformacion.add(btnBuscar);
+        btnBuscar.setBounds(230, 20, 120, 30);
 
         pnlFondo.add(pnlInformacion);
-        pnlInformacion.setBounds(250, 200, 490, 170);
+        pnlInformacion.setBounds(230, 180, 720, 60);
 
         btnCancelar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnCancelar.setText("Regresar");
@@ -389,18 +353,7 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
             }
         });
         pnlFondo.add(btnCancelar);
-        btnCancelar.setBounds(980, 430, 170, 70);
-
-        btnRegistrar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        btnRegistrar.setText("Agregar inventario");
-        btnRegistrar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        btnRegistrar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRegistrarActionPerformed(evt);
-            }
-        });
-        pnlFondo.add(btnRegistrar);
-        btnRegistrar.setBounds(330, 430, 170, 70);
+        btnCancelar.setBounds(780, 500, 150, 60);
 
         tblInventario.setBackground(new java.awt.Color(244, 241, 222));
         tblInventario.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
@@ -436,7 +389,7 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tblInventario);
 
         pnlFondo.add(jScrollPane1);
-        jScrollPane1.setBounds(750, 200, 470, 210);
+        jScrollPane1.setBounds(230, 250, 700, 210);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -477,56 +430,12 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtNombreFocusGained
 
-    private void txtStockFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtStockFocusGained
-        if(txtStock.getText().equals("Stock.")){
-            txtStock.setText("");
-            txtStock.setForeground(Color.black);
-        }
-    }//GEN-LAST:event_txtStockFocusGained
-
     private void txtNombreFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNombreFocusLost
         if(txtNombre.getText().equals("")){
             txtNombre.setText("Nombre.");
             txtNombre.setForeground(new Color(102,102,102));
         }
     }//GEN-LAST:event_txtNombreFocusLost
-
-    private void txtStockFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtStockFocusLost
-        if(txtStock.getText().equals("")){
-            txtStock.setText("Stock.");
-            txtStock.setForeground(new Color(102,102,102));
-        }
-    }//GEN-LAST:event_txtStockFocusLost
-
-    private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
-        if (Vacio()==false) {
-            int resp = JOptionPane.showConfirmDialog(null, 
-                "¿Los datos son correctos?", "Agregar.",JOptionPane.OK_CANCEL_OPTION);
-            if(resp == 0){
-                AgregarInventario();
-                int resp2 = JOptionPane.showConfirmDialog(null, 
-                    "¿Desea hacer un nuevo registro?", "Agregar.",JOptionPane.YES_NO_OPTION);
-                if(resp2 == 1){
-                    MandaInfoVIP();
-                }
-                else{
-                    Limpiar();
-                    //limpiarTabla();
-                    CargarInventario();
-                }
-                 
-                }
-                else{
-                JOptionPane.showMessageDialog(null, "Se ha cancelado el registro.");
-                Limpiar();
-                 
-            }
-            
-        }
-        else
-            JOptionPane.showMessageDialog(null, "Hay campos vacios.");
-        
-    }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         try {
@@ -536,31 +445,27 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowOpened
 
-    private void txtStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStockActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtStockActionPerformed
+    private void jsCantidadMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jsCantidadMouseClicked
+        if(Integer.parseInt(jsCantidad.getValue().toString())<=1)jsCantidad.setValue(1);
+    }//GEN-LAST:event_jsCantidadMouseClicked
 
-    private void txtCostoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCostoFocusGained
-     if(txtCosto.getText().equals("Costo.")){
-            txtCosto.setText("");
-            txtCosto.setForeground(Color.black);
+    private void btnRetirarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRetirarActionPerformed
+        RetiraInventario();
+    }//GEN-LAST:event_btnRetirarActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        try {
+            if (txtNombre.getText().equals("Nombre.")) {
+                CargarInventario();
+            }
+            else{
+            ConsultaInventario();
+            txtNombre.setText("Nombre.");
+            txtNombre.setForeground(new Color(102,102,102));
+            }
+        } catch (Exception e) {
         }
-    }//GEN-LAST:event_txtCostoFocusGained
-
-    private void txtCostoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCostoFocusLost
-        if(txtCosto.getText().equals("")){
-            txtCosto.setText("Costo.");
-            txtCosto.setForeground(new Color(102,102,102));
-        }
-    }//GEN-LAST:event_txtCostoFocusLost
-
-    private void txtCostoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCostoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtCostoActionPerformed
-
-    private void cmbUnidad_MedidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbUnidad_MedidaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbUnidad_MedidaActionPerformed
+    }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void tblInventarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblInventarioMouseClicked
         try {
@@ -588,14 +493,30 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Ventana_Inventario_Agregar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Ventana_Inventario_Retirar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Ventana_Inventario_Agregar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Ventana_Inventario_Retirar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Ventana_Inventario_Agregar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Ventana_Inventario_Retirar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Ventana_Inventario_Agregar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Ventana_Inventario_Retirar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -616,25 +537,24 @@ public class Ventana_Inventario_Agregar extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Ventana_Inventario_Agregar().setVisible(true);
+                new Ventana_Inventario_Retirar().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnCerrarSesion;
-    private javax.swing.JButton btnRegistrar;
-    private javax.swing.JComboBox<String> cmbUnidad_Medida;
+    private javax.swing.JButton btnRetirar;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSpinner jsCantidad;
     private javax.swing.JLabel lblUsuario;
     private javax.swing.JPanel pnlCabezera;
     private javax.swing.JPanel pnlFondo;
     private javax.swing.JPanel pnlInformacion;
     private javax.swing.JTable tblInventario;
-    private javax.swing.JTextField txtCosto;
     private javax.swing.JTextField txtNombre;
-    private javax.swing.JTextField txtStock;
     // End of variables declaration//GEN-END:variables
 }

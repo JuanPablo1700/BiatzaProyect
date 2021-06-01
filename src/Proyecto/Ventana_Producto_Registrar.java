@@ -7,6 +7,9 @@ package Proyecto;
 
 import java.awt.Color;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
@@ -283,7 +286,8 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Datos registrados correctamente.");
             limpiarCampos();
         }else{
-            JOptionPane.showMessageDialog(null, "Error: No se registraron los datos.");
+            JOptionPane.showMessageDialog(null, "No se registraron los datos.");
+            limpiarCampos();
         }
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
@@ -293,10 +297,10 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
 
     private void limpiarCampos(){
         cmbTipoProducto.setSelectedIndex(0);
-        txtNomProducto.setText("");
+        txtNomProducto.setText("Nombre del producto");
         cmbTamaño.setSelectedIndex(0);
-        txtPrecioProducto.setText("");
-        ta_desc.setText("");
+        txtPrecioProducto.setText("Precio");
+        ta_desc.setText("Descripcion del Producto");
     }
     
     private boolean guardar(){
@@ -307,9 +311,12 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
         Tamaño = cmbTamaño.getSelectedItem().toString();
         Precio = Float.parseFloat(txtPrecioProducto.getText());
         Descripcion = ta_desc.getText();
-        
-        CBD.conectar();
-        String sql = "insert into productos (Nom_Producto, Tipo, Tamaño, Precio, Descripcion) "
+        if(DatoDuplicado()){
+            JOptionPane.showMessageDialog(null, "Producto Duplicado.");
+            return estado = false;
+        }else{
+            CBD.conectar();
+            String sql = "insert into productos (Nom_Producto, Tipo, Tamaño, Precio, Descripcion) "
                 + "values("
                 + "'" + Nom_Producto + "',"
                 + "'" + Tipo + "',"
@@ -317,11 +324,38 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
                 + Precio + ","
                 + "'" + Descripcion + "'"
                 + ")";
-        if(CBD.ejecutar(sql)){
-            estado = true;
+            if(CBD.ejecutar(sql)){
+                estado = true;
+            }
+            CBD.desconectar();
         }
-        CBD.desconectar();
         return estado;
+    }
+    
+    public boolean DatoDuplicado(){
+        boolean duplicado = false;
+        Tipo = cmbTipoProducto.getSelectedItem().toString();
+        Nom_Producto = txtNomProducto.getText();
+        Tamaño = cmbTamaño.getSelectedItem().toString();
+        
+        String[] Datos = new String[3];
+        try {
+            Connection conectar = CBD.conectar();
+            Statement st = conectar.createStatement();
+            ResultSet rs = st.executeQuery("SELECT Nom_Producto, Tipo, Tamaño from Productos");
+            
+            while (rs.next()){
+                Datos[0]=rs.getString(1);
+                Datos[1]=rs.getString(2);
+                Datos[2]=rs.getString(3);
+                
+                if(Datos[0].equals(Nom_Producto) && Datos[1].equals(Tipo) && Datos[2].equals(Tamaño)) return duplicado = true;
+            }
+            conectar.close();    
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+        return duplicado;
     }
     
     private void ValidaLetras(JTextField texto)throws Exception{
@@ -423,6 +457,14 @@ public class Ventana_Producto_Registrar extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Ventana_Producto_Registrar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>

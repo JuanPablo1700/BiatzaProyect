@@ -23,7 +23,7 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         initComponents();
     }
 
-    public String Nombre_Inventario="",Cantidad="",Costo="",Descripción="";
+    public String Nombre="",Stock="",Costo="",Unidad_Medida="";
     
     public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Cargo;
     
@@ -34,7 +34,7 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         DefaultTableModel mod=(DefaultTableModel) tblInventario.getModel();
         tblInventario.setModel(mod);
         String sql=""; 
-        sql = "select Nombre,Cantidad,Costo,Descripcion from Inventario";
+        sql = "select Nombre,Stock,Costo,Unidad_Medida from Inventario";
         String[] Datos = new String[4];
         try {
             Statement st = conectar.createStatement();
@@ -55,15 +55,18 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
     }
     
     public void InventarioSeleccionado(int Fila){
-        Nombre_Inventario = tblInventario.getValueAt(Fila, 0).toString();
-        Cantidad= tblInventario.getValueAt(Fila, 1).toString();
-        Costo= tblInventario.getValueAt(Fila, 2).toString();
-        Descripción= tblInventario.getValueAt(Fila, 3).toString();
-          
+        Nombre = tblInventario.getValueAt(Fila, 0).toString();
+        Stock = tblInventario.getValueAt(Fila, 1).toString();
+         Costo= tblInventario.getValueAt(Fila, 2).toString();
+        Unidad_Medida=tblInventario.getValueAt(Fila, 3).toString();
     }
     
     private void MandaInfoVIA(){
         Ventana_Inventario_Agregar VIA = new Ventana_Inventario_Agregar();
+        VIA.Nombre=Nombre;
+        VIA.Stock=Stock;
+        VIA.Costo=Costo;
+        VIA.Unidad_Medida=Unidad_Medida;
         
         VIA.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
         VIA.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
@@ -75,10 +78,10 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
     
     private void MandaInfoVIE(){
         Ventana_Inventario_Eliminar VIE = new Ventana_Inventario_Eliminar();
-        VIE.Nombre_Inventario=Nombre_Inventario;
-        VIE.Cantidad=Cantidad;
+        VIE.Nombre=Nombre;
+        VIE.Stock=Stock;
         VIE.Costo=Costo;
-        VIE.Descripción=Descripción;
+        VIE.Unidad_Medida=Unidad_Medida;
         
         VIE.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
         VIE.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
@@ -86,6 +89,21 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         
         this.dispose();        
         VIE.setVisible(true);
+    }
+    
+    private void MandaInfoVIR(){
+        Ventana_Inventario_Retirar VIR = new Ventana_Inventario_Retirar();
+        VIR.Nombre=Nombre;
+        VIR.Stock=Stock;
+        VIR.Costo=Costo;
+        VIR.Unidad_Medida=Unidad_Medida;
+        
+        VIR.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
+        VIR.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
+        VIR.Actual_Cargo=Actual_Cargo;
+        
+        this.dispose();        
+        VIR.setVisible(true);
     }
     
     private void MandaInfoIP(){
@@ -111,10 +129,11 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         lblUsuario = new javax.swing.JLabel();
         btnCerrarSesion = new javax.swing.JButton();
         btnRegresar = new javax.swing.JButton();
-        btnEliminarInventario = new javax.swing.JButton();
+        btnRetirarInventario = new javax.swing.JButton();
         btnAgregarInventario = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblInventario = new javax.swing.JTable();
+        btnEliminarInventario1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1270, 583));
@@ -148,7 +167,7 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         lblUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblUsuario.setText("Administrador: Nombre_Usuario");
         pnlCabezera.add(lblUsuario);
-        lblUsuario.setBounds(10, 20, 320, 30);
+        lblUsuario.setBounds(10, 20, 620, 30);
 
         btnCerrarSesion.setBackground(new java.awt.Color(224, 122, 95));
         btnCerrarSesion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -182,17 +201,17 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         btnEliminarUsuario.add(btnRegresar);
         btnRegresar.setBounds(850, 480, 170, 70);
 
-        btnEliminarInventario.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnEliminarInventario.setText("Eliminar Inventario");
-        btnEliminarInventario.setActionCommand("Registrar");
-        btnEliminarInventario.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        btnEliminarInventario.addActionListener(new java.awt.event.ActionListener() {
+        btnRetirarInventario.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnRetirarInventario.setText("Retirar Inventario");
+        btnRetirarInventario.setActionCommand("Registrar");
+        btnRetirarInventario.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnRetirarInventario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEliminarInventarioActionPerformed(evt);
+                btnRetirarInventarioActionPerformed(evt);
             }
         });
-        btnEliminarUsuario.add(btnEliminarInventario);
-        btnEliminarInventario.setBounds(560, 480, 170, 70);
+        btnEliminarUsuario.add(btnRetirarInventario);
+        btnRetirarInventario.setBounds(650, 480, 170, 70);
 
         btnAgregarInventario.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnAgregarInventario.setText("Agregar Inventario");
@@ -213,7 +232,7 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Nombre", "Cantidad", "Costo", "Descripción"
+                "Nombre", "Stock", "Costo", "Unidad_Medida"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -241,6 +260,18 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         btnEliminarUsuario.add(jScrollPane1);
         jScrollPane1.setBounds(260, 210, 760, 250);
 
+        btnEliminarInventario1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnEliminarInventario1.setText("Eliminar Inventario");
+        btnEliminarInventario1.setActionCommand("Registrar");
+        btnEliminarInventario1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnEliminarInventario1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarInventario1ActionPerformed(evt);
+            }
+        });
+        btnEliminarUsuario.add(btnEliminarInventario1);
+        btnEliminarInventario1.setBounds(460, 480, 170, 70);
+
         getContentPane().add(btnEliminarUsuario);
         btnEliminarUsuario.setBounds(0, 0, 1270, 590);
 
@@ -255,12 +286,12 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnAgregarInventarioActionPerformed
 
-    private void btnEliminarInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarInventarioActionPerformed
-        try {
-            MandaInfoVIE();
+    private void btnRetirarInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRetirarInventarioActionPerformed
+      try {
+            MandaInfoVIR();
         } catch (Exception e) {
-        }
-    }//GEN-LAST:event_btnEliminarInventarioActionPerformed
+        }  
+    }//GEN-LAST:event_btnRetirarInventarioActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
         try {
@@ -290,6 +321,13 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         } catch (Exception e) {
         }
     }//GEN-LAST:event_formWindowOpened
+
+    private void btnEliminarInventario1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarInventario1ActionPerformed
+        try {
+            MandaInfoVIE();
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_btnEliminarInventario1ActionPerformed
 
     
     /**
@@ -325,6 +363,14 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -337,9 +383,10 @@ public class Ventana_Inventario_Principal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarInventario;
     private javax.swing.JButton btnCerrarSesion;
-    private javax.swing.JButton btnEliminarInventario;
+    private javax.swing.JButton btnEliminarInventario1;
     private javax.swing.JPanel btnEliminarUsuario;
     private javax.swing.JButton btnRegresar;
+    private javax.swing.JButton btnRetirarInventario;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JLabel lblUsuario;

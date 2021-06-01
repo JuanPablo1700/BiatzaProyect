@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  *
@@ -36,7 +37,7 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
     private boolean Vacio(){
         boolean vacio=true;
         if(!txtNombre.getText().equals("Nombre") && !txtApellido.getText().equals("Apellido.") && !txtTelefono.getText().equals("Teléfono.")
-                 && !txtDireccion.getText().equals("Dirección."))vacio=false;
+                 && !txtCalle.getText().equals("Dirección."))vacio=false;
 
         return vacio;
     }
@@ -58,7 +59,7 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
         if(!Vacio()){
         VPR.Reg_Telefono = txtTelefono.getText();
         VPR.Reg_Nombre = txtNombre.getText()+" "+txtApellido.getText();
-        VPR.Reg_Direccion = txtDireccion.getText();
+        VPR.Reg_Direccion = txtCalle.getText();
         }
         this.dispose();
         VPR.setVisible(true);
@@ -71,8 +72,19 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
         txtApellido.setForeground(new Color(102,102,102));
         txtTelefono.setText("Teléfono.");
         txtTelefono.setForeground(new Color(102,102,102));
-        txtDireccion.setText("Dirección.");
-        txtDireccion.setForeground(new Color(102,102,102));
+        txtCalle.setText("Calle.");
+        txtCalle.setForeground(new Color(102,102,102));
+        
+        txtNumero.setText("Número.");
+        txtNumero.setForeground(new Color(102,102,102));
+                
+        txtColonia.setText("Colonia.");
+        txtColonia.setForeground(new Color(102,102,102));
+        txtEnt1.setText("Entrecalle 1.");
+        txtEnt1.setForeground(new Color(102,102,102));
+        txtEnt2.setText("Entrecalle 2.");
+        txtEnt2.setForeground(new Color(102,102,102));
+        
         
     }
     
@@ -81,7 +93,7 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
             nombre=txtNombre.getText();
             apellido=txtApellido.getText();
             telefono=txtTelefono.getText();
-            direccion=txtDireccion.getText();
+            direccion=txtCalle.getText();
             
             try {
                 Connection conectar = CBD.conectar();
@@ -101,6 +113,24 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
              JOptionPane.showMessageDialog(null, "Error al registrar.");
          }
      }
+    private boolean validaTel(JTextField texto){
+        boolean res=false;
+        res=texto.getText().matches("\\d{10}");
+        texto.requestFocus();
+        return res;
+    }
+    private boolean validaNumero(JTextField texto){
+        boolean res=false;
+        res=texto.getText().matches("[0-9]+.*");
+        texto.requestFocus();
+        return res;
+    }
+    private boolean validaTexto(JTextField texto){
+       boolean res=false;
+       res=texto.getText().toUpperCase().matches("[A-Z]+.*");
+       texto.requestFocus();
+       return res;
+    }
     
 
     /**
@@ -123,7 +153,11 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
         txtTelefono = new javax.swing.JTextField();
         txtNombre = new javax.swing.JTextField();
         txtApellido = new javax.swing.JTextField();
-        txtDireccion = new javax.swing.JTextField();
+        txtCalle = new javax.swing.JTextField();
+        txtNumero = new javax.swing.JTextField();
+        txtColonia = new javax.swing.JTextField();
+        txtEnt1 = new javax.swing.JTextField();
+        txtEnt2 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1270, 583));
@@ -215,8 +249,13 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
                 txtTelefonoFocusLost(evt);
             }
         });
+        txtTelefono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtTelefonoActionPerformed(evt);
+            }
+        });
         pnlInformacion.add(txtTelefono);
-        txtTelefono.setBounds(100, 10, 202, 26);
+        txtTelefono.setBounds(110, 10, 202, 28);
 
         txtNombre.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtNombre.setForeground(new java.awt.Color(102, 102, 102));
@@ -229,8 +268,13 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
                 txtNombreFocusLost(evt);
             }
         });
+        txtNombre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNombreActionPerformed(evt);
+            }
+        });
         pnlInformacion.add(txtNombre);
-        txtNombre.setBounds(100, 60, 202, 26);
+        txtNombre.setBounds(10, 50, 202, 28);
 
         txtApellido.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtApellido.setForeground(new java.awt.Color(102, 102, 102));
@@ -244,24 +288,85 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
             }
         });
         pnlInformacion.add(txtApellido);
-        txtApellido.setBounds(100, 110, 202, 26);
+        txtApellido.setBounds(230, 50, 202, 28);
 
-        txtDireccion.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtDireccion.setForeground(new java.awt.Color(102, 102, 102));
-        txtDireccion.setText("Dirección.");
-        txtDireccion.addFocusListener(new java.awt.event.FocusAdapter() {
+        txtCalle.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtCalle.setForeground(new java.awt.Color(102, 102, 102));
+        txtCalle.setText("Calle.");
+        txtCalle.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                txtDireccionFocusGained(evt);
+                txtCalleFocusGained(evt);
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
-                txtDireccionFocusLost(evt);
+                txtCalleFocusLost(evt);
             }
         });
-        pnlInformacion.add(txtDireccion);
-        txtDireccion.setBounds(100, 160, 202, 26);
+        txtCalle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCalleActionPerformed(evt);
+            }
+        });
+        pnlInformacion.add(txtCalle);
+        txtCalle.setBounds(10, 90, 202, 28);
+
+        txtNumero.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtNumero.setForeground(new java.awt.Color(102, 102, 102));
+        txtNumero.setText("Número.");
+        txtNumero.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtNumeroFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtNumeroFocusLost(evt);
+            }
+        });
+        pnlInformacion.add(txtNumero);
+        txtNumero.setBounds(230, 90, 202, 28);
+
+        txtColonia.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtColonia.setForeground(new java.awt.Color(102, 102, 102));
+        txtColonia.setText("Colonia.");
+        txtColonia.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtColoniaFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtColoniaFocusLost(evt);
+            }
+        });
+        pnlInformacion.add(txtColonia);
+        txtColonia.setBounds(120, 130, 202, 28);
+
+        txtEnt1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtEnt1.setForeground(new java.awt.Color(102, 102, 102));
+        txtEnt1.setText("Entrecalle 1.");
+        txtEnt1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtEnt1FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtEnt1FocusLost(evt);
+            }
+        });
+        pnlInformacion.add(txtEnt1);
+        txtEnt1.setBounds(10, 170, 202, 28);
+
+        txtEnt2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtEnt2.setForeground(new java.awt.Color(102, 102, 102));
+        txtEnt2.setText("Entrecalle 2.");
+        txtEnt2.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtEnt2FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtEnt2FocusLost(evt);
+            }
+        });
+        pnlInformacion.add(txtEnt2);
+        txtEnt2.setBounds(230, 170, 202, 28);
 
         pnlFondo.add(pnlInformacion);
-        pnlInformacion.setBounds(440, 200, 390, 220);
+        pnlInformacion.setBounds(410, 200, 450, 220);
 
         getContentPane().add(pnlFondo);
         pnlFondo.setBounds(0, 0, 1270, 583);
@@ -278,22 +383,50 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnCancelarActionPerformed
 
-    private void txtDireccionFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtDireccionFocusGained
-        if(txtDireccion.getText().equals("Dirección.")){
-            txtDireccion.setText("");
-            txtDireccion.setForeground(Color.black);
+    private void txtCalleFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCalleFocusGained
+        if(txtCalle.getText().equals("Calle.")){
+            txtCalle.setText("");
+            txtCalle.setForeground(Color.black);
         }
-    }//GEN-LAST:event_txtDireccionFocusGained
+    }//GEN-LAST:event_txtCalleFocusGained
 
-    private void txtDireccionFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtDireccionFocusLost
-        if(txtDireccion.getText().equals("")){
-            txtDireccion.setText("Dirección.");
-            txtDireccion.setForeground(new Color(102,102,102));
+    private void txtCalleFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCalleFocusLost
+        if(txtCalle.getText().equals("")){
+            txtCalle.setText("Calle.");
+            txtCalle.setForeground(new Color(102,102,102));
         }
-    }//GEN-LAST:event_txtDireccionFocusLost
+    }//GEN-LAST:event_txtCalleFocusLost
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
+        
+        
+        
         if (Vacio()==false) {
+            if(!validaTel(txtTelefono)){
+            JOptionPane.showMessageDialog(this,"Datos invalidos"); return;
+        }
+        if(!validaTexto(txtNombre)){
+            JOptionPane.showMessageDialog(this,"Datos invalidos"); return;
+        }
+        if(!validaTexto(txtApellido)){
+            JOptionPane.showMessageDialog(this,"Datos invalidos"); return;
+        }
+        if(!validaTexto(txtCalle)){
+            JOptionPane.showMessageDialog(this,"Datos invalidos"); return;
+        }
+        if(!validaNumero(txtNumero)){
+            JOptionPane.showMessageDialog(this,"Datos invalidos"); return;
+        }
+        if(!validaTexto(txtColonia)){
+            JOptionPane.showMessageDialog(this,"Datos invalidos"); return;
+        }
+        if(!validaTexto(txtEnt1)){
+            JOptionPane.showMessageDialog(this,"Datos invalidos"); return;
+        }
+        if(!validaTexto(txtEnt2)){
+            JOptionPane.showMessageDialog(this,"Datos invalidos"); return;
+        }
+        
             int resp = JOptionPane.showConfirmDialog(null, 
                 "¿Los datos son correctos?", "Registrar.",JOptionPane.OK_CANCEL_OPTION);
             if(resp == 0){
@@ -314,10 +447,11 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Se ha cancelado el registro.");
                 Limpiar();
             }
-            
+           
         }
         else
             JOptionPane.showMessageDialog(null, "Hay campos vacios.");
+        
         
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
@@ -377,6 +511,74 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowOpened
 
+    private void txtColoniaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtColoniaFocusGained
+        if(txtColonia.getText().equals("Colonia.")){
+            txtColonia.setText("");
+            txtColonia.setForeground(Color.black);
+        }
+    }//GEN-LAST:event_txtColoniaFocusGained
+
+    private void txtColoniaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtColoniaFocusLost
+        if(txtColonia.getText().equals("")){
+            txtColonia.setText("Colonia.");
+            txtColonia.setForeground(new Color(102,102,102));
+        }
+    }//GEN-LAST:event_txtColoniaFocusLost
+
+    private void txtEnt2FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtEnt2FocusGained
+        if(txtEnt2.getText().equals("Entrecalle 2.")){
+            txtEnt2.setText("");
+            txtEnt2.setForeground(Color.black);
+        }
+    }//GEN-LAST:event_txtEnt2FocusGained
+
+    private void txtEnt2FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtEnt2FocusLost
+        if(txtEnt2.getText().equals("")){
+            txtEnt2.setText("Entrecalle 2.");
+            txtEnt2.setForeground(new Color(102,102,102));
+        }
+    }//GEN-LAST:event_txtEnt2FocusLost
+
+    private void txtNumeroFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNumeroFocusGained
+        if(txtNumero.getText().equals("Número.")){
+            txtNumero.setText("");
+            txtNumero.setForeground(Color.black);
+        }
+    }//GEN-LAST:event_txtNumeroFocusGained
+
+    private void txtNumeroFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNumeroFocusLost
+        if(txtNumero.getText().equals("")){
+            txtNumero.setText("Número.");
+            txtNumero.setForeground(new Color(102,102,102));
+        }
+    }//GEN-LAST:event_txtNumeroFocusLost
+
+    private void txtEnt1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtEnt1FocusGained
+        if(txtEnt1.getText().equals("Entrecalle 1.")){
+            txtEnt1.setText("");
+            txtEnt1.setForeground(Color.black);
+        }
+    }//GEN-LAST:event_txtEnt1FocusGained
+
+    private void txtEnt1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtEnt1FocusLost
+        if(txtEnt1.getText().equals("")){
+            txtEnt1.setText("Entrecalle 1.");
+            txtEnt1.setForeground(new Color(102,102,102));
+        }
+    }//GEN-LAST:event_txtEnt1FocusLost
+
+    private void txtCalleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCalleActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCalleActionPerformed
+
+    private void txtTelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTelefonoActionPerformed
+        
+    }//GEN-LAST:event_txtTelefonoActionPerformed
+
+    private void txtNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNombreActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -406,6 +608,10 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -425,8 +631,12 @@ public class Ventana_Cliente_Registrar extends javax.swing.JFrame {
     private javax.swing.JPanel pnlFondo;
     private javax.swing.JPanel pnlInformacion;
     private javax.swing.JTextField txtApellido;
-    private javax.swing.JTextField txtDireccion;
+    private javax.swing.JTextField txtCalle;
+    private javax.swing.JTextField txtColonia;
+    private javax.swing.JTextField txtEnt1;
+    private javax.swing.JTextField txtEnt2;
     private javax.swing.JTextField txtNombre;
+    private javax.swing.JTextField txtNumero;
     private javax.swing.JTextField txtTelefono;
     // End of variables declaration//GEN-END:variables
 }

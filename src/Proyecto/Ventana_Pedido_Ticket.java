@@ -6,7 +6,11 @@
 package Proyecto;
 import java.awt.*;
 import java.awt.print.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author sergi
@@ -16,16 +20,22 @@ public class Ventana_Pedido_Ticket extends javax.swing.JFrame implements Printab
     /**
      * Creates new form Ventana_Pedido_Ticket
      */
+    private DefaultTableModel m,n;
     public Ventana_Pedido_Ticket() {
         initComponents();
+        m = (DefaultTableModel) tblProduc.getModel();
+        tblProduc.setModel(m);
+        n = (DefaultTableModel) tblProduc2.getModel();
+        tblProduc2.setModel(n);
         
     }
     public String Actual_Nombre_Usuario,Actual_Apellido_Usuario,Actual_Telefono,Actual_U,Actual_C,
             Actual_Correo,Actual_Direccion,Actual_Cargo,Actual_Fecha,Actual_Status,id_Usuario;
+    public String[]contenidoTbl;
+    public String total,id_Pedido;
     
     
-    
-    private void mandaInfoIPR(Ventana_Pedido_Registrar vtn){
+    private void mandaInfoIPR(Ventana_Pedido_Principal vtn){
         vtn.Actual_Nombre_Usuario=Actual_Nombre_Usuario;
         vtn.Actual_Apellido_Usuario=Actual_Apellido_Usuario;
         vtn.Actual_Telefono=Actual_Telefono;
@@ -33,7 +43,33 @@ public class Ventana_Pedido_Ticket extends javax.swing.JFrame implements Printab
         this.dispose();
         vtn.setVisible(true);
     }
-    
+    private void CargaTabla(){
+        try {
+          String cad[] = new String[4];
+          Object O[] = new Object[4];
+        for (int i = 0; i < contenidoTbl.length; i++) {
+            cad=contenidoTbl[i].split("\n ");
+            O[0]=cad[0];
+            O[1]=cad[1];
+            O[2]=cad[2];
+            O[3]=cad[3];
+            m.addRow(O);
+            n.addRow(O);
+        }
+        lblTotal.setText(total);
+        Calendar calendario = new GregorianCalendar();
+        int anio = calendario.get(Calendar.YEAR),mes  = calendario.get(Calendar.MONTH)+1,dia = calendario.get(Calendar.DAY_OF_MONTH);
+        
+        lblFecha.setText(dia+" - "+mes+" - "+anio);
+        lblNoPedido.setText(id_Pedido);
+        
+        //lblTotal2.setText(total);
+        lblFecha2.setText(dia+" - "+mes+" - "+anio);
+        lblNoPedido2.setText(id_Pedido);
+        } catch (Exception e) {
+        }
+        
+    }
     
     
     /**
@@ -45,31 +81,60 @@ public class Ventana_Pedido_Ticket extends javax.swing.JFrame implements Printab
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnImprimir = new javax.swing.JButton();
         btnRegresar = new javax.swing.JButton();
+        btnImprimir = new javax.swing.JButton();
+        pnlTicket2 = new javax.swing.JPanel();
+        jLabel15 = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        Contenido2 = new javax.swing.JTextArea();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        tblProduc2 = new javax.swing.JTable();
+        lblTotal2 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        lblFecha2 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        lblNoPedido2 = new javax.swing.JLabel();
         pnlTicket = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        Contenido = new javax.swing.JTextArea();
+        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
+        tblProduc = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
+        lblTotal = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        lblFecha = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        lblNoPedido = new javax.swing.JLabel();
+        pnlTicket1 = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        Contenido1 = new javax.swing.JTextArea();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        tblProduc1 = new javax.swing.JTable();
+        jLabel11 = new javax.swing.JLabel();
+        lblTotal1 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        lblFecha1 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        lblNoPedido1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(400, 555));
-        setMinimumSize(new java.awt.Dimension(400, 555));
+        setMinimumSize(new java.awt.Dimension(809, 555));
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(400, 555));
-
-        btnImprimir.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        btnImprimir.setText("Imprimir");
-        btnImprimir.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
-        btnImprimir.setMaximumSize(new java.awt.Dimension(120, 50));
-        btnImprimir.setMinimumSize(new java.awt.Dimension(120, 50));
-        btnImprimir.setPreferredSize(new java.awt.Dimension(120, 50));
-        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnImprimirActionPerformed(evt);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
             }
         });
+        getContentPane().setLayout(null);
 
         btnRegresar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnRegresar.setText("Regresar");
@@ -82,86 +147,280 @@ public class Ventana_Pedido_Ticket extends javax.swing.JFrame implements Printab
                 btnRegresarActionPerformed(evt);
             }
         });
+        getContentPane().add(btnRegresar);
+        btnRegresar.setBounds(340, 490, 130, 50);
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Ejemplo de ticket");
+        btnImprimir.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        btnImprimir.setText("Imprimir");
+        btnImprimir.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black, java.awt.Color.black));
+        btnImprimir.setMaximumSize(new java.awt.Dimension(120, 50));
+        btnImprimir.setMinimumSize(new java.awt.Dimension(120, 50));
+        btnImprimir.setPreferredSize(new java.awt.Dimension(120, 50));
+        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImprimirActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnImprimir);
+        btnImprimir.setBounds(340, 490, 130, 50);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        pnlTicket2.setMaximumSize(new java.awt.Dimension(400, 460));
+        pnlTicket2.setMinimumSize(new java.awt.Dimension(400, 460));
+        pnlTicket2.setLayout(null);
+
+        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel15.setText("Ticket cocina");
+        pnlTicket2.add(jLabel15);
+        jLabel15.setBounds(130, 0, 120, 14);
+
+        Contenido2.setColumns(20);
+        Contenido2.setRows(5);
+        Contenido2.setText("*****  Ejemplo de ticket   *****\n\n|  Cantidad  |                  Producto                  |  Precio unitario  |  Importe  |\n--------------------------------------------------------------\n\n\n\n---------------------------------------------------------------\n\n\n   ¡Gracias por su visita!");
+        jScrollPane5.setViewportView(Contenido2);
+
+        pnlTicket2.add(jScrollPane5);
+        jScrollPane5.setBounds(12, 12, 0, 35);
+
+        tblProduc2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Cantidad", "Producto"
             }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
 
-        jLabel1.setText("************************************************************");
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane6.setViewportView(tblProduc2);
+        if (tblProduc2.getColumnModel().getColumnCount() > 0) {
+            tblProduc2.getColumnModel().getColumn(0).setPreferredWidth(6);
+        }
 
-        javax.swing.GroupLayout pnlTicketLayout = new javax.swing.GroupLayout(pnlTicket);
-        pnlTicket.setLayout(pnlTicketLayout);
-        pnlTicketLayout.setHorizontalGroup(
-            pnlTicketLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlTicketLayout.createSequentialGroup()
-                .addGroup(pnlTicketLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlTicketLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(pnlTicketLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlTicketLayout.createSequentialGroup()
-                                .addGap(0, 1, Short.MAX_VALUE)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        pnlTicketLayout.setVerticalGroup(
-            pnlTicketLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlTicketLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(jLabel2)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel1)
-                .addGap(21, 21, 21)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
+        pnlTicket2.add(jScrollPane6);
+        jScrollPane6.setBounds(10, 70, 380, 310);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnlTicket, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pnlTicket, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 278, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
+        lblTotal2.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        lblTotal2.setText(" ");
+        pnlTicket2.add(lblTotal2);
+        lblTotal2.setBounds(60, 390, 130, 15);
+
+        jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel19.setText("******************************  Nombre de la empresa  *********************************");
+        pnlTicket2.add(jLabel19);
+        jLabel19.setBounds(0, 20, 400, 14);
+
+        jLabel20.setText("Fecha: ");
+        pnlTicket2.add(jLabel20);
+        jLabel20.setBounds(10, 50, 50, 14);
+
+        lblFecha2.setText(" ");
+        pnlTicket2.add(lblFecha2);
+        lblFecha2.setBounds(60, 50, 80, 14);
+
+        jLabel21.setText("No. Pedido:");
+        pnlTicket2.add(jLabel21);
+        jLabel21.setBounds(130, 50, 70, 14);
+
+        lblNoPedido2.setText(" ");
+        pnlTicket2.add(lblNoPedido2);
+        lblNoPedido2.setBounds(210, 50, 70, 14);
+
+        getContentPane().add(pnlTicket2);
+        pnlTicket2.setBounds(410, 10, 400, 460);
+
+        pnlTicket.setMaximumSize(new java.awt.Dimension(400, 460));
+        pnlTicket.setMinimumSize(new java.awt.Dimension(400, 460));
+        pnlTicket.setPreferredSize(new java.awt.Dimension(400, 460));
+        pnlTicket.setLayout(null);
+
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel7.setText("Ticket cajero");
+        pnlTicket.add(jLabel7);
+        jLabel7.setBounds(130, 0, 120, 14);
+
+        Contenido.setColumns(20);
+        Contenido.setRows(5);
+        Contenido.setText("*****  Ejemplo de ticket   *****\n\n|  Cantidad  |                  Producto                  |  Precio unitario  |  Importe  |\n--------------------------------------------------------------\n\n\n\n---------------------------------------------------------------\n\n\n   ¡Gracias por su visita!");
+        jScrollPane2.setViewportView(Contenido);
+
+        pnlTicket.add(jScrollPane2);
+        jScrollPane2.setBounds(12, 12, 0, 35);
+
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("**************************************************************************************************");
+        pnlTicket.add(jLabel1);
+        jLabel1.setBounds(0, 410, 400, 14);
+
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("¡Gracias por su compra!");
+        jLabel2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        pnlTicket.add(jLabel2);
+        jLabel2.setBounds(0, 430, 400, 14);
+
+        tblProduc.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Cantidad", "Producto", "Precio unitario", "Importe"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tblProduc);
+        if (tblProduc.getColumnModel().getColumnCount() > 0) {
+            tblProduc.getColumnModel().getColumn(0).setPreferredWidth(6);
+            tblProduc.getColumnModel().getColumn(2).setPreferredWidth(20);
+            tblProduc.getColumnModel().getColumn(2).setHeaderValue("Precio unitario");
+            tblProduc.getColumnModel().getColumn(3).setPreferredWidth(20);
+            tblProduc.getColumnModel().getColumn(3).setHeaderValue("Importe");
+        }
+
+        pnlTicket.add(jScrollPane1);
+        jScrollPane1.setBounds(10, 70, 380, 310);
+
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jLabel3.setText("Total:");
+        pnlTicket.add(jLabel3);
+        jLabel3.setBounds(20, 390, 50, 15);
+
+        lblTotal.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        lblTotal.setText(" ");
+        pnlTicket.add(lblTotal);
+        lblTotal.setBounds(60, 390, 130, 15);
+
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel4.setText("****************************** Nombre de la empresa  *********************************");
+        pnlTicket.add(jLabel4);
+        jLabel4.setBounds(0, 20, 400, 14);
+
+        jLabel5.setText("Fecha: ");
+        pnlTicket.add(jLabel5);
+        jLabel5.setBounds(10, 50, 50, 14);
+
+        lblFecha.setText(" ");
+        pnlTicket.add(lblFecha);
+        lblFecha.setBounds(60, 50, 80, 14);
+
+        jLabel6.setText("No. Pedido:");
+        pnlTicket.add(jLabel6);
+        jLabel6.setBounds(130, 50, 70, 14);
+
+        lblNoPedido.setText(" ");
+        pnlTicket.add(lblNoPedido);
+        lblNoPedido.setBounds(210, 50, 70, 14);
+
+        getContentPane().add(pnlTicket);
+        pnlTicket.setBounds(0, 10, 400, 460);
+
+        pnlTicket1.setMaximumSize(new java.awt.Dimension(400, 460));
+        pnlTicket1.setMinimumSize(new java.awt.Dimension(400, 460));
+        pnlTicket1.setLayout(null);
+
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("Ticket cajero");
+        pnlTicket1.add(jLabel8);
+        jLabel8.setBounds(130, 0, 120, 14);
+
+        Contenido1.setColumns(20);
+        Contenido1.setRows(5);
+        Contenido1.setText("*****  Ejemplo de ticket   *****\n\n|  Cantidad  |                  Producto                  |  Precio unitario  |  Importe  |\n--------------------------------------------------------------\n\n\n\n---------------------------------------------------------------\n\n\n   ¡Gracias por su visita!");
+        jScrollPane3.setViewportView(Contenido1);
+
+        pnlTicket1.add(jScrollPane3);
+        jScrollPane3.setBounds(12, 12, 0, 35);
+
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setText("**************************************************************************************************");
+        pnlTicket1.add(jLabel9);
+        jLabel9.setBounds(0, 410, 400, 14);
+
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel10.setText("¡Gracias por su compra!");
+        jLabel10.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        pnlTicket1.add(jLabel10);
+        jLabel10.setBounds(0, 430, 400, 14);
+
+        tblProduc1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Cantidad", "Producto", "Precio unitario", "Importe"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane4.setViewportView(tblProduc1);
+        if (tblProduc1.getColumnModel().getColumnCount() > 0) {
+            tblProduc1.getColumnModel().getColumn(0).setPreferredWidth(6);
+            tblProduc1.getColumnModel().getColumn(2).setPreferredWidth(20);
+            tblProduc1.getColumnModel().getColumn(2).setHeaderValue("Precio unitario");
+            tblProduc1.getColumnModel().getColumn(3).setPreferredWidth(20);
+            tblProduc1.getColumnModel().getColumn(3).setHeaderValue("Importe");
+        }
+
+        pnlTicket1.add(jScrollPane4);
+        jScrollPane4.setBounds(10, 70, 380, 310);
+
+        jLabel11.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jLabel11.setText("Total:");
+        pnlTicket1.add(jLabel11);
+        jLabel11.setBounds(20, 390, 50, 15);
+
+        lblTotal1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        lblTotal1.setText(" ");
+        pnlTicket1.add(lblTotal1);
+        lblTotal1.setBounds(60, 390, 130, 15);
+
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel12.setText("********************************** Nombre de la empresa  *********************************");
+        pnlTicket1.add(jLabel12);
+        jLabel12.setBounds(0, 20, 400, 14);
+
+        jLabel13.setText("Fecha: ");
+        pnlTicket1.add(jLabel13);
+        jLabel13.setBounds(10, 50, 50, 14);
+
+        lblFecha1.setText(" ");
+        pnlTicket1.add(lblFecha1);
+        lblFecha1.setBounds(60, 50, 80, 14);
+
+        jLabel14.setText("No. Pedido:");
+        pnlTicket1.add(jLabel14);
+        jLabel14.setBounds(130, 50, 70, 14);
+
+        lblNoPedido1.setText(" ");
+        pnlTicket1.add(lblNoPedido1);
+        lblNoPedido1.setBounds(210, 50, 70, 14);
+
+        getContentPane().add(pnlTicket1);
+        pnlTicket1.setBounds(0, 10, 400, 460);
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
-        Ventana_Pedido_Registrar vtn = new Ventana_Pedido_Registrar();
+        Ventana_Pedido_Principal vtn = new Ventana_Pedido_Principal();
         mandaInfoIPR(vtn);
     }//GEN-LAST:event_btnRegresarActionPerformed
 
@@ -178,6 +437,12 @@ public class Ventana_Pedido_Ticket extends javax.swing.JFrame implements Printab
         }
          
     }//GEN-LAST:event_btnImprimirActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        String productos="";
+        CargaTabla();
+        
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments
@@ -205,6 +470,7 @@ public class Ventana_Pedido_Ticket extends javax.swing.JFrame implements Printab
             java.util.logging.Logger.getLogger(Ventana_Pedido_Ticket.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -215,13 +481,50 @@ public class Ventana_Pedido_Ticket extends javax.swing.JFrame implements Printab
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea Contenido;
+    private javax.swing.JTextArea Contenido1;
+    private javax.swing.JTextArea Contenido2;
     private javax.swing.JButton btnImprimir;
     private javax.swing.JButton btnRegresar;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JLabel lblFecha;
+    private javax.swing.JLabel lblFecha1;
+    private javax.swing.JLabel lblFecha2;
+    private javax.swing.JLabel lblNoPedido;
+    private javax.swing.JLabel lblNoPedido1;
+    private javax.swing.JLabel lblNoPedido2;
+    private javax.swing.JLabel lblTotal;
+    private javax.swing.JLabel lblTotal1;
+    private javax.swing.JLabel lblTotal2;
     private javax.swing.JPanel pnlTicket;
+    private javax.swing.JPanel pnlTicket1;
+    private javax.swing.JPanel pnlTicket2;
+    private javax.swing.JTable tblProduc;
+    private javax.swing.JTable tblProduc1;
+    private javax.swing.JTable tblProduc2;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -229,7 +532,7 @@ public class Ventana_Pedido_Ticket extends javax.swing.JFrame implements Printab
   throws PrinterException 
   {    
       
-                
+              
         
       int result = NO_SUCH_PAGE;    
         if (pageIndex == 0) {                    
@@ -322,9 +625,17 @@ public class Ventana_Pedido_Ticket extends javax.swing.JFrame implements Printab
     
     catch(Exception r){
     r.printStackTrace();
-*/  
-    
-              printAll(g2d);
+*/          
+            int y=20;
+            int yShift = 10;
+            int headerRectHeight=15;
+            int headerRectHeighta=40;
+            int sum;
+ //g2d.setFont(new Font("Monospaced",Font.PLAIN,9));
+
+
+            g2d.scale(0.5, 0.5);
+              pnlTicket.printAll(g2d);
               result = PAGE_EXISTS;   
               
           }    
