@@ -36,6 +36,11 @@ public class Ventana_Inventario_Retirar extends javax.swing.JFrame {
     public int id_Inventario;
     private final ConeccionBD CBD = new ConeccionBD();
     
+    /**
+     * compara los campos de la interfaz con la cadena vacia para retornar la 
+     * variable booleana falsa
+     * @return 
+     */
     private boolean Vacio(){
         boolean vacio=true;
         if(!txtNombre.getText().equals("") )vacio=false;
@@ -43,6 +48,13 @@ public class Ventana_Inventario_Retirar extends javax.swing.JFrame {
         return vacio;
     }
     
+    /**
+     * hace una consulta a la tabla inventario para almacenar el id_ inventario
+     * @param nom
+     * @param stock
+     * @param costo
+     * @param Und_Med 
+     */
     private void SacaID(String nom, float stock, float costo, String Und_Med){
             String sql = "select ID_Inventario from Inventario where Nombre='"+nom+"' and Stock = "+stock+" and Costo= "+costo+" "
                     + " and Unidad_Medida = '"+Und_Med+"' ";
@@ -68,6 +80,10 @@ public class Ventana_Inventario_Retirar extends javax.swing.JFrame {
             }
     }
     
+    /**
+     * permite que al hacer clic en un registro de la tabla se mantenga seleccionado
+     * @param Fila 
+     */
     public void InventarioSeleccionado(int Fila){
         Nombre = tblInventario.getValueAt(Fila, 0).toString();
         Stock= tblInventario.getValueAt(Fila, 1).toString();
@@ -76,6 +92,10 @@ public class Ventana_Inventario_Retirar extends javax.swing.JFrame {
         
     }
     
+    /**
+     * toma la información de logeo de la interfaz para
+     * enviarla a la interfaz de inventario principal
+     */
     private void MandaInfoVIP(){
         Ventana_Inventario_Principal VIP = new Ventana_Inventario_Principal();
         VIP.Actual_Nombre_Usuario = Actual_Nombre_Usuario;
@@ -86,12 +106,19 @@ public class Ventana_Inventario_Retirar extends javax.swing.JFrame {
     }
     
     
-    
+    /**
+     * esta función quita la informacion previamente insertada en el campo
+     * de texto nombre
+     */
     private void Limpiar(){
         txtNombre.setText("Nombre.");
         txtNombre.setForeground(new Color(102,102,102));  
     }
     
+    /**
+     * esta funcion remueve todos los registros que se muestran sobre tabla
+     * en la interfaz eliminar inventario
+     */
     public void limpiarTabla(){
         try {
             //System.out.println("Limpiando tabla");
@@ -105,7 +132,10 @@ public class Ventana_Inventario_Retirar extends javax.swing.JFrame {
         }
     }
     
-    
+    /**
+     * funcion donde muestra todos los registros  de la tabla inventario y se muestra
+     * en la tabla de la interfaz
+     */
     private void CargarInventario(){
         limpiarTabla();
         DefaultTableModel mod=(DefaultTableModel) tblInventario.getModel();
@@ -131,7 +161,10 @@ public class Ventana_Inventario_Retirar extends javax.swing.JFrame {
         }
     }
    
-    
+    /**
+     * función donde hace una consulta de todos los datos de la tabla inventario donde
+     * la condición sea el nombre guardandolo en una matriz
+     */
      private void ConsultaInventario(){
         limpiarTabla();
         String nombre = txtNombre.getText()+"%";
@@ -157,6 +190,11 @@ public class Ventana_Inventario_Retirar extends javax.swing.JFrame {
         }
     }
      
+     /**
+      * función donde guarda el stock del registro y se resta con la cantidad 
+      * establecida para actualizar el registro, validando que no sea mayor y que
+      * no sea un numero negativo
+      */
      private void RetiraInventario(){
       float stock_actual=0;
         String sql=""; 
@@ -501,6 +539,38 @@ public class Ventana_Inventario_Retirar extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Ventana_Inventario_Retirar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
